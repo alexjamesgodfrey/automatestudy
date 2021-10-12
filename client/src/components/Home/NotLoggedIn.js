@@ -25,7 +25,7 @@ export default function NotLoggedIn() {
         setLoading(false);
     }
     return (
-        <div>
+        <div style={{ maxWidth: '1300px'}}>
             <h3 style={{ textAlign: 'center' }}>Welcome to <span style={{ color: '#4FB0AE' }}>studyflow.ai</span></h3>
             <p className="mb-2 text-muted" style={{ textAlign: 'center' }}>automated workflow for students</p>
             <div style={{margin: '0px 20px' }} className="d-flex justify-content-around flex-wrap">
@@ -75,7 +75,7 @@ export default function NotLoggedIn() {
                     <Card.Footer><Button disabled={loading} onClick={() => google()}variant="primary"><span style={{ color: 'white' }}>Get Started</span></Button></Card.Footer>
                 </Card> */}
             </div>
-            <h3 style={{ marginLeft: '20px'}}>Example <span style={{ color: '#4FB0AE' }}>studyflow</span></h3>
+            <h3>Example <span style={{ color: '#4FB0AE' }}>studyflow</span></h3>
             <div style={{ margin: '20px 20px'}}>
                 <div className="d-flex align-items-start justify-content-around">
                     <div className="d-flex flex-column align-items-center">

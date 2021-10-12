@@ -11,6 +11,7 @@ export default function Home() {
     return (
         <div>
             <Header />
+            <div className="d-flex justify-content-center">
             {currentUser ?
                 <div>
                     <LoggedIn />
@@ -19,6 +20,7 @@ export default function Home() {
                 <div style={{ marginTop: '10px' }}>
                     <NotLoggedIn />
                 </div>}
+            </div>
         </div>
     )
 }

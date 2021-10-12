@@ -16,7 +16,7 @@ export default function AuthProvider({ children }) {
     // }
 
     function googleSignup() {
-        return auth.signInWithPopup(googleProvider);
+        return auth.signInWithRedirect(googleProvider);
     }
 
     // function login(email, password) {
