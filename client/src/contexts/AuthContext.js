@@ -9,6 +9,7 @@ export function useAuth() {
 
 export default function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState();
+    const [surveyResponse, setSurveyReponse] = useState();
     const [loading, setLoading] = useState(true);
 
     // function signup(email, password) {
@@ -59,10 +60,23 @@ export default function AuthProvider({ children }) {
         return currentUser.reauthenticateWithCredential(credential);
     }
 
+    const getSurveyReponse = async (user) => {
+        try {
+            await fetch(`/api/surveyresponses/${user.uid}`)
+                .then(response => response.json())
+                .then(async data => {
+                    await setSurveyReponse(data[0])
+                    setLoading(false)
+                })
+        } catch (error) {
+            return null
+        }
+    }
+
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             setCurrentUser(user);
-            setLoading(false);
+            getSurveyReponse(user);
         })
 
         return unsubscribe;
@@ -80,7 +94,8 @@ export default function AuthProvider({ children }) {
         //updatePassword,
         //updatePhotoURL,
         deleteUser,
-        reauthenticate
+        reauthenticate,
+        surveyResponse
     }
 
     return (

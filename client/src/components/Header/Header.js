@@ -7,8 +7,6 @@ export default function Header() {
     const { currentUser, googleSignup, logout } = useAuth()
     const [loading, setLoading] = useState(false)
 
-    console.log(currentUser)
-
     const google = async () => {
         setLoading(true);
 

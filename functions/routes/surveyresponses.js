@@ -15,6 +15,17 @@
         }
     })
 
+    //check if a user has a surveyresponse
+    app.get("/api/surveyresponses/:uid", async (req, res) => {
+        try {
+            const { uid } = req.params;
+            const user = await pool.query("SELECT * FROM surveyresponses WHERE uid = $1", [uid]);
+            res.json(user.rows);
+        } catch (err) {
+            console.error(err.message);
+        }
+    })
+
     //create a new surveyresponse
     app.post("/api/surveyresponses", async (req, res) => {
         try {
