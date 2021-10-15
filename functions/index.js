@@ -1,15 +1,18 @@
 require("dotenv").config();
 const functions = require("firebase-functions");
 const express = require("express");
-const cors = require("cors");
 const app = express();
+const cors = require("cors");
+const bodyParser = require('body-parser')
 const path = require("path");
 
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(express.static(path.join(__dirname, "..", "client", "build")));
 
-require('./routes/main.js')(app);
+require('./routes/users.js')(app);
+require('./routes/surveyresponses.js')(app);
 
 app.get("/", async (req, res) => {
     try {

@@ -2,32 +2,33 @@ import React, { useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import Card from 'react-bootstrap/Card'
 import Survey from './Survey'
+import Test from './Test'
 
 export default function LoggedIn() {
     const { currentUser, logout } = useAuth()
 
-    console.log(currentUser)
-
     const createUser = async () => {
-        const here = await fetch(`/api/users/${currentUser.uid}`)
-        const hereJSON = await here.json()
-        if (hereJSON.length === 0) {
-            const user = `{
-                "displayname": "${currentUser.displayName}",
-                "email": "${currentUser.email}",
-                "photourl": "${currentUser.photoURL}",
-                "uid": "${currentUser.uid}"
-            }`
-            console.log('adding user to database')
-            await fetch('/api/users', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: user
-            })
-        }
-        
+        try {
+            const here = await fetch(`/api/users/${currentUser.uid}`)
+            const hereJSON = await here.json()
+            if (hereJSON.length === 0) {
+                const user = `{
+                    "displayname": "${currentUser.displayName}",
+                    "email": "${currentUser.email}",
+                    "photourl": "${currentUser.photoURL}",
+                    "uid": "${currentUser.uid}"
+                }`
+                console.log('adding user to database')
+                await fetch('/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: user
+                })
+            }
+        } catch (error) {}
+           
     }
 
     useEffect(() => {
@@ -47,6 +48,8 @@ export default function LoggedIn() {
                 </Card>
             </div>
             <div className="d-flex justify-content-center"><Survey /></div>
+            <Test />
         </div>
+        
     )
 }

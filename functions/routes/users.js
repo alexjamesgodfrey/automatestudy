@@ -9,7 +9,7 @@
     app.get("/api/users", async (req, res) => {
         try {
             const req = await pool.query("SELECT * FROM users");
-            res.json(req);
+            res.json(req.rows);
         } catch (err) {
             console.error(err.message);
         }
