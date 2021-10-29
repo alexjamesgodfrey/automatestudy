@@ -11,8 +11,11 @@ export default function Main() {
     const todoistSecret = process.env.REACT_APP_TODOIST_SECRET
     const todoistURL = `https://todoist.com/oauth/authorize?client_id=${todoistClient}&scope=data:read_write,data:delete&state=${todoistSecret}`
     const notionClient = process.env.REACT_APP_NOTION_CLIENT
-    const notionSecret = process.env.REACT_APP_NOTION_SECRET
-    const notionURL = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${notionClient}&redirect_uri=http%3A%2F%2Flocalhost%3A3001&response_type=code&state=${notionSecret}`
+    const notionState = process.env.REACT_APP_NOTION_SECRET
+    const notionURL = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${notionClient}&redirect_uri=http%3A%2F%2Flocalhost%3A3001&response_type=code&state=${notionState}`
+    const onedriveClient = process.env.REACT_APP_ONEDRIVE_CLIENT
+    const onedriveState = 'onedrive'
+    const onedriveURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${onedriveClient}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3001&response_mode=query&scope=offline_access%20user.read%20mail.read&state=${onedriveState}`
 
     const checkTodoist = async () => {
         if (!userDB.todoistCode){
@@ -27,11 +30,24 @@ export default function Main() {
         }
     }
 
+    const checkOnedrive = async () => {
+        if (!userDB.onedrivecode){
+            const code = new URLSearchParams(search).get('code');
+            const state = new URLSearchParams(search).get('state');
+            if (code && state === onedriveState){
+                console.log('adding onedrivecode to user')
+                await fetch(`/api/users/onedrivecode/${code}/${currentUser.uid}`, {
+                    method: 'PUT'
+                })
+            }
+        }
+    }
+
     const checkNotion = async () => {
         if (!userDB.notioncode){
             const code = new URLSearchParams(search).get('code');
             const state = new URLSearchParams(search).get('state');
-            if (code && state === notionSecret){
+            if (code && state === notionState){
                 console.log('adding notioncode to user')
                 await fetch(`/api/users/notioncode/${code}/${currentUser.uid}`, {
                     method: 'PUT'
@@ -39,13 +55,14 @@ export default function Main() {
             }
         }
     }
+
+
     
 
     useEffect(() => {
-        console.log(userDB)
         checkTodoist()
         checkNotion()
-        console.log(userDB.todoistcode)
+        checkOnedrive()
     })
 
     return (
@@ -66,7 +83,7 @@ export default function Main() {
                             {userDB.onedrivecode ?
                                 <span style={{color: '#4BB543', textDecoration: 'line-through'}}>2. Connect OneDrive Account</span>
                                 :
-                                <div className="d-flex justify-content-between align-items-center"><span>2. Connect OneDrive Account</span><a href={todoistURL}><Button variant="info">go</Button></a></div>
+                                <div className="d-flex justify-content-between align-items-center"><span>2. Connect OneDrive Account</span><a href={onedriveURL}><Button variant="info">go</Button></a></div>
                             }       
                         </Card.Text>    
                         <Card.Text>

@@ -71,4 +71,15 @@
             console.error(err.message);
         }
     })
+
+    //update a user's onedrivecode
+    app.put("/api/users/onedrivecode/:code/:uid", async (req, res) => {
+        try {
+            const { code, uid } = req.params;
+            const changeOnedrive = await pool.query("UPDATE users set onedrivecode = $1 WHERE uid = $2", [code, uid]);
+            res.json(changeOnedrive.rows);
+        } catch (err) {
+            console.error(err.message);
+        }
+    })
 }
