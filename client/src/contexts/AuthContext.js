@@ -9,6 +9,7 @@ export function useAuth() {
 
 export default function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState();
+    const [userDB, setUserDB] = useState()
     const [surveyResponse, setSurveyReponse] = useState();
     const [loading, setLoading] = useState(true);
 
@@ -62,14 +63,22 @@ export default function AuthProvider({ children }) {
 
     const getSurveyReponse = async (user) => {
         try {
+            await fetch(`/api/users/${user.uid}`)
+                .then(response => response.json())
+                .then(async data => {
+                    await setUserDB(data[0])
+                })
             await fetch(`/api/surveyresponses/${user.uid}`)
                 .then(response => response.json())
                 .then(async data => {
-                    await setSurveyReponse(data[0])
+                    let d = data[0]
+                    d.classesarray = JSON.parse('['+d.classesarray.slice(1, -1)+']')
+                    await setSurveyReponse(d)
                     setLoading(false)
                 })
         } catch (error) {
-            return null
+            setSurveyReponse(null)
+            return setLoading(false)
         }
     }
 
@@ -95,6 +104,7 @@ export default function AuthProvider({ children }) {
         //updatePhotoURL,
         deleteUser,
         reauthenticate,
+        userDB,
         surveyResponse
     }
 

@@ -49,4 +49,15 @@
             console.error(err.message);
         }
     })
+
+    //update a user's todoistcode
+    app.put("/api/users/todoistcode/:code/:uid", async (req, res) => {
+        try {
+            const { code, uid } = req.params;
+            const changeTodoist = await pool.query("UPDATE users set todoistcode = $1 WHERE uid = $2", [code, uid]);
+            res.json(changeTodoist.rows);
+        } catch (err) {
+            console.error(err.message);
+        }
+    })
 }
