@@ -15,7 +15,7 @@ export default function Main() {
     const notionURL = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${notionClient}&redirect_uri=http%3A%2F%2Flocalhost%3A3001&response_type=code&state=${notionState}`
     const onedriveClient = process.env.REACT_APP_ONEDRIVE_CLIENT
     const onedriveState = 'onedrive'
-    const onedriveURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${onedriveClient}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3001&response_mode=query&scope=offline_access%20user.read%20mail.read&state=${onedriveState}`
+    const onedriveURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${onedriveClient}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3001&response_mode=query&scope=files.read.all%20user.read&state=${onedriveState}`
 
     const checkTodoist = async () => {
         if (!userDB.todoistCode){
@@ -24,19 +24,6 @@ export default function Main() {
             if (code && state === todoistSecret){
                 console.log('adding todoistcode to user')
                 await fetch(`/api/users/todoistcode/${code}/${currentUser.uid}`, {
-                    method: 'PUT'
-                })
-            }
-        }
-    }
-
-    const checkOnedrive = async () => {
-        if (!userDB.onedrivecode){
-            const code = new URLSearchParams(search).get('code');
-            const state = new URLSearchParams(search).get('state');
-            if (code && state === onedriveState){
-                console.log('adding onedrivecode to user')
-                await fetch(`/api/users/onedrivecode/${code}/${currentUser.uid}`, {
                     method: 'PUT'
                 })
             }
@@ -56,8 +43,18 @@ export default function Main() {
         }
     }
 
-
-    
+    const checkOnedrive = async () => {
+        if (!userDB.onedrivecode){
+            const code = new URLSearchParams(search).get('code');
+            const state = new URLSearchParams(search).get('state');
+            if (code && state === onedriveState){
+                console.log('adding onedrivecode to user')
+                await fetch(`/api/users/onedrivecode/${code}/${currentUser.uid}`, {
+                    method: 'PUT'
+                })
+            }
+        }
+    }
 
     useEffect(() => {
         checkTodoist()
@@ -80,17 +77,17 @@ export default function Main() {
                             }       
                         </Card.Text>    
                         <Card.Text>
-                            {userDB.onedrivecode ?
-                                <span style={{color: '#4BB543', textDecoration: 'line-through'}}>2. Connect OneDrive Account</span>
+                            {userDB.notioncode ?
+                                <span style={{color: '#4BB543', textDecoration: 'line-through'}}>2. Connect Notion Account</span>
                                 :
-                                <div className="d-flex justify-content-between align-items-center"><span>2. Connect OneDrive Account</span><a href={onedriveURL}><Button variant="info">go</Button></a></div>
+                                <div className="d-flex justify-content-between align-items-center"><span>2. Connect Notion Account</span><a href={notionURL}><Button variant="dark">go</Button></a></div>
                             }       
                         </Card.Text>    
                         <Card.Text>
-                            {userDB.notioncode ?
-                                <span style={{color: '#4BB543', textDecoration: 'line-through'}}>3. Connect Notion Account</span>
+                            {userDB.onedrivecode ?
+                                <span style={{color: '#4BB543', textDecoration: 'line-through'}}>3. Connect OneDrive Account</span>
                                 :
-                                <div className="d-flex justify-content-between align-items-center"><span>3. Connect Notion Account</span><a href={notionURL}><Button variant="dark">go</Button></a></div>
+                                <div className="d-flex justify-content-between align-items-center"><span>3. Connect OneDrive Account</span><a href={onedriveURL}><Button variant="info">go</Button></a></div>
                             }       
                         </Card.Text>    
                     </Card.Body>
