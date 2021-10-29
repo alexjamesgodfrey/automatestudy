@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { auth, googleProvider } from '../firebase.js';
+import Spinner from 'react-bootstrap/Spinner'
 
 const AuthContext = React.createContext();
 
@@ -106,6 +107,17 @@ export default function AuthProvider({ children }) {
         reauthenticate,
         userDB,
         surveyResponse
+    }
+
+    if (loading) {
+        return (
+            <div style={{marginTop: '20%'}} className="d-flex justify-content-center">
+                <div className="d-flex flex-column align-items-center">
+                    <h3 style={{marginBottom: '15px'}}><strong>studyflow.ai</strong></h3>
+                    <Spinner animation="border" variant="dark" />
+                </div>
+            </div>
+        )
     }
 
     return (
