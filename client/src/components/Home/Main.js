@@ -10,6 +10,9 @@ export default function Main() {
     const todoistClient = process.env.REACT_APP_TODOIST_CLIENT
     const todoistSecret = process.env.REACT_APP_TODOIST_SECRET
     const todoistURL = `https://todoist.com/oauth/authorize?client_id=${todoistClient}&scope=data:read_write,data:delete&state=${todoistSecret}`
+    const notionClient = process.env.REACT_APP_NOTION_CLIENT
+    const notionSecret = process.env.REACT_APP_NOTION_SECRET
+    const notionURL = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${notionClient}&redirect_uri=http%3A%2F%2Flocalhost%3A3001&response_type=code&state=${notionSecret}`
 
     const checkTodoist = async () => {
         if (!userDB.todoistCode){
@@ -23,10 +26,25 @@ export default function Main() {
             }
         }
     }
+
+    const checkNotion = async () => {
+        if (!userDB.notioncode){
+            const code = new URLSearchParams(search).get('code');
+            const state = new URLSearchParams(search).get('state');
+            if (code && state === notionSecret){
+                console.log('adding notioncode to user')
+                await fetch(`/api/users/notioncode/${code}/${currentUser.uid}`, {
+                    method: 'PUT'
+                })
+            }
+        }
+    }
     
 
     useEffect(() => {
+        console.log(userDB)
         checkTodoist()
+        checkNotion()
         console.log(userDB.todoistcode)
     })
 
@@ -55,7 +73,7 @@ export default function Main() {
                             {userDB.notioncode ?
                                 <span style={{color: '#4BB543', textDecoration: 'line-through'}}>3. Connect Notion Account</span>
                                 :
-                                <div className="d-flex justify-content-between align-items-center"><span>3. Connect Notion Account</span><a href={todoistURL}><Button variant="dark">go</Button></a></div>
+                                <div className="d-flex justify-content-between align-items-center"><span>3. Connect Notion Account</span><a href={notionURL}><Button variant="dark">go</Button></a></div>
                             }       
                         </Card.Text>    
                     </Card.Body>
