@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { getTodoistProjects, getSectionsOfTodoistProject, createSchoolProject, createTodoistProject } from '../../functions/TodoistCalls'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 
@@ -76,6 +77,7 @@ export default function Main() {
         checkTodoist()
         checkNotion()
         checkOnedrive()
+        console.log(getTodoistProjects(userDB.todoisttoken))
     })
 
     return (
