@@ -61,6 +61,17 @@
         }
     })
 
+    //update a user's todoisttoken
+    app.put("/api/users/todoisttoken/:code/:uid", async (req, res) => {
+        try {
+            const { code, uid } = req.params;
+            const changeTodoist = await pool.query("UPDATE users set todoisttoken = $1 WHERE uid = $2", [code, uid]);
+            res.json(changeTodoist.rows);
+        } catch (err) {
+            console.error(err.message);
+        }
+    })
+
     //update a user's notioncode
     app.put("/api/users/notioncode/:code/:uid", async (req, res) => {
         try {

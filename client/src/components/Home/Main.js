@@ -12,21 +12,37 @@ export default function Main() {
     const todoistURL = `https://todoist.com/oauth/authorize?client_id=${todoistClient}&scope=data:read_write,data:delete&state=${todoistSecret}`
     const notionClient = process.env.REACT_APP_NOTION_CLIENT
     const notionState = process.env.REACT_APP_NOTION_SECRET
-    const notionURL = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${notionClient}&redirect_uri=http%3A%2F%2Flocalhost%3A3001&response_type=code&state=${notionState}`
+    const notionURL = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${notionClient}&redirect_uri=http%3A%2F%2Flocalhost%3A0&response_type=code&state=${notionState}`
     const onedriveClient = process.env.REACT_APP_ONEDRIVE_CLIENT
     const onedriveState = 'onedrive'
-    const onedriveURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${onedriveClient}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3001&response_mode=query&scope=files.read.all%20user.read&state=${onedriveState}`
+    const onedriveURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${onedriveClient}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000&response_mode=query&scope=files.read.all%20user.read&state=${onedriveState}`
 
+    
     const checkTodoist = async () => {
+        /*
+        The following function checks the url for code and secret parameters for
+        Todoist connection, and adds the user's code and token after generation to 
+        the user database if present.
+        */
         if (!userDB.todoistCode){
-            const code = new URLSearchParams(search).get('code');
-            const state = new URLSearchParams(search).get('state');
+            const code = await new URLSearchParams(search).get('code');
+            const state = await new URLSearchParams(search).get('state');
             if (code && state === todoistSecret){
-                console.log('adding todoistcode to user')
                 await fetch(`/api/users/todoistcode/${code}/${currentUser.uid}`, {
                     method: 'PUT'
                 })
-            }
+                await fetch(`https://todoist.com/oauth/access_token?client_id=${todoistClient}&client_secret=${todoistSecret}&code=${code}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(async data => {
+                    if (data.access_token){
+                        await fetch(`/api/users/todoisttoken/${data.access_token}/${currentUser.uid}`, {
+                            method: 'PUT'
+                        })
+                    }
+                })
+        }
         }
     }
 
