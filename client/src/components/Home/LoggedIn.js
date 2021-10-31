@@ -20,17 +20,12 @@ export default function LoggedIn() {
                     "photourl": "${currentUser.photoURL}",
                     "uid": "${currentUser.uid}"
                 }`
-                console.log('adding user to database')
                 await fetch('/api/users', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: user
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('success')
                 })
             }
         } catch (error) {}

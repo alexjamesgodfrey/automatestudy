@@ -18,11 +18,11 @@
     })
 
     //get a flow by id
-    app.get("/api/flows/:id/", async (req, res) => {
+    app.get("/api/flowbyid/:id/", async (req, res) => {
         try {
             const { id } = req.params;
             const query = await pool.query("SELECT * FROM flowlist WHERE id = $1", 
-            [id]);
+            [parseInt(id)]);
             res.json(query.rows[0]);
         } catch (err) {
             console.error(err.message);

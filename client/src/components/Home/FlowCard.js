@@ -11,7 +11,7 @@ export default function FlowCard(props) {
     const [loading, setLoading] = useState(true)
  
     const getFlow = async (id) => {
-        await fetch(`/api/flows/${id}`)
+        await fetch(`/api/flowbyid/${id}`)
             .then(response => response.json())
             .then(data => {
                 setFlow(data)

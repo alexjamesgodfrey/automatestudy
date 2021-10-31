@@ -106,6 +106,7 @@ export default function Main() {
                     setFlowList(data)
                 })
         }
+        console.log(classLoading)
     }
 
     const setFlow = async (id) => {
@@ -130,10 +131,10 @@ export default function Main() {
 
     useEffect(() => {
         // checkTodoist()
-        createProject()
-        checkNotion()
-        checkOnedrive()
+        // checkNotion()
+        // checkOnedrive()
         getAllFlows()
+        console.log(classLoading)
     }, [])
 
     return (
