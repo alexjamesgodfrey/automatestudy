@@ -72,11 +72,14 @@ export default function FlowCard(props) {
                     }
                 </Card.Body>
                 :
-                <Spinner variant="dark" animation="border" />
+                <div style={{marginTop: '20px'}} className="d-flex justify-content-center">
+                    <Spinner animation="border" />
+                </div>
                 }
             </Card>
             <Modal show={showModal} onHide={() => {
                     setShowModal(false)
+                    setLoading(false)
                 }}>
                 <Modal.Header closeButton>
                 <Modal.Title>Change studyflow for {props.c}</Modal.Title>

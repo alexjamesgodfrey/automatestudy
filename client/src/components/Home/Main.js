@@ -93,16 +93,23 @@ export default function Main() {
     const getAllFlows = async () => {
         if (surveyResponse.media = 'Digital Writing (iPad, Surface)'){
             let tasks
+            let cloud
             if (surveyResponse.tools.indexOf('Todoist') !== -1){
                 tasks = 'Todoist'
             }
             else {
                 tasks = 'StudyTasks'
             }
-            await fetch(`/api/flows/${surveyResponse.apporcloud}/${surveyResponse.cloud}/${tasks}`)
+            if (!(surveyResponse.cloud)) {
+                await fetch(`/api/flows/nocloud/${surveyResponse.apporcloud}/${tasks}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data)
+                    setFlowList(data)
+                })
+            }
+            await fetch(`/api/flows/cloud/${surveyResponse.apporcloud}/${surveyResponse.cloud}/${tasks}`)
+                .then(response => response.json())
+                .then(data => {
                     setFlowList(data)
                 })
         }
