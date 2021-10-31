@@ -93,4 +93,15 @@
             console.error(err.message);
         }
     })
+
+    //update a user's projectid
+    app.put("/api/users/projectid/:code/:uid", async (req, res) => {
+        try {
+            const { code, uid } = req.params;
+            const changeProjectCode = await pool.query("UPDATE users set projectid = $1 WHERE uid = $2", [code, uid]);
+            res.json(changeProjectCode.rows);
+        } catch (err) {
+            console.error(err.message);
+        }
+    })
 }
