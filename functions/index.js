@@ -13,6 +13,7 @@ app.use(express.static(path.join(__dirname, "..", "client", "build")));
 
 require('./routes/users.js')(app);
 require('./routes/surveyresponses.js')(app);
+require('./routes/flows.js')(app);
 
 app.get("/", async (req, res) => {
     try {

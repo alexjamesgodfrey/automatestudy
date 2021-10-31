@@ -95,7 +95,7 @@ export default function NotLoggedIn() {
                     </div>
                     <img className="icon" src={arrowRight} alt="arrow facing right" />
                     <div className="d-flex flex-column align-items-center">
-                        <img  style={{ width: '60px', marginBottom: '5px' }} src={todoist} alt="todoist icon" />
+                        <img style={{ width: '60px', marginBottom: '5px' }} src={todoist} alt="todoist icon" />
                         <p style={{ textAlign: 'center', margin: '0px' }}>1. four review tasks <span style={{ color: '#4FB0AE' }}>automatically</span> created in todoist</p>
                         <p style={{ textAlign: 'center' }}>2. review at time intervals for maximum retention</p>
                     </div>

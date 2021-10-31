@@ -5,14 +5,12 @@ import { createTodoistProject } from '../../functions/TodoistCalls'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
-import Dropdown from 'react-bootstrap/Dropdown'
 import Flows from './Flows'
 
 export default function Main() {
     const { currentUser, userDB, surveyResponse } = useAuth()
     const [showModal, setShowModal] = useState(false)
     const [currentClass, setCurrentClass] = useState('')
-    const [difficulty, setDifficulty] = useState('Average')
     const search = useLocation().search
     const todoistClient = process.env.REACT_APP_TODOIST_CLIENT
     const todoistSecret = process.env.REACT_APP_TODOIST_SECRET
@@ -119,17 +117,6 @@ export default function Main() {
                     <Modal.Title>Add studyflow for {currentClass}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                    Difficulty: {difficulty}
-                    <Dropdown style={{margin: '5px 20px 20px 10px'}}>
-                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                            Enter relative class difficulty for recommended studyflows
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => setDifficulty('Hard')}>Hard</Dropdown.Item>
-                            <Dropdown.Item onClick={() => setDifficulty('Average')}>Average</Dropdown.Item>
-                            <Dropdown.Item onClick={() => setDifficulty('Easy')}>Easy</Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
                     <Flows surveyResponse={surveyResponse} />
                     </Modal.Body>
                     <Modal.Footer>

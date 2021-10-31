@@ -9,8 +9,13 @@ export default function Flows(props) {
     return (
         <div>
             {props.surveyResponse.apporcloud === 'Notability' && props.surveyResponse.cloud === 'OneDrive' ?
-            <div>
-                <div style={{cursor: 'pointer'}} className="d-flex align-items-start justify-content-around">
+            <div style={{border: '2px solid lightgrey', padding: '10px', cursor: 'pointer', }}>
+                <p>
+                    <strong>Recommended </strong>
+                    Create Notability note, automatic notion page creation for active recall questions, 4
+                    spaced repetition review tasks created over 30 days.
+                </p>
+                <div className="d-flex align-items-start justify-content-around">
                     <div className="d-flex flex-column align-items-center">
                         <img style={{ width: '50px'}} src={notability} alt="notability icon" />
                     </div>
@@ -28,6 +33,7 @@ export default function Flows(props) {
                     </div>
                 </div>
             </div>
+            
             : <span />
             }
         </div>
