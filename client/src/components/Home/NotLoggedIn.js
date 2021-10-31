@@ -93,7 +93,7 @@ export default function NotLoggedIn() {
                 <div 
                     style={{ border: '2px solid lightgrey', padding: '10px', margin: '20px 0px', borderRadius: '1%', cursor: 'pointer'}}
                 >
-                    <FlowDisplay showDifficulty={true} flow={sampleFlow} />
+                    <FlowDisplay showDifficulty={false} flow={sampleFlow} />
                 </div>
                 <div style={{ margin: '30px' }} className="d-flex justify-content-center"><Button disabled={loading} onClick={() => google()}variant="primary"><span style={{ color: 'white' }}>get started</span></Button></div>
             </div>

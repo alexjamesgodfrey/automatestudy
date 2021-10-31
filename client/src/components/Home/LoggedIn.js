@@ -7,10 +7,7 @@ import Test from './Test'
 
 export default function LoggedIn() {
     const { currentUser, surveyResponse } = useAuth()
-    const [userInfo, setUserInfo] = useState()
     const [takenSurvey, setTakenSurvey] = useState(surveyResponse)
-
-    console.log(currentUser.uid)
 
     const createUser = async () => {
         try {
@@ -31,13 +28,16 @@ export default function LoggedIn() {
                     },
                     body: user
                 })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('success')
+                })
             }
         } catch (error) {}
     }
 
     useEffect(() => {
         createUser()
-        //submitSurvey(JSON.stringify(bod))
     }, [])
 
     return (

@@ -42,7 +42,7 @@
         try {
             const { displayname, email, photourl, uid } = req.body;
             const insertUser = await pool.query(
-                "INSERT INTO users (displayname, email, photourl, uid, flows) VALUES ($1, $2, $3, $4)", 
+                "INSERT INTO users (displayname, email, photourl, uid, flows) VALUES ($1, $2, $3, $4, $5)", 
                 [displayname, email, photourl, uid, []]);
             res.json(insertUser.rows);
         } catch (err) {
