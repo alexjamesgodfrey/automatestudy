@@ -5,12 +5,16 @@ import { createTodoistProject } from '../../functions/TodoistCalls'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
+import Spinner from 'react-bootstrap/Spinner'
 import Flows from './Flows'
 
 export default function Main() {
     const { currentUser, userDB, surveyResponse } = useAuth()
     const [showModal, setShowModal] = useState(false)
+    const [classLoading, setClassLoading] = useState(false)
     const [currentClass, setCurrentClass] = useState('')
+    const [currentClassKey, setCurrentClassKey] = useState(0)
+    const [flowList, setFlowList] = useState([])
     const search = useLocation().search
     const todoistClient = process.env.REACT_APP_TODOIST_CLIENT
     const todoistSecret = process.env.REACT_APP_TODOIST_SECRET
@@ -83,12 +87,22 @@ export default function Main() {
         }
     }
 
+    const getFlows = async () => {
+        await fetch('/api/flows/notability/onedrive/studytasks')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                setFlowList(data)
+            })
+    }
+
     useEffect(() => {
         // checkTodoist()
         createProject()
         checkNotion()
         checkOnedrive()
-    })
+        getFlows()
+    }, [])
 
     return (
         <div style={{width: '100vw' }}>
@@ -99,25 +113,37 @@ export default function Main() {
                         <Card style={{ width: '300px', margin: '20px', height: '150px' }}>
                             <Card.Header as="h5">{c}</Card.Header>
                             <Card.Body>
-                                <Card.Text 
-                                    onClick={() => {
-                                        setCurrentClass(c)
-                                        setShowModal(true)}
-                                    } 
-                                    style={{ textDecoration: 'underline', textDecorationColor: '#84CACC', cursor: 'pointer'}}
-                                >
-                                    add a <strong>studyflow</strong>
-                                </Card.Text>    
+                                {classLoading ? 
+                                    <div style={{marginTop: '20px'}} className="d-flex justify-content-center">
+                                        <Spinner animation="border" />
+                                    </div>
+                                :
+                                    <Card.Text 
+                                        onClick={() => {
+                                            setCurrentClass(c)
+                                            setCurrentClassKey(i)
+                                            setShowModal(true)
+                                            setClassLoading(true)}
+                                        } 
+                                        style={{ textDecoration: 'underline', textDecorationColor: '#84CACC', cursor: 'pointer'}}
+                                    >
+                                        add a <strong>studyflow</strong>
+                                    </Card.Text>  
+                                }
+                                  
                             </Card.Body>
                         </Card>
                     )
                 })}
-                <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal show={showModal} onHide={() => {
+                        setClassLoading(false)
+                        setShowModal(false)
+                    }}>
                     <Modal.Header closeButton>
                     <Modal.Title>Add studyflow for {currentClass}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                    <Flows surveyResponse={surveyResponse} />
+                    <Flows classIndex={currentClassKey} user={userDB} surveyResponse={surveyResponse} class={currentClass} flowList={flowList}/>
                     </Modal.Body>
                     <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowModal(false)}>

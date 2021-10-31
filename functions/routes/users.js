@@ -104,4 +104,15 @@
             console.error(err.message);
         }
     })
+
+    //update a user's flows
+    app.put("/api/users/flows/", async (req, res) => {
+        try {
+            const { flows, uid } = req.body;
+            const changeFlows = await pool.query("UPDATE users set flows = $1 WHERE uid = $2", [flows, uid]);
+            res.json(changeFlows.rows);
+        } catch (err) {
+            console.error(err.message);
+        }
+    })
 }
