@@ -29,7 +29,6 @@
     //create a new surveyresponse
     app.post("/api/surveyresponses", async (req, res) => {
         try {
-            res.json(req.body)
             let counter = 0
             const email = req.body.form_response.hidden.email
             const uid = req.body.form_response.hidden.uid
@@ -63,14 +62,12 @@
                 classesarray.push(req.body.form_response.answers[counter].text)
                 counter += 1
             }
-            const hastodoist = req.body.form_response.answers[counter].choice.label
-            counter += 1
-            const hasnotion = req.body.form_response.answers[counter].choice.label
+            const tools = req.body.form_response.answers[counter].choices.labels
             const insertUser = await pool.query(
-                "INSERT INTO surveyresponses (email, uid, studylocation, college, cornellcollege, grade, media, apporcloud, cloud, numberofclasses, classesarray, hastodoist, hasnotion) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)", 
+                "INSERT INTO surveyresponses (email, uid, studylocation, college, cornellcollege, grade, media, apporcloud, cloud, numberofclasses, classesarray, tools) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)", 
                 [email, uid, studylocation, college, cornellcollege,
                     grade, media, apporcloud, cloud, numberofclasses, 
-                    classesarray, hastodoist, hasnotion]);
+                    classesarray, tools]);
             res.json(insertUser.rows);
         } catch (err) {
             console.error(err.message);
