@@ -3,15 +3,28 @@ import { useAuth } from '../../contexts/AuthContext'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import './NotLoggedIn.scss'
-import arrowRight from '../../images/arrowright.svg'
+import FlowDisplay from './FlowDisplay'
 import notability from '../../images/notability.png'
 import onedrive from '../../images/onedrive.svg'
+import goodnotes from '../../images/goodnotes.png'
+import onenote from '../../images/onenote.svg'
+import googledrive from '../../images/googledrive.svg'
 import notion from '../../images/notion.svg'
+import microsofttodo from '../../images/microsofttodo.png'
 import todoist from '../../images/todoist.svg'
 
 export default function NotLoggedIn() {
     const { googleSignup } = useAuth()
     const [loading, setLoading] = useState(false)
+    const sampleFlow = {
+        id: "31", 
+        description: "Create Notability note (automatic backup to OneDrive), automatic notion page creation for active recall questions, 4 spaced repetition review tasks created over 30 days.", 
+        tags: ["Notability", "OneDrive", "Notion", "StudyTasks"], 
+        difficulty: "Average", 
+        recommended: true,
+        taskCount: '4', 
+        taskduration: '30'
+    }
 
     const google = async () => {
         setLoading(true);
@@ -75,32 +88,25 @@ export default function NotLoggedIn() {
                     <Card.Footer><Button disabled={loading} onClick={() => google()}variant="primary"><span style={{ color: 'white' }}>Get Started</span></Button></Card.Footer>
                 </Card> */}
             </div>
-            <h3>Example <span style={{ color: '#4FB0AE' }}>studyflow</span></h3>
+            <h4>Example <span style={{ color: '#4FB0AE' }}>studyflow</span></h4>
             <div style={{ margin: '20px 20px'}}>
-                <div className="d-flex align-items-start justify-content-around">
-                    <div className="d-flex flex-column align-items-center">
-                        <img style={{ width: '70px'}} src={notability} alt="notability icon" />
-                        <p style={{ textAlign: 'center' }}>create note in notability</p>
-                    </div>
-                    <img className="icon" src={arrowRight} alt="arrow facing right" />
-                    <div className="d-flex flex-column align-items-center">
-                        <img  style={{ width: '70px'}} src={onedrive} alt="onedrive icon" />
-                        <p style={{ textAlign: 'center' }}><span style={{ color: '#4FB0AE' }}>automatic</span> backup to oneDrive</p>
-                    </div>
-                    <img className="icon" src={arrowRight} alt="arrow facing right" />
-                    <div className="d-flex flex-column align-items-center">
-                        <img style={{ width: '60px', marginBottom: '5px'}} src={notion} alt="notion icon" />
-                        <p style={{ textAlign: 'center', margin: '0px' }}>1. <span style={{ color: '#4FB0AE' }}>automatic</span> notion page creation</p>
-                        <p style={{ textAlign: 'center' }}>2. create active recall questions</p>
-                    </div>
-                    <img className="icon" src={arrowRight} alt="arrow facing right" />
-                    <div className="d-flex flex-column align-items-center">
-                        <img style={{ width: '60px', marginBottom: '5px' }} src={todoist} alt="todoist icon" />
-                        <p style={{ textAlign: 'center', margin: '0px' }}>1. four review tasks <span style={{ color: '#4FB0AE' }}>automatically</span> created in todoist</p>
-                        <p style={{ textAlign: 'center' }}>2. review at time intervals for maximum retention</p>
-                    </div>
+                <div 
+                    style={{ border: '2px solid lightgrey', padding: '10px', margin: '20px 0px', borderRadius: '1%', cursor: 'pointer'}}
+                >
+                    <FlowDisplay showDifficulty={true} flow={sampleFlow} />
                 </div>
                 <div style={{ margin: '30px' }} className="d-flex justify-content-center"><Button disabled={loading} onClick={() => google()}variant="primary"><span style={{ color: 'white' }}>get started</span></Button></div>
+            </div>
+            <h4><span style={{ color: '#4FB0AE' }}>studyflow</span> integrates with the following apps</h4>
+            <div style={{ margin: '20px 0px 50px 0px'}} className="d-flex align-items-center justify-content-around flex-wrap">
+                <div><img style={{ width: '50px'}} src={notability} alt="notability icon" /></div>
+                <div><img style={{ width: '50px'}} src={goodnotes} alt="goodnotes icon" /></div>
+                <img style={{ width: '50px'}} src={onenote} alt="one note icon" />
+                <img style={{ width: '50px'}} src={onedrive} alt="onedrive icon" />
+                <img style={{ width: '50px'}} src={googledrive} alt="google drive icon" />
+                <img style={{ width: '45px', marginTop: '2px'}} src={notion} alt="notion icon" />
+                <div><img style={{ width: '45px', margin: '2px 3px 0px 0px' }} src={microsofttodo} alt="microsoft todo icon" /></div>
+                <img style={{ width: '45px', margin: '2px 3px 0px 0px' }} src={todoist} alt="todoist icon" />
             </div>
         </div>
     )

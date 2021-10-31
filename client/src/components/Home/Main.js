@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { createTodoistProject } from '../../functions/TodoistCalls'
+import FlowCard from './FlowCard'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import Spinner from 'react-bootstrap/Spinner'
 import Flows from './Flows'
+import FlowDisplay from './FlowDisplay'
 
 export default function Main() {
     const { currentUser, userDB, surveyResponse } = useAuth()
@@ -15,6 +17,7 @@ export default function Main() {
     const [currentClass, setCurrentClass] = useState('')
     const [currentClassKey, setCurrentClassKey] = useState(0)
     const [flowList, setFlowList] = useState([])
+    const [userFlows, setUserFlows] = useState([])
     const search = useLocation().search
     const todoistClient = process.env.REACT_APP_TODOIST_CLIENT
     const todoistSecret = process.env.REACT_APP_TODOIST_SECRET
@@ -87,13 +90,42 @@ export default function Main() {
         }
     }
 
-    const getFlows = async () => {
-        await fetch('/api/flows/notability/onedrive/studytasks')
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-                setFlowList(data)
-            })
+    const getAllFlows = async () => {
+        if (surveyResponse.media = 'Digital Writing (iPad, Surface)'){
+            let tasks
+            if (surveyResponse.tools.indexOf('Todoist') !== -1){
+                tasks = 'Todoist'
+            }
+            else {
+                tasks = 'StudyTasks'
+            }
+            await fetch(`/api/flows/${surveyResponse.apporcloud}/${surveyResponse.cloud}/${tasks}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    setFlowList(data)
+                })
+        }
+    }
+
+    const setFlow = async (id) => {
+        let userFlows = userDB.flows
+        userFlows.splice(currentClassKey, 1, id)
+        const bod = `{
+            "flows": [${userFlows}],
+            "uid": "${currentUser.uid}"
+        }`
+        await fetch('/api/users/flows/', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: bod
+        })
+        .then(() => {
+            setShowModal(false)
+            setClassLoading(false)
+        })
     }
 
     useEffect(() => {
@@ -101,40 +133,48 @@ export default function Main() {
         createProject()
         checkNotion()
         checkOnedrive()
-        getFlows()
+        getAllFlows()
     }, [])
 
     return (
         <div style={{width: '100vw' }}>
-            <h4 style={{ textAlign: 'center', margin: '20px'}}>welcome, {currentUser.displayName} | {surveyResponse.grade} at {surveyResponse.college}</h4>
-            <div style={{margin: '20px 0px' }} className="d-flex flex-column justify-content-center">
+            <h4 style={{ textAlign: 'center', margin: '20px'}}>Welcome, <span style={{ textTransform: 'capitalize'}}>{currentUser.displayName}</span> | {surveyResponse.grade} at {surveyResponse.college}</h4>
+            <div style={{margin: '20px 20px' }} className="d-flex flex-column justify-content-center"> 
+                <h4>Your classes</h4>  
+                <div className="d-flex flex-column align-items-center justify-content-center">
                 {surveyResponse.classesarray.map((c, i) => {
                     return (
-                        <Card style={{ width: '300px', margin: '20px', height: '150px' }}>
-                            <Card.Header as="h5">{c}</Card.Header>
-                            <Card.Body>
-                                {classLoading ? 
-                                    <div style={{marginTop: '20px'}} className="d-flex justify-content-center">
-                                        <Spinner animation="border" />
-                                    </div>
-                                :
-                                    <Card.Text 
-                                        onClick={() => {
-                                            setCurrentClass(c)
-                                            setCurrentClassKey(i)
-                                            setShowModal(true)
-                                            setClassLoading(true)}
-                                        } 
-                                        style={{ textDecoration: 'underline', textDecorationColor: '#84CACC', cursor: 'pointer'}}
-                                    >
-                                        add a <strong>studyflow</strong>
-                                    </Card.Text>  
-                                }
-                                  
-                            </Card.Body>
-                        </Card>
-                    )
-                })}
+                        <div>
+                            {parseInt(userDB.flows[i]) === 0 ?
+                                <Card style={{ width: '300px', marginBottom: '20px', height: '150px' }}>
+                                    <Card.Header as="h5">{c}</Card.Header>
+                                        <Card.Body 
+                                            style={{ cursor: 'pointer '}}
+                                            onClick={() => {
+                                                setCurrentClass(c)
+                                                setCurrentClassKey(i)
+                                                setShowModal(true)
+                                                setClassLoading(true)}
+                                            } 
+                                        >
+                                            {classLoading ? 
+                                                <div style={{marginTop: '20px'}} className="d-flex justify-content-center">
+                                                    <Spinner animation="border" />
+                                                </div>
+                                                :
+                                                <Card.Text>
+                                                    <p style={{textAlign: 'center', marginTop: '20px'}} >click to add a <strong>studyflow</strong></p>
+                                                </Card.Text>  
+                                            }
+                                        </Card.Body>
+                                </Card>
+                            :   
+                                <FlowCard classKey={i} userDB={userDB} currentUser={currentUser} flowList={flowList} c={c} flowid={userDB.flows[i]} />
+                            }
+                        </div>
+                    )})
+                }
+                </div>
                 <Modal show={showModal} onHide={() => {
                         setClassLoading(false)
                         setShowModal(false)
@@ -143,14 +183,21 @@ export default function Main() {
                     <Modal.Title>Add studyflow for {currentClass}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                    <Flows classIndex={currentClassKey} user={userDB} surveyResponse={surveyResponse} class={currentClass} flowList={flowList}/>
+                        <p>Choose a studyflow based on class difficulty (Easy/Average/Hard) and desired repetition count. </p>
+                        {flowList.map((flow, key) => {
+                            return (
+                            <div 
+                                onClick={() => setFlow(flow.id)}
+                                style={{ border: '2px solid lightgrey', padding: '10px', margin: '20px 0px', borderRadius: '1%', cursor: 'pointer'}}
+                            >
+                                <FlowDisplay showDifficulty={true} flow={flow} />
+                            </div>)
+                        })}
+                        {/* <Flows classIndex={currentClassKey} user={userDB} surveyResponse={surveyResponse} class={currentClass} flowList={flowList}/> */}
                     </Modal.Body>
                     <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowModal(false)}>
                         Close
-                    </Button>
-                    <Button variant="primary" onClick={() => setShowModal(false)}>
-                        Save Changes
                     </Button>
                     </Modal.Footer>
                 </Modal>
