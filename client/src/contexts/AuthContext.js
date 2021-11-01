@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react'
+import _, { first } from 'underscore'
 import { auth, googleProvider } from '../firebase.js';
 import Spinner from 'react-bootstrap/Spinner'
 
@@ -12,6 +13,8 @@ export default function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState();
     const [userDB, setUserDB] = useState()
     const [surveyResponse, setSurveyReponse] = useState();
+    const [flowList, setFlowList] = useState([]);
+    const [flowObject, setFlowObject] = useState({})
     const [loading, setLoading] = useState(true);
 
     // function signup(email, password) {
@@ -75,18 +78,43 @@ export default function AuthProvider({ children }) {
                     let d = data[0]
                     d.classesarray = JSON.parse('['+d.classesarray.slice(1, -1)+']')
                     await setSurveyReponse(d)
-                    setLoading(false)
                 })
         } catch (error) {
             setSurveyReponse(null)
-            return setLoading(false)
         }
     }
 
+    const getFlows = async () => {
+        let firstGrouping = []
+        await fetch('/api/flows')
+            .then(response => response.json())
+            .then(async data => {
+                await setFlowList(data)
+                firstGrouping = _.groupBy(data, (obj) => {
+                    return obj.tags[0]
+                })
+                for (const property in firstGrouping){
+                    firstGrouping[property] =  _.groupBy(firstGrouping[property], (obj) => {
+                            return obj.tags[1]
+                        })
+                    for (const property2 in firstGrouping[property]){
+                        firstGrouping[property][property2] =  _.groupBy(firstGrouping[property][property2], (obj) => {
+                            return obj.tags[2]
+                        })
+                    }
+                }
+            })
+            .then(async () => {
+                await setFlowObject(firstGrouping)
+            })
+    }
+
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-            setCurrentUser(user);
-            getSurveyReponse(user);
+        const unsubscribe = auth.onAuthStateChanged(async user => {
+            await setCurrentUser(user);
+            await getSurveyReponse(user);
+            await getFlows()
+            setLoading(false)
         })
 
         return unsubscribe;
@@ -106,7 +134,9 @@ export default function AuthProvider({ children }) {
         deleteUser,
         reauthenticate,
         userDB,
-        surveyResponse
+        surveyResponse,
+        flowList,
+        flowObject
     }
 
     if (loading) {

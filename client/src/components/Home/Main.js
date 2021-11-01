@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import _, { first, property } from 'underscore'
 import { useAuth } from '../../contexts/AuthContext'
 import { createTodoistProject } from '../../functions/TodoistCalls'
 import FlowCard from './FlowCard'
@@ -7,16 +8,17 @@ import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import Spinner from 'react-bootstrap/Spinner'
+import Dropdown from 'react-bootstrap/Dropdown'
+import DropdownButton from 'react-bootstrap/DropdownButton'
 import Flows from './Flows'
 import FlowDisplay from './FlowDisplay'
 
 export default function Main() {
-    const { currentUser, userDB, surveyResponse } = useAuth()
+    const { currentUser, userDB, surveyResponse, flowList } = useAuth()
     const [showModal, setShowModal] = useState(false)
     const [classLoading, setClassLoading] = useState(false)
     const [currentClass, setCurrentClass] = useState('')
     const [currentClassKey, setCurrentClassKey] = useState(0)
-    const [flowList, setFlowList] = useState([])
     const [userFlows, setUserFlows] = useState([])
     const search = useLocation().search
     const todoistClient = process.env.REACT_APP_TODOIST_CLIENT
@@ -93,31 +95,66 @@ export default function Main() {
         }
     }
 
-    const getAllFlows = async () => {
-        if (surveyResponse.media = 'Digital Writing (iPad, Surface)'){
-            let tasks
-            let cloud
-            if (surveyResponse.tools.indexOf('Todoist') !== -1){
-                tasks = 'Todoist'
-            }
-            else {
-                tasks = 'StudyTasks'
-            }
-            if (!(surveyResponse.cloud)) {
-                await fetch(`/api/flows/nocloud/${surveyResponse.apporcloud}/${tasks}`)
-                .then(response => response.json())
-                .then(data => {
-                    setFlowList(data)
-                })
-            }
-            await fetch(`/api/flows/cloud/${surveyResponse.apporcloud}/${surveyResponse.cloud}/${tasks}`)
-                .then(response => response.json())
-                .then(data => {
-                    setFlowList(data)
-                })
-        }
-        console.log(classLoading)
-    }
+    // const getAllFlows = async () => {
+    //     if (surveyResponse.media = 'Digital Writing (iPad, Surface)'){
+    //         let tasks
+    //         let cloud
+    //         if (surveyResponse.tools.indexOf('Todoist') !== -1){
+    //             tasks = 'Todoist'
+    //         }
+    //         else {
+    //             tasks = 'StudyTasks'
+    //         }
+    //         if (!(surveyResponse.cloud)) {
+    //             await fetch(`/api/flows/nocloud/${surveyResponse.apporcloud}/${tasks}`)
+    //             .then(response => response.json())
+    //             .then(data => {
+    //                 setFlowList(data)
+    //             })
+    //         }
+    //         await fetch(`/api/flows/cloud/${surveyResponse.apporcloud}/${surveyResponse.cloud}/${tasks}`)
+    //             .then(response => response.json())
+    //             .then(data => {
+    //                 setFlowList(data)
+    //             })
+    //     }
+    //     console.log(classLoading)
+    // }
+
+    // const getCategory = (obj) => {
+    //     console.log(obj)
+    //     const cat = _.chain(obj).pick('tags').value().tags
+    //     // .pick(['Notability', 'OneDrive']).values().join(' ').value()
+    //     console.log(cat)
+    //     return cat
+    // }
+
+    // const getFlows = async () => {
+    //     await fetch('/api/flows')
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         console.log(data)
+    //         let firstGrouping = _.groupBy(data, (obj) => {
+    //             return obj.tags[0]
+    //         })
+    //         console.log(firstGrouping)
+    //         const groupingArray = []
+    //         for (const property in firstGrouping){
+    //             firstGrouping[property] =  _.groupBy(firstGrouping[property], (obj) => {
+    //                     return obj.tags[1]
+    //                 })
+    //             for (const property2 in firstGrouping[property]){
+    //                 firstGrouping[property][property2] =  _.groupBy(firstGrouping[property][property2], (obj) => {
+    //                     return obj.tags[2]
+    //                 })
+    //             }
+    //         }
+    //         setFlowList(firstGrouping)
+    //         console.log(firstGrouping)
+            
+    //     })
+    //     .then((firstGrouping) => console.log(firstGrouping))
+    // }
 
     const setFlow = async (id) => {
         let userFlows = userDB.flows
@@ -143,7 +180,7 @@ export default function Main() {
         checkTodoist()
         checkNotion()
         checkOnedrive()
-        getAllFlows()
+        console.log(flowList)
         console.log(classLoading)
     }, [])
 
@@ -201,7 +238,27 @@ export default function Main() {
                     <Modal.Title>Add studyflow for {currentClass}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <p>Choose a studyflow based on class difficulty (Easy/Average/Hard) and desired repetition count. </p>
+                        <div>
+                            <p><strong>Filters:</strong></p>
+                            <div className="d-flex justify-content-around flex-wrap">
+                                <DropdownButton id="dropdown-basic-button" title="Note-taking Media">
+                                    <Dropdown.Item href="#/action-1">Notability</Dropdown.Item>
+                                    <Dropdown.Item href="#/action-2">Goodnotes</Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">OneDrive</Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">Paper</Dropdown.Item>
+                                </DropdownButton>
+                                <DropdownButton id="dropdown-basic-button" title="Cloud Service">
+                                    <Dropdown.Item href="#/action-1">OneDrive</Dropdown.Item>
+                                    <Dropdown.Item href="#/action-2">Google Drive</Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">Dropbox</Dropdown.Item>
+                                </DropdownButton>
+                                <DropdownButton id="dropdown-basic-button" title="Difficulty">
+                                    <Dropdown.Item href="#/action-1">Easy</Dropdown.Item>
+                                    <Dropdown.Item href="#/action-2">Average</Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">Hard</Dropdown.Item>
+                                </DropdownButton>
+                            </div>
+                        </div>
                         {flowList.map((flow, key) => {
                             return (
                             <div 
