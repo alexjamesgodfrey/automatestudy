@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import FlowConnects from './FlowConnects'
 import Card from 'react-bootstrap/Card'
 import Spinner from 'react-bootstrap/Spinner'
 import FlowDisplay from './FlowDisplay'
@@ -9,6 +10,7 @@ export default function FlowCard(props) {
     const [flow, setFlow] = useState({})
     const [showModal, setShowModal] = useState(false)
     const [loading, setLoading] = useState(true)
+        
  
     const getFlow = async (id) => {
         await fetch(`/api/flowbyid/${id}`)
@@ -62,6 +64,20 @@ export default function FlowCard(props) {
                         </div>
                     :
                     <div>
+                        <h6>Setup</h6>
+                        {/* {flow.tags.indexOf('OneDrive') !== 0 && !props.userDB.onedrivecode ?
+                            <div className="d-flex justify-content-left align-items-center">
+                                <div style={{ width: '6px', height: '6px', backgroundColor: '#CB444A', borderRadius: '50%', margin: '0px 3px 2.5px 0px'}}></div>
+                                <a style={{ textDecoration: 'none'}} href={props.onedriveURL}>
+                                    <span style={{ color: '#CB444A', marginRight: '10px' }}>Connect OneDrive Account</span>
+                                    <Button variant="danger">go</Button>
+                                </a>
+                            </div>
+                        : 
+                            <span></span>
+                        } */}
+                        <FlowConnects flow={flow} userDB={props.userDB} />
+                        <div style={{ borderBottom: '2px solid lightgrey', marginBottom: '10px'}}></div>
                         <h6 style={{ borderBottom: '2px solid lightgrey'}}>Tasks</h6>
                         <h6 onClick={() => {
                             setShowModal(true)

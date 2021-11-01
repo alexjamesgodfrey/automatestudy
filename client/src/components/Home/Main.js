@@ -30,36 +30,38 @@ export default function Main() {
     const onedriveURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${onedriveClient}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000&response_mode=query&scope=files.read.all%20user.read&state=${onedriveState}`
 
     
-    // const checkTodoist = async () => {
-    //     /*
-    //     The following function checks the url for code and secret parameters for
-    //     Todoist connection, and adds the user's code and token after generation to 
-    //     the user database if present.
-    //     */
-    //     if (!userDB.todoistCode){
-    //         const code = await new URLSearchParams(search).get('code');
-    //         const state = await new URLSearchParams(search).get('state');
-    //         if (code && state === todoistSecret){
-    //             await fetch(`/api/users/todoistcode/${code}/${currentUser.uid}`, {
-    //                 method: 'PUT'
-    //             })
-    //             await fetch(`https://todoist.com/oauth/access_token?client_id=${todoistClient}&client_secret=${todoistSecret}&code=${code}`, {
-    //                 method: 'POST'
-    //             })
-    //             .then(response => response.json())
-    //             .then(async data => {
-    //                 if (data.access_token){
-    //                     await fetch(`/api/users/todoisttoken/${data.access_token}/${currentUser.uid}`, {
-    //                         method: 'PUT'
-    //                     })
-    //                 }
-    //             })
-    //     }
-    //     }
-    // }
+    const checkTodoist = async () => {
+        /*
+        The following function checks the url for code and secret parameters for
+        Todoist connection, and adds the user's code and token after generation to 
+        the user database if present.
+        */
+        if (!userDB.todoistCode){
+            console.log('Todoist not found')
+            const code = await new URLSearchParams(search).get('code');
+            const state = await new URLSearchParams(search).get('state');
+            if (code && state === todoistSecret){
+                await fetch(`/api/users/todoistcode/${code}/${currentUser.uid}`, {
+                    method: 'PUT'
+                })
+                await fetch(`https://todoist.com/oauth/access_token?client_id=${todoistClient}&client_secret=${todoistSecret}&code=${code}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(async data => {
+                    if (data.access_token){
+                        await fetch(`/api/users/todoisttoken/${data.access_token}/${currentUser.uid}`, {
+                            method: 'PUT'
+                        })
+                    }
+                })
+        }
+        }
+    }
 
     const checkNotion = async () => {
         if (!userDB.notioncode){
+            console.log('Notion not found')
             const code = new URLSearchParams(search).get('code');
             const state = new URLSearchParams(search).get('state');
             if (code && state === notionState){
@@ -73,6 +75,7 @@ export default function Main() {
 
     const checkOnedrive = async () => {
         if (!userDB.onedrivecode){
+            console.log('OneDrive not found')
             const code = new URLSearchParams(search).get('code');
             const state = new URLSearchParams(search).get('state');
             if (code && state === onedriveState){
@@ -137,9 +140,9 @@ export default function Main() {
     }
 
     useEffect(() => {
-        // checkTodoist()
-        // checkNotion()
-        // checkOnedrive()
+        checkTodoist()
+        checkNotion()
+        checkOnedrive()
         getAllFlows()
         console.log(classLoading)
     }, [])
@@ -177,7 +180,14 @@ export default function Main() {
                                         </Card.Body>
                                 </Card>
                             :   
-                                <FlowCard classKey={i} userDB={userDB} currentUser={currentUser} flowList={flowList} c={c} flowid={userDB.flows[i]} />
+                                <FlowCard 
+                                    classKey={i} 
+                                    userDB={userDB} 
+                                    currentUser={currentUser} 
+                                    flowList={flowList} c={c} 
+                                    flowid={userDB.flows[i]} 
+                                    onedriveURL={onedriveURL}
+                                />
                             }
                         </div>
                     )})
