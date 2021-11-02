@@ -4,6 +4,16 @@
  const pool = require("../db.js");
 
  module.exports = function (app) {
+     
+    //get all flows
+    app.get("/api/flows", async (req, res) => {
+        try {
+            const query = await pool.query("SELECT * FROM flowlist");
+            res.json(query.rows);
+        } catch (err) {
+            console.error(err.message);
+        }
+    })
 
     //digital writing flows with cloud
     app.get("/api/flows/cloud/:apporcloud/:cloud/:tasks", async (req, res) => {
