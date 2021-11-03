@@ -22,7 +22,7 @@ export default function Main() {
     const [userFlows, setUserFlows] = useState([])
 
     const [customFlow, setCustomFlow] = useState([])
-    const [media, setMedia] = useState("Note-taking Media")
+    const [media, setMedia] = useState("Media")
     const [cloud, setCloud] = useState("Cloud Service")
     const [difficulty, setDifficulty] = useState('Difficulty')
 
@@ -206,7 +206,7 @@ export default function Main() {
     }
 
     const clearFilters = async () => {
-        setMedia('Note-taking Media')
+        setMedia('Media')
         setCloud('Cloud Service')
         setDifficulty('Difficulty')
         setCustomFlow([])
