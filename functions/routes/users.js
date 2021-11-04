@@ -94,6 +94,17 @@
         }
     })
 
+    //update a user's dropboxcode
+    app.put("/api/users/dropboxcode/:code/:uid", async (req, res) => {
+        try {
+            const { code, uid } = req.params;
+            const changeDropbox = await pool.query("UPDATE users set dropboxcode = $1 WHERE uid = $2", [code, uid]);
+            res.json(changeDropbox.rows);
+        } catch (err) {
+            console.error(err.message);
+        }
+    })
+
     //update a user's projectid
     app.put("/api/users/projectid/:code/:uid", async (req, res) => {
         try {

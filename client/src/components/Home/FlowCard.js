@@ -113,8 +113,8 @@ export default function FlowCard(props) {
                         : 
                             <span></span>
                         } */}
-                        <FlowConnects flow={flow} userDB={props.userDB} />
-                        <div style={{ borderBottom: '2px solid lightgrey', marginBottom: '10px'}}></div>
+                        <FlowConnects flow={flow} currentUser={props.currentUser} userDB={props.userDB} />
+                        <div style={{ borderBottom: '2px solid lightgrey', margin: '15px 0px 15px 0px'}}></div>
                         <h6 style={{ borderBottom: '2px solid lightgrey'}}>Tasks</h6>
                         <h6 onClick={() => {
                             setShowModal(true)
