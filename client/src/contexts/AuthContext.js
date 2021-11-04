@@ -19,6 +19,7 @@ export default function AuthProvider({ children }) {
     const [flowObject, setFlowObject] = useState({})
 
     const [open, setOpen] = useState(false)
+    const [userPresent, setUserPresent] = useState(false)
     const [loadingUserData, setLoadingUserData] = useState(true)
     const [loadingUserPreferences, setLoadingUserPreferences] = useState(true)
     const [loadingFlows, setLoadingFlows] = useState(true)
@@ -123,6 +124,7 @@ export default function AuthProvider({ children }) {
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async user => {
+            user ? setUserPresent(true) : setUserPresent(false)
             setOpen(true)
             await setCurrentUser(user);
             await getSurveyReponse(user);
@@ -152,7 +154,7 @@ export default function AuthProvider({ children }) {
         flowObject
     }
 
-    if (loading) {
+    if (loading && userPresent) {
         return (
             <Fade in={open}>
             <div style={{marginTop: '20%'}} className="d-flex justify-content-center">
@@ -183,6 +185,20 @@ export default function AuthProvider({ children }) {
                             }
                         </div>
                     
+                </div>
+            </div>
+            </Fade>
+        )
+    }
+
+    if (loading) {
+        return (
+            <Fade in={open}>
+            <div style={{marginTop: '20%'}} className="d-flex justify-content-center">
+                <div style={{ width: '400px' }} className="d-flex flex-column align-items-center">
+                    <h3 style={{marginBottom: '15px'}}><strong>welcome to studyflow.ai</strong></h3> 
+                    <h6 style={{marginBottom: '15px'}}><strong>loading an optimal user experience</strong></h6>
+                    <Spinner animation="border" /> 
                 </div>
             </div>
             </Fade>
