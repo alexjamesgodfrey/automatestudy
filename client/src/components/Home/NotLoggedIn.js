@@ -6,6 +6,7 @@ import './NotLoggedIn.scss'
 import FlowDisplay from './FlowDisplay'
 import notability from '../../images/notability.png'
 import onedrive from '../../images/onedrive.svg'
+import dropbox from '../../images/dropbox.svg'
 import goodnotes from '../../images/goodnotes.png'
 import onenote from '../../images/onenote.svg'
 import googledrive from '../../images/googledrive.svg'
@@ -19,7 +20,7 @@ export default function NotLoggedIn() {
     const sampleFlow = {
         id: "31", 
         description: "Create Notability note (automatic backup to OneDrive), automatic notion page creation for active recall questions, 4 spaced repetition review tasks created over 30 days.", 
-        tags: ["Notability", "OneDrive", "Notion", "StudyTasks"], 
+        tags: ["Notability", "OneDrive", "Notion", "Todoist"], 
         difficulty: "Average", 
         recommended: true,
         taskCount: '4', 
@@ -38,34 +39,33 @@ export default function NotLoggedIn() {
         setLoading(false);
     }
     return (
-        <div style={{ maxWidth: '1300px'}}>
-            <h3 style={{ textAlign: 'center' }}>Welcome to <span style={{ color: '#4FB0AE' }}>studyflow.ai</span></h3>
+        <div style={{ maxWidth: '1300px', margin: '0px 20px'}}>
+            <h3 style={{ textAlign: 'center' }}>welcome to <span style={{ color: '#4FB0AE' }}>studyflow.ai</span></h3>
             <p className="mb-2 text-muted" style={{ textAlign: 'center' }}>automated workflow for students</p>
             <div style={{margin: '0px 20px' }} className="d-flex justify-content-around flex-wrap">
-                <Card style={{ width: '300px', margin: '15px' }}>
-                    <Card.Header as="h5">What we do</Card.Header>
+                <Card style={{ width: '300px', height: '150px', margin: '15px' }}>
+                    <Card.Header as="h5">what we do</Card.Header>
                     <Card.Body>
                         <Card.Text>
-                            We help you implement our revolutionary study system that is focused solely on study efficiency.
-                            What we do is <span style={{ color: '#4FB0AE' }}>save your time</span>.
+                            we help you implement our seamless study system that is focused solely on 
+                            <span style={{ color: '#4FB0AE' }}> saving your time</span>.
                         </Card.Text>    
                     </Card.Body>
                 </Card>
-                <Card style={{ width: '300px', height: '200px', margin: '15px' }}>
-                    <Card.Header as="h5">How we do it</Card.Header>
+                <Card style={{ width: '300px', height: '150px', margin: '15px' }}>
+                    <Card.Header as="h5">how we do it</Card.Header>
                     <Card.Body>
                         <Card.Text>
-                            We <span style={{ color: '#4FB0AE' }}>automate as much as possible</span>. This includes your study intervals, study intensity,
-                            and menial tasks like backing up your notes.
+                            we <span style={{ color: '#4FB0AE' }}>automate as much as possible:</span> your study intervals, intensity, and note backup.
                         </Card.Text>    
                     </Card.Body>
                 </Card>
-                <Card style={{ width: '300px', height: '200px', margin: '15px' }}>
-                    <Card.Header as="h5">Why</Card.Header>
+                <Card style={{ width: '300px', height: '150px', margin: '15px' }}>
+                    <Card.Header as="h5">why we do it</Card.Header>
                     <Card.Body>
                         <Card.Text>
-                            Creating your own study system is hard. Automation takes programming skills.
-                            We want to help students <span style={{ color: '#4FB0AE' }}>study efficiently</span> so they have as much free time as possible.
+                            so any student can easily implement a proven study strategy
+                             that helps them <span style={{ color: '#4FB0AE' }}>learn more in less time</span>.
                         </Card.Text>    
                     </Card.Body>
                 </Card>
@@ -89,21 +89,22 @@ export default function NotLoggedIn() {
                 </Card> */}
             </div>
             <h4>Example <span style={{ color: '#4FB0AE' }}>studyflow</span></h4>
-            <div style={{ margin: '20px 20px'}}>
+            <div onClick={() => google()} style={{ margin: '20px 20px'}}>
                 <div 
                     style={{ border: '2px solid lightgrey', padding: '10px', margin: '20px 0px', borderRadius: '1%', cursor: 'pointer'}}
                 >
                     <FlowDisplay showDifficulty={false} flow={sampleFlow} />
                 </div>
-                <div style={{ margin: '30px' }} className="d-flex justify-content-center"><Button disabled={loading} onClick={() => google()}variant="primary"><span style={{ color: 'white' }}>get started</span></Button></div>
+                <div style={{ margin: '30px' }} className="d-flex justify-content-center"><Button size="md" disabled={loading} onClick={() => google()}variant="primary"><span style={{ color: 'white' }}>get started in 30 seconds</span></Button></div>
             </div>
-            <h4><span style={{ color: '#4FB0AE' }}>studyflow</span> integrates with the following apps</h4>
+            <h4><span style={{ color: '#4FB0AE' }}>studyflow</span> integrates the following apps</h4>
             <div style={{ margin: '20px 0px 50px 0px'}} className="d-flex align-items-center justify-content-around flex-wrap">
-                <div><img style={{ width: '50px'}} src={notability} alt="notability icon" /></div>
+                <div><img style={{ width: '53px'}} src={notability} alt="notability icon" /></div>
                 <div><img style={{ width: '50px'}} src={goodnotes} alt="goodnotes icon" /></div>
                 <img style={{ width: '50px'}} src={onenote} alt="one note icon" />
-                <img style={{ width: '50px'}} src={onedrive} alt="onedrive icon" />
+                <img style={{ width: '54px'}} src={onedrive} alt="onedrive icon" />
                 <img style={{ width: '50px'}} src={googledrive} alt="google drive icon" />
+                <img style={{ width: '50px'}} src={dropbox} alt="dropbox icon" />
                 <img style={{ width: '45px', marginTop: '2px'}} src={notion} alt="notion icon" />
                 <div><img style={{ width: '45px', margin: '2px 3px 0px 0px' }} src={microsofttodo} alt="microsoft todo icon" /></div>
                 <img style={{ width: '45px', margin: '2px 3px 0px 0px' }} src={todoist} alt="todoist icon" />

@@ -258,6 +258,7 @@ export default function Main() {
                                     userDB={userDB} 
                                     currentUser={currentUser} 
                                     flowList={flowList} c={c} 
+                                    flowObject={flowObject}
                                     flowid={userDB.flows[i]} 
                                     onedriveURL={onedriveURL}
                                 />

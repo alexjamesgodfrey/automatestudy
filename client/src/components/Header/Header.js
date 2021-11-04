@@ -31,7 +31,7 @@ export default function Header() {
                     </Navbar.Text>
                 :
                     <Navbar.Text style={{ cursor: 'pointer'}} onClick={() => google()}>
-                        <span style={{ color: '#4FB0AE' }}><strong>Sign in</strong></span>
+                        <span style={{ color: '#4FB0AE' }}><strong>sign in</strong></span>
                     </Navbar.Text>
                 }
                 </Navbar.Collapse>

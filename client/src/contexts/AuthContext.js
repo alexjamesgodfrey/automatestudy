@@ -197,8 +197,7 @@ export default function AuthProvider({ children }) {
             <div style={{marginTop: '20%'}} className="d-flex justify-content-center">
                 <div style={{ width: '400px' }} className="d-flex flex-column align-items-center">
                     <h3 style={{marginBottom: '15px'}}><strong>welcome to studyflow.ai</strong></h3> 
-                    <h6 style={{marginBottom: '15px'}}><strong>loading an optimal user experience</strong></h6>
-                    <Spinner animation="border" /> 
+                    <p className="mb-2 text-muted">automated workflow for students</p>
                 </div>
             </div>
             </Fade>

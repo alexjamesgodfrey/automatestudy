@@ -2,6 +2,7 @@ import React from 'react'
 import Badge from 'react-bootstrap/Badge'
 import notability from '../../images/notability.png'
 import onedrive from '../../images/onedrive.svg'
+import dropbox from '../../images/dropbox.svg'
 import goodnotes from '../../images/goodnotes.png'
 import onenote from '../../images/onenote.svg'
 import googledrive from '../../images/googledrive.svg'
@@ -58,6 +59,13 @@ export default function FlowDisplay(props) {
                 {props.flow.tags.indexOf('Google Drive') !== -1 ?
                     <div className="d-flex align-items-center">
                         <img style={{ width: '50px'}} src={googledrive} alt="google drive icon" />
+                        {arrow}
+                    </div>
+                    :<span></span>
+                }
+                {props.flow.tags.indexOf('Dropbox') !== -1 ?
+                    <div className="d-flex align-items-center">
+                        <img style={{ width: '50px'}} src={dropbox} alt="dropbox icon" />
                         {arrow}
                     </div>
                     :<span></span>

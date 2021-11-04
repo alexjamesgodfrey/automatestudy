@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import FlowConnects from './FlowConnects'
 import Card from 'react-bootstrap/Card'
+import Dropdown from 'react-bootstrap/Dropdown'
+import DropdownButton from 'react-bootstrap/DropdownButton'
 import Spinner from 'react-bootstrap/Spinner'
 import FlowDisplay from './FlowDisplay'
 import Modal from 'react-bootstrap/Modal'
@@ -10,6 +12,11 @@ export default function FlowCard(props) {
     const [flow, setFlow] = useState({})
     const [showModal, setShowModal] = useState(false)
     const [loading, setLoading] = useState(true)
+
+    const [customFlow, setCustomFlow] = useState([])
+    const [media, setMedia] = useState("Media")
+    const [cloud, setCloud] = useState("Cloud Service")
+    const [difficulty, setDifficulty] = useState('Difficulty')
         
  
     const getFlow = async (id) => {
@@ -43,6 +50,36 @@ export default function FlowCard(props) {
             setShowModal(false)
             setLoading(false)
         })
+    }
+
+    const filterFlows = (filters, difficulty) => {
+        let tempFlows = props.flowObject
+        for (let i=0; i<filters.length; i++) {
+            tempFlows = tempFlows[filters[i]]
+        }
+        const tempFlowArr = Object.entries(tempFlows)
+        let flowArr = []
+        for (let i=0; i<tempFlowArr.length; i++) {
+            const baseArr = Object.entries(tempFlowArr[i][1])
+            for (let j=0; j<baseArr.length; j++){
+                console.log(baseArr[j][1])
+                flowArr.push(baseArr[j][1])
+            }
+        }
+        flowArr = flowArr.flat()
+        console.log(flowArr)
+        if (difficulty !== 'Difficulty') {
+            flowArr = flowArr.filter(flow => flow.difficulty === difficulty)
+            console.log(flowArr)
+        }
+        setCustomFlow(flowArr)
+    }
+
+    const clearFilters = async () => {
+        setMedia('Media')
+        setCloud('Cloud Service')
+        setDifficulty('Difficulty')
+        setCustomFlow([])
     }
 
     useEffect(() => {
@@ -101,16 +138,87 @@ export default function FlowCard(props) {
                 <Modal.Title>Change studyflow for {props.c}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Choose a studyflow based on class difficulty (Easy/Average/Hard) and desired repetition count. </p>
-                    {props.flowList.map((flow, key) => {
-                        return (
-                        <div 
-                            onClick={() => changeFlow(flow.id)}
-                            style={{ border: '2px solid lightgrey', padding: '10px', margin: '20px 0px', borderRadius: '1%', cursor: 'pointer'}}
-                        >
-                            <FlowDisplay showDifficulty={true} flow={flow} />
-                        </div>)
-                    })}
+                    <div>
+                    <div style={{ marginBottom: '5px' }}className="d-flex justify-content-between">
+                        <span><strong>Filters:</strong></span>
+                        <span onClick={() => clearFilters()} style={{ textAlign: 'right', cursor: 'pointer', textDecoration: 'underline' }}>reset</span>
+                    </div>
+                    <div className="d-flex justify-content-around flex-wrap">
+                        <DropdownButton id="dropdown-basic-button" title={media}>
+                            <Dropdown.Item onClick={async () => {
+                                setMedia('Notability')
+                                filterFlows(['Notability'], difficulty)
+                            }}>Notability</Dropdown.Item>
+                            <Dropdown.Item onClick={async () => {
+                                setMedia('Goodnotes')
+                                filterFlows(['Goodnotes'], difficulty)
+                            }}>Goodnotes</Dropdown.Item>
+                            <Dropdown.Item onClick={async () => {
+                                setMedia('OneNotes')
+                                filterFlows(['OneNotes'], difficulty)
+                            }}>OneNotes</Dropdown.Item>
+                            <Dropdown.Item onClick={async () => {
+                                setMedia('Paper')
+                                filterFlows(['Paper'], difficulty)
+                            }}>Paper</Dropdown.Item>
+                        </DropdownButton>
+                        <DropdownButton id="dropdown-basic-button" title={cloud}>
+                            <Dropdown.Item onClick={async () => {
+                                setCloud('OneDrive')
+                                filterFlows([media, 'OneDrive'], difficulty)
+                            }}>OneDrive</Dropdown.Item>
+                            <Dropdown.Item onClick={async () => {
+                                setCloud('Google Drive')
+                                filterFlows([media, 'Google Drive'], difficulty)
+                            }}>Google Drive</Dropdown.Item>
+                            <Dropdown.Item onClick={async () => {
+                                setCloud('Dropbox')
+                                filterFlows([media, 'Dropbox'], difficulty)
+                            }}>Dropbox</Dropdown.Item>
+                        </DropdownButton>
+                        <DropdownButton id="dropdown-basic-button" title={difficulty}>
+                            <Dropdown.Item onClick={async () => {
+                                setDifficulty('Easy')
+                                filterFlows([media, cloud], 'Easy')
+                            }}>Easy</Dropdown.Item>
+                            <Dropdown.Item onClick={async () => {
+                                setDifficulty('Average')
+                                filterFlows([media, cloud], 'Average')
+                            }}>Average</Dropdown.Item>
+                            <Dropdown.Item onClick={async () => {
+                                setDifficulty('Hard')
+                                filterFlows([media, cloud], 'Hard')
+                            }}>Hard</Dropdown.Item>
+                        </DropdownButton>
+                    </div>
+                </div>
+                <div>
+                    {customFlow.length > 1 ? 
+                        <div>
+                        {customFlow.map((flow, key) => {
+                            return (
+                            <div 
+                                onClick={() => changeFlow(flow.id)}
+                                style={{ border: '2px solid lightgrey', padding: '10px', margin: '20px 0px', borderRadius: '1%', cursor: 'pointer'}}
+                            >
+                                <FlowDisplay showDifficulty={true} flow={flow} />
+                            </div>)
+                        })}
+                        </div>
+                    :
+                        <div>
+                        {props.flowList.map((flow, key) => {
+                            return (
+                            <div 
+                                onClick={() => changeFlow(flow.id)}
+                                style={{ border: '2px solid lightgrey', padding: '10px', margin: '20px 0px', borderRadius: '1%', cursor: 'pointer'}}
+                            >
+                                <FlowDisplay showDifficulty={true} flow={flow} />
+                            </div>)
+                        })}
+                        </div>
+                    }
+                </div>
                     {/* <Flows classIndex={currentClassKey} user={userDB} surveyResponse={surveyResponse} class={currentClass} flowList={flowList}/> */}
                 </Modal.Body>
                 <Modal.Footer>
