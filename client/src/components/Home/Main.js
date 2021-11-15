@@ -27,12 +27,14 @@ export default function Main() {
     const [difficulty, setDifficulty] = useState('Difficulty')
 
     const search = useLocation().search
+    const redirectURI = process.env.REACT_APP_REDIRECT_URI
     const todoistClient = process.env.REACT_APP_TODOIST_CLIENT
     const todoistSecret = process.env.REACT_APP_TODOIST_SECRET
     const todoistURL = `https://todoist.com/oauth/authorize?client_id=${todoistClient}&scope=data:read_write,data:delete&state=${todoistSecret}`
     const notionClient = process.env.REACT_APP_NOTION_CLIENT
     const notionState = process.env.REACT_APP_NOTION_SECRET
-    const notionURL = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${notionClient}&redirect_uri=http%3A%2F%2Flocalhost%3A0&response_type=code&state=${notionState}`
+    const notionSecret = process.env.REACT_APP_NOTION_SECRET
+    const notionURL = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${notionClient}&redirect_uri=${redirectURI}&response_type=code&state=${notionState}`
     const onedriveClient = process.env.REACT_APP_ONEDRIVE_CLIENT
     const onedriveState = 'onedrive'
     const onedriveURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${onedriveClient}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000&response_mode=query&scope=files.read.all%20user.read&state=${onedriveState}`
@@ -77,6 +79,24 @@ export default function Main() {
                 await fetch(`/api/users/notioncode/${code}/${currentUser.uid}`, {
                     method: 'PUT'
                 })
+                // const body = `{
+                //     "grant_type": "authorization_code",
+                //     "code": "${code}",
+                //     "redirect_uri": "http://localhost:3000"
+                // }`
+                // console.log(body)
+                // const auth = 'Basic ' + Buffer.from(notionClient + ":" + notionSecret).toString('base64');
+                // console.log(auth)
+                // await fetch(`https://api.notion.com/v1/oauth/token`, {
+                //     method: 'POST',
+                //     headers: {
+                //         'Authorization': auth,
+                //         'Content-Type': 'application/json'
+                //     }, 
+                //     body: body
+                // })
+                // .then(response => response.json())
+                // .then(data => console.log(data))
             }
         }
     }
