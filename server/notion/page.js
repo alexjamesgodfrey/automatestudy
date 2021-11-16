@@ -15,31 +15,18 @@ const listPages = async (access_token) => {
     // })
 }
 
+
 /**
- * Function formPage (1) clears the desired page of all blocks (2) creates a 
- * database in the page. 
- * @param {String} access_token the user's Notion access token
- * @param {String} page_id the id of the page
- * @param {Array} classes_array array of the user's classes
+ * Function createMasterDatabase creates the master database that will hold all 
+ * of the user's class notes
+ * @param {String} access_token the user's Notion access code
+ * @param {String} page_id the page_id in which to create the database
+ * @param {String} classes_array list of classes to use as multi_select property
  */
-const formPage = async (access_token, page_id, classes_array) => {
+const createMasterDatabase = async (access_token, page_id, classes_array) => {
+    console.log('Creating master database for user ' + access_token)
     const notion = new Client({ auth: access_token });
 
-    //delete all page content
-    const pageBlocks = await notion.blocks.children.list({
-        block_id: page_id,
-        page_size: 100,
-    });
-    console.log(pageBlocks)
-    const pageBlockList = pageBlocks.results.map(block => block.id)
-    console.log(pageBlockList)
-    for (let i=0; i<pageBlockList.length; i++) {
-        const response = await notion.blocks.delete({
-            block_id: pageBlockList[i],
-        });
-    }
-
-    //creates an object for each class for classes dropdown
     const colors = ["gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red"]
     const classes = classes_array.map(c => {
         return {
@@ -48,11 +35,14 @@ const formPage = async (access_token, page_id, classes_array) => {
         }
     })
 
-    //create a database in page
     const createDatabase = await notion.databases.create({
         parent: {
             type: "page_id",
             page_id: page_id 
+        },
+        icon: {
+            type: "emoji",
+            emoji: "🖋️"
         },
         title: [
             {
@@ -64,115 +54,387 @@ const formPage = async (access_token, page_id, classes_array) => {
             }
         ],
         properties: {
-            "Name": {
-                "title": {}
+            Name: {
+                title: {}
             },
-            "Date": {
-                "date": {}
+            Date: {
+                date: {}
             },
             "Class": {
-                "multi_select": {
-                    "options": classes
+                multi_select: {
+                    options: classes
                 }
+            },
+            "Next Task": {
+                formula: {
+                    expression: `if(prop("📓Create") == true, if(prop("📓R1") == true, if(prop("📓R2") == true, if(prop("📓R3") == true, if(prop("📓R4") == true, "Fully Reviewed", "[" + formatDate(dateAdd(prop("Date"), 30, "days"), "M/D/YY") + "] Fourth Review"), "[" + formatDate(dateAdd(prop("Date"), 7, "days"), "M/D/YY") + "] Third Review"), "[" + formatDate(dateAdd(prop("Date"), 3, "days"), "M/D/YY") + "] Second Review"), "[" + formatDate(dateAdd(prop("Date"), 1, "days"), "M/D/YY") + "] First Review"), "[" + formatDate(prop("Date"), "M/D/YY") + "] Create Review Questions")`
+                }
+            },
+            "📓Create": {
+                checkbox: {}
+            },
+            "📓R1": {
+                checkbox: {}
+            },
+            "📓R2": {
+                checkbox: {}
+            },
+            "📓R3": {
+                checkbox: {}
+            },
+            "📓R4": {
+                checkbox: {}
             },
         }
     });
+    console.log('Database information:')
+    console.log(createDatabase)
+}
 
 
+/**
+ * Function formParent (1) clears the desired page of all blocks (2) creates a 
+ * database in the page. 
+ * @param {String} access_token the user's Notion access token
+ * @param {String} page_id the id of the page
+ * @param {Array} classes_array array of the user's classes
+ */
+const formParent = async (access_token, page_id, classes_array) => {
+    const notion = new Client({ auth: access_token });
 
+    //delete all page content
+    const pageBlocks = await notion.blocks.children.list({
+        block_id: page_id,
+        page_size: 100,
+    });
+    const pageBlockList = pageBlocks.results.map(block => block.id)
+    for (let i=0; i<pageBlockList.length; i++) {
+        const response = await notion.blocks.delete({
+            block_id: pageBlockList[i],
+        });
+    }
+
+    createMasterDatabase(access_token, page_id, classes_array)
 }
 
 /**
- * Creates a database in the top page
- * @param {String} access_token 
+ * Creates a page in notion in database_id database
+ * @param {String} access_token the user's Notion access token
+ * @param {String} database_id database id to create page in
+ * @param {String} page_title title of the page 
+ * @param {String} date ISO8601 string of desired date
+ * @param {String} class_name name of the class property
  */
-const createDatabase = async (access_token) => {
-
-}
-
-/**
- * Creates a page in notion.
- * @param {String} access_token 
- */
-const createPage = async (access_token) => {
+const createPageInDatabase = async (access_token, database_id, page_title, date, class_name) => {
     const notion = new Client({ auth: access_token });
     const response = await notion.pages.create({
-    parent: {
-        workspace: true,
-    },
-    icon: {
-        type: "emoji",
-            emoji: "🎉"
-    },
-    cover: {
-        type: "external",
-        external: {
-            url: "https://website.domain/images/image.png"
-        }
-    },
-    properties: {
-        Name: {
-        title: [
+        parent: {
+            database_id: database_id,
+        },
+        icon: {
+            type: "emoji",
+            emoji: "✏️"
+        },
+        properties: {
+            Name: {
+                title: [
+                    {
+                        text: {
+                            content: page_title,
+                        },
+                    },
+                ],
+            },
+            Class: {
+                multi_select: [
+                    {
+                        name: class_name
+                    },
+                ]
+            },
+            Date: {
+                date: 
+                    {
+                        start: date
+                    }
+            }
+        },
+        children: [
             {
-            text: {
-                content: 'Tuscan Kale',
+                object: 'block',
+                type: 'bulleted_list_item',
+                bulleted_list_item: {
+                    text: [
+                        {
+                            type: "text",
+                            text: {
+                                content: `[${new Date().toLocaleString()}] Entry `,
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: `${page_title} `,
+                            }, 
+                            annotations: {
+                                italic: true
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: `created by `,
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: `studyflow.ai`,
+                                link: {
+                                    url: "https://studyflow.ai"
+                                }
+                            },
+                            annotations: {
+                                bold: true
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: `.`,
+                            }
+                        }
+                    ]
+                }
             },
-            },
-        ],
-        },
-        Description: {
-        text: [
             {
-            text: {
-                content: 'A dark green leafy vegetable',
+                object: 'block',
+                type: "bulleted_list_item",
+                bulleted_list_item: {
+                    text: [
+                        {
+                            type: "text",
+                            text: {
+                                content: 'Scroll up to view page properties: create questions or review based on '
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: 'Next Task '
+                            },
+                            annotations: {
+                                bold: true
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: 'property.'
+                            }
+                        },
+                    ]
+                }
             },
-            },
-        ],
-        },
-        'Food group': {
-        select: {
-            name: '🥦 Vegetable',
-        },
-        },
-        Price: {
-        number: 2.5,
-        },
-    },
-    children: [
-        {
-        object: 'block',
-        type: 'heading_2',
-        heading_2: {
-            text: [
             {
-                type: 'text',
-                text: {
-                content: 'Lacinato kale',
-                },
+                object: 'block',
+                type: "bulleted_list_item",
+                bulleted_list_item: {
+                    text: [
+                        {
+                            type: "text",
+                            text: {
+                                content: 'Please view the '
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: 'FAQ ',
+                                link: {
+                                    url: 'https://studyflow.ai'
+                                }
+                            },
+                            annotations: {
+                                bold: true
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: 'or '
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: 'contact us',
+                                link: {
+                                    url: 'https://studyflow.ai'
+                                }
+                            },
+                            annotations: {
+                                bold: true
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: ' with questions, and enjoy studying efficiently!'
+                            }
+                        },
+                    ]
+                }
             },
-            ],
-        },
-        },
-        {
-        object: 'block',
-        type: 'paragraph',
-        paragraph: {
-            text: [
             {
-                type: 'text',
-                text: {
-                content: 'Lacinato kale is a variety of kale with a long tradition in Italian cuisine, especially that of Tuscany. It is also known as Tuscan kale, Italian kale, dinosaur kale, kale, flat back kale, palm tree kale, or black Tuscan palm.',
-                link: {
-                    url: 'https://en.wikipedia.org/wiki/Lacinato_kale',
-                },
-                },
+                object: 'block',
+                type: "heading_2",
+                //...other keys excluded
+                heading_2: {
+                    text: [
+                        {
+                            type: "text",
+                            text: {
+                                "content": "Active Recall Questions",
+                                "link": null
+                            }
+                        }
+                    ]
+                }
             },
-            ],
-        },
-        },
-    ],
+            {
+                object: 'block',
+                type: 'toggle',
+                toggle: {
+                    text: [
+                        {
+                            type: 'text',
+                            text: {
+                                content: ' '
+                        }
+                    }],
+                }
+            },
+            {
+                object: 'block',
+                type: 'toggle',
+                toggle: {
+                    text: [
+                        {
+                            type: 'text',
+                            text: {
+                                content: ' '
+                        }
+                    }],
+                }
+            },
+            {
+                object: 'block',
+                type: 'toggle',
+                toggle: {
+                    text: [
+                        {
+                            type: 'text',
+                            text: {
+                                content: ' '
+                        }
+                    }],
+                }
+            },
+            {
+                object: 'block',
+                type: 'toggle',
+                toggle: {
+                    text: [
+                        {
+                            type: 'text',
+                            text: {
+                                content: ' '
+                        }
+                    }],
+                }
+            },
+            {
+                object: 'block',
+                type: 'toggle',
+                toggle: {
+                    text: [
+                        {
+                            type: 'text',
+                            text: {
+                                content: ' '
+                        }
+                    }],
+                }
+            },
+            {
+                object: 'block',
+                type: 'toggle',
+                toggle: {
+                    text: [
+                        {
+                            type: 'text',
+                            text: {
+                                content: ' '
+                        }
+                    }],
+                }
+            },
+            {
+                object: 'block',
+                type: 'toggle',
+                toggle: {
+                    text: [
+                        {
+                            type: 'text',
+                            text: {
+                                content: ' '
+                        }
+                    }],
+                }
+            },
+            {
+                object: 'block',
+                type: 'toggle',
+                toggle: {
+                    text: [
+                        {
+                            type: 'text',
+                            text: {
+                                content: ' '
+                        }
+                    }],
+                }
+            },
+            {
+                object: 'block',
+                type: 'toggle',
+                toggle: {
+                    text: [
+                        {
+                            type: 'text',
+                            text: {
+                                content: ' '
+                        }
+                    }],
+                }
+            },
+            {
+                object: 'block',
+                type: 'toggle',
+                toggle: {
+                    text: [
+                        {
+                            type: 'text',
+                            text: {
+                                content: ' '
+                        }
+                    }],
+                }
+            },
+          ],
     });
     console.log(response);
 }
 
-module.exports = {listPages, createPage, formPage}
+module.exports = {listPages, createPageInDatabase, formParent}

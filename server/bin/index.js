@@ -2,7 +2,15 @@
 const notionPage = require('../notion/page')
 const notion = require('../notion/notion.js')
 
-//notion.getAccessToken('5bea7791-272f-4f76-a63b-b6bfba4a23d8', '5')
-//notionPage.createPage('secret_DoCxqCrdDosUz5Fu8SGT3sRTEqsw9Q0jg5b5hZQ7ckU')
+//notion.getAccessToken('6faa520d-12f3-4997-84d8-417f8f7ba2c9', '5')
+//notionPage.createPage('secret_GuT28RSGQVKBbfDeqguGaeyKdtu8tOyOaioONxaSzAB')
 //notionPage.listPages('secret_GuT28RSGQVKBbfDeqguGaeyKdtu8tOyOaioONxaSzAB')
-notionPage.formPage('secret_GuT28RSGQVKBbfDeqguGaeyKdtu8tOyOaioONxaSzAB', '8b6815e0-b4e7-4eca-8b8f-973b00148ae4', ['MATH1120', 'CS1110', 'ASIAN2299'])
+//notionPage.formParent('secret_GuT28RSGQVKBbfDeqguGaeyKdtu8tOyOaioONxaSzAB', 'cde4d8d3-8cfa-461e-ac1d-2d3725053143', ['MATH1120', 'CS1110', 'ASIAN2299'])
+notionPage.createPageInDatabase(
+    'secret_GuT28RSGQVKBbfDeqguGaeyKdtu8tOyOaioONxaSzAB', 
+    '21ce33b7-2204-49a6-a67b-b1b237621a61',
+    'Custom Page Title',
+    new Date().toISOString().substring(0, 10),
+    'MATH1120'
+)
+
