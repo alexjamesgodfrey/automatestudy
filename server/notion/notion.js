@@ -25,7 +25,7 @@ const getAccessToken = async (code, userid) => {
     .then(response => response.json())
     .then(async data => {
         console.log(JSON.stringify(data))
-        await fetch(`${process.env.BASE_REQUEST_URL}/api/notioninformation/${userid}`, {
+        await fetch(`${process.env.BASE_REQUEST_URL}/api/notioninformation/initial/${userid}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

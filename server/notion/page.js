@@ -1,4 +1,5 @@
-const { Client } = require('@notionhq/client');
+const { Client, LogLevel } = require('@notionhq/client');
+require("dotenv").config();
 
 /**
  * Returns a list of all non-archived page id's users Notion
@@ -22,8 +23,9 @@ const listPages = async (access_token) => {
  * @param {String} access_token the user's Notion access code
  * @param {String} page_id the page_id in which to create the database
  * @param {String} classes_array list of classes to use as multi_select property
+ * @param {String} user_id the user's primary key from users database
  */
-const createMasterDatabase = async (access_token, page_id, classes_array) => {
+const createMasterDatabase = async (access_token, page_id, classes_array, user_id) => {
     console.log('Creating master database for user ' + access_token)
     const notion = new Client({ auth: access_token });
 
@@ -88,7 +90,15 @@ const createMasterDatabase = async (access_token, page_id, classes_array) => {
         }
     });
     console.log('Database information:')
-    console.log(createDatabase)
+    console.log(JSON.stringify(createDatabase))
+    console.log(user_id)
+    await fetch(`${process.env.BASE_REQUEST_URL}/api/notioninformation/database/${user_id}`, {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(createDatabase)
+    })
 }
 
 
@@ -98,8 +108,9 @@ const createMasterDatabase = async (access_token, page_id, classes_array) => {
  * @param {String} access_token the user's Notion access token
  * @param {String} page_id the id of the page
  * @param {Array} classes_array array of the user's classes
+ * @param {String} user_id the user's primary key from the users database
  */
-const formParent = async (access_token, page_id, classes_array) => {
+const formParent = async (access_token, page_id, classes_array, user_id) => {
     const notion = new Client({ auth: access_token });
 
     //delete all page content
@@ -114,8 +125,27 @@ const formParent = async (access_token, page_id, classes_array) => {
         });
     }
 
-    createMasterDatabase(access_token, page_id, classes_array)
+    createMasterDatabase(access_token, page_id, classes_array, user_id)
 }
+
+const createWelcomePage = async (access_token, page_id) => {
+    await fetch('https://api.notion.com/v1/pages', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${access_token}`,
+            "Notion-Version": "2021-08-16"
+        },
+        body: JSON.stringify({
+            parent: {
+                page_id: page_id,
+            }
+        })
+    })
+        .then(response => response.json())
+        .then(data => console.log(data))
+}
+
 
 /**
  * Creates a page in notion in database_id database
@@ -437,4 +467,4 @@ const createPageInDatabase = async (access_token, database_id, page_title, date,
     console.log(response);
 }
 
-module.exports = {listPages, createPageInDatabase, formParent}
+module.exports = {listPages, createPageInDatabase, formParent, createWelcomePage}
