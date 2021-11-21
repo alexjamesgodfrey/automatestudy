@@ -18,6 +18,7 @@ import onenote from '../../images/onenote.svg'
 import onedrive from '../../images/onedrive.svg'
 import googledrive from '../../images/googledrive.svg'
 import dropbox from '../../images/dropbox.svg'
+import notion from '../../images/notion.svg'
 import './Fades.scss'
 
 export default function Main() {
@@ -305,7 +306,9 @@ export default function Main() {
                     </Modal.Header>
                     <Modal.Body>
                         <h4>Step 1--Choose Where to Take Notes</h4>
+                        <p style={{ marginLeft: '5px'}} className="mb-2 text-muted"><span style={{ textDecoration: 'underline' }}>which note app is right for me?</span></p>
                         <div className="d-flex justify-content-around">
+                        
                             {step1 == 'Notability' ? 
                                 <div onClick={() => setStep1('Notability')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={notability} alt="notability icon" /></div>
                             :
@@ -325,6 +328,7 @@ export default function Main() {
                         {step1 ? 
                             <div className="fade-1">
                                 <h4>Step 2--Choose Cloud Backup Service</h4>
+                                <p style={{ marginLeft: '5px'}} className="mb-2 text-muted"><span style={{ textDecoration: 'underline' }}>view instructions</span> on how to setup automatic cloud backup with {step1}</p>
                                 <div className="d-flex justify-content-around">
                                     {step2 == 'OneDrive' ? 
                                         <div onClick={() => setStep2('OneDrive')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={onedrive} alt="onedrive icon" /></div>
@@ -345,6 +349,19 @@ export default function Main() {
                             </div>
                         :
                             <span></span>}
+                        {step1 && step2? 
+                            <div className="fade-1">
+                                <h4>Step 3--Automatic Notion Database Entry</h4>
+                                <p style={{ marginLeft: '5px'}} className="mb-2 text-muted">Studyflow creates a Notion database for you
+                                    upon connection and will automatically create a new database entry with four review tasks every time 
+                                    a new file is added to your {step2} folder.</p>
+                                <div className="d-flex justify-content-around">
+                                    <div style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={notion} alt="notion icon" /></div>
+                                </div>
+                            </div>
+                        :
+                            <span></span>
+                        }
                         {/* <div>
                             <div style={{ marginBottom: '5px' }}className="d-flex justify-content-between">
                                 <span><strong>Filters:</strong></span>
