@@ -12,6 +12,13 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import Flows from './Flows'
 import FlowDisplay from './FlowDisplay'
+import notability from '../../images/notability.png'
+import goodnotes from '../../images/goodnotes.png'
+import onenote from '../../images/onenote.svg'
+import onedrive from '../../images/onedrive.svg'
+import googledrive from '../../images/googledrive.svg'
+import dropbox from '../../images/dropbox.svg'
+import './Fades.scss'
 
 export default function Main() {
     const { currentUser, userDB, surveyResponse, flowList, flowObject } = useAuth()
@@ -39,6 +46,8 @@ export default function Main() {
     const onedriveState = 'onedrive'
     const onedriveURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${onedriveClient}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000&response_mode=query&scope=files.read.all%20user.read&state=${onedriveState}`
 
+    const [step1, setStep1] = useState('')
+    const [step2, setStep2] = useState('')
     
     const checkTodoist = async () => {
         /*
@@ -78,7 +87,7 @@ export default function Main() {
                 console.log('adding notioncode to user')
                 await fetch(`/api/users/notioncode/${code}/${currentUser.uid}`, {
                     method: 'PUT'
-                })
+                })  
                 // const body = `{
                 //     "grant_type": "authorization_code",
                 //     "code": "${code}",
@@ -295,7 +304,48 @@ export default function Main() {
                     <Modal.Title>Add studyflow for {currentClass}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <div>
+                        <h4>Step 1--Choose Where to Take Notes</h4>
+                        <div className="d-flex justify-content-around">
+                            {step1 == 'Notability' ? 
+                                <div onClick={() => setStep1('Notability')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={notability} alt="notability icon" /></div>
+                            :
+                                <div onClick={() => setStep1('Notability')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={notability} alt="notability icon" /></div>
+                            }
+                            {step1 == 'Goodnotes' ? 
+                                <div onClick={() => setStep1('Goodnotes')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={goodnotes} alt="goodnotes icon" /></div>
+                            :
+                                <div onClick={() => setStep1('Goodnotes')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={goodnotes} alt="goodnotes icon" /></div>
+                            }
+                            {step1 == 'OneNote' ? 
+                                <div onClick={() => setStep1('OneNote')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={onenote} alt="onenote icon" /></div>
+                            :
+                                <div onClick={() => setStep1('OneNote')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={onenote} alt="onenote icon" /></div>
+                            }
+                        </div>
+                        {step1 ? 
+                            <div className="fade-1">
+                                <h4>Step 2--Choose Cloud Backup Service</h4>
+                                <div className="d-flex justify-content-around">
+                                    {step2 == 'OneDrive' ? 
+                                        <div onClick={() => setStep2('OneDrive')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={onedrive} alt="onedrive icon" /></div>
+                                    :
+                                        <div onClick={() => setStep2('OneDrive')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={onedrive} alt="onedrives icon" /></div>
+                                    }
+                                    {step2 == 'Google Drive' ? 
+                                        <div onClick={() => setStep2('Google Drive')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={googledrive} alt="Google Drive icon" /></div>
+                                    :
+                                        <div onClick={() => setStep2('Google Drive')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={googledrive} alt="Google Drive icon" /></div>
+                                    }
+                                    {step2 == 'Dropbox' ? 
+                                        <div onClick={() => setStep2('Dropbox')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={dropbox} alt="Dropbox icon" /></div>
+                                    :
+                                        <div onClick={() => setStep2('Dropbox')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={dropbox} alt="Dropbox icon" /></div>
+                                    }
+                                </div>
+                            </div>
+                        :
+                            <span></span>}
+                        {/* <div>
                             <div style={{ marginBottom: '5px' }}className="d-flex justify-content-between">
                                 <span><strong>Filters:</strong></span>
                                 <span onClick={() => clearFilters()} style={{ textAlign: 'right', cursor: 'pointer', textDecoration: 'underline' }}>reset</span>

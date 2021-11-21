@@ -22,7 +22,12 @@ export default function Header() {
     return (
         <div style={{ borderBottom: '2px solid lightgrey'}}>
             <Navbar style={{ margin: '0px 20px'}}>
-                <Navbar.Brand href="#home"><strong>studyflow</strong></Navbar.Brand>
+                <Navbar.Brand href="#home">
+                    <div className="d-flex flex-column">
+                        <strong style={{lineHeight: 1, marginTop: '3px'}}>studyflow</strong>
+                        <strong style={{fontSize: '17px', textAlign: 'right', lineHeight: 0.75}}>beta</strong>
+                    </div>
+                </Navbar.Brand>
                 <Navbar.Toggle />
                 <Navbar.Collapse className="justify-content-end">
                 {currentUser ? 
