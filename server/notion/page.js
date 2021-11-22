@@ -1,6 +1,16 @@
 const { Client } = require('@notionhq/client');
 require("dotenv").config();
 const moment = require('moment')
+var log4js = require("log4js");
+log4js.configure({
+    appenders: {
+      everything: { type: 'file', filename: 'log.log' }
+    },
+    categories: {
+      default: { appenders: [ 'everything' ], level: 'trace' }
+    }
+});
+var logger = log4js.getLogger();
 
 /**
  * Returns a list of all non-archived page id's users Notion
@@ -27,7 +37,7 @@ const listPages = async (access_token) => {
  * @param {String} user_id the user's primary key from users database
  */
 const createMasterDatabase = async (access_token, page_id, classes_array, user_id) => {
-    console.log(`[${moment().format('L')} ${moment().format('LTS')}] Creating master database for user ${access_token}`)
+    logger.trace("Creating master database for " + access_token)
     const notion = new Client({ auth: access_token });
 
     const colors = ["gray", "brown", "orange", "yellow", "green", "blue", "purple", "pink", "red"]
@@ -114,7 +124,8 @@ const createMasterDatabase = async (access_token, page_id, classes_array, user_i
  * @param {String} user_id the user's primary key from the users database
  */
 const formParent = async (access_token, page_id, classes_array, user_id) => {
-    console.log(`[${moment().format('L')} ${moment().format('LTS')}] Forming parent for ${access_token}`)
+    logger.level = "trace";
+    logger.trace("Forming parent for " + access_token);
     const notion = new Client({ auth: access_token });
 
     //delete all page content
@@ -160,7 +171,7 @@ const formParent = async (access_token, page_id, classes_array, user_id) => {
 }
 
 const createWelcomePage = async (access_token, database_id, date) => {
-    console.log(`[${moment().format('L')} ${moment().format('LTS')}] Creating welcome page for ${access_token}`)
+    logger.trace("Creating welcome page for " + access_token)
 
     const notion = new Client({ auth: access_token });
     
