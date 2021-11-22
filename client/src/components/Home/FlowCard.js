@@ -84,11 +84,16 @@ export default function FlowCard(props) {
 
     useEffect(() => {
         getFlow(props.flowid)
+        console.log(props.flow.flow.split('-'))
     }, [])
 
     return (
-        <Card>
+        <Card style={{ marginBottom: '20px', maxWidth: '1000px', minWidth: '300px' }}>
             <Card.Header as="h5">{props.flow.class}</Card.Header>
+            <div style={{ margin: '10px 20px'}}>
+                <h6>Setup</h6>
+                <FlowConnects flow={props.flow.flow.split('-')} userDB={props.userDB} currentUser={props.currentUser} />
+            </div>
         </Card>
     )
 

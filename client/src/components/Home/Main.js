@@ -125,19 +125,19 @@ export default function Main() {
         }
     }
 
-    const checkOnedrive = async () => {
-        if (!userDB.onedrivecode){
-            console.log('OneDrive not found')
-            const code = new URLSearchParams(search).get('code');
-            const state = new URLSearchParams(search).get('state');
-            if (code && state === onedriveState){
-                console.log('adding onedrivecode to user')
-                await fetch(`/api/users/onedrivecode/${code}/${currentUser.uid}`, {
-                    method: 'PUT'
-                })
-            }
-        }
-    }
+    // const checkOnedrive = async () => {
+    //     if (!userDB.onedrivecode){
+    //         console.log('OneDrive not found')
+    //         const code = new URLSearchParams(search).get('code');
+    //         const state = new URLSearchParams(search).get('state');
+    //         if (code && state === onedriveState){
+    //             console.log('adding onedrivecode to user')
+    //             await fetch(`/api/users/onedrivecode/${code}/${currentUser.uid}`, {
+    //                 method: 'PUT'
+    //             })
+    //         }
+    //     }
+    // }
 
     const getFlows = async () => {
         await fetch(`/api/flows/user/${userDB.id}`)
@@ -150,7 +150,6 @@ export default function Main() {
                 setFlows(userFlowObject)
             })
     }
-    console.log(Object.keys(flows))
 
     const createFlow = async () => {
         const flow = `${step1}-${step2}-Notion`
@@ -284,7 +283,7 @@ export default function Main() {
     useEffect(() => {
         checkTodoist()
         checkNotion()
-        checkOnedrive()
+        //checkOnedrive()
         getFlows()
         console.log(classLoading)
     }, [])
@@ -296,7 +295,7 @@ export default function Main() {
                 <h4>Your classes</h4>  
                 <div className="d-flex flex-column align-items-center justify-content-center">
                 {Object.keys(flows).map((f, i) => {
-                    return <FlowCard flow={flows[f]} />
+                    return <FlowCard flow={flows[f]} userDB={userDB} currentUser={currentUser} />
                 })}
                 {surveyResponse.classesarray.map((c, i) => {
                     return (
@@ -507,7 +506,10 @@ export default function Main() {
                         {/* <Flows classIndex={currentClassKey} user={userDB} surveyResponse={surveyResponse} class={currentClass} flowList={flowList}/> */}
                     </Modal.Body>
                     <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                    <Button variant="secondary" onClick={() => {
+                        setShowModal(false)
+                        setClassLoading(false)
+                    }}>
                         Close
                     </Button>
                     </Modal.Footer>
