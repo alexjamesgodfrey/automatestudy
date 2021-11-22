@@ -18,8 +18,6 @@ export default function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState();
     const [userDB, setUserDB] = useState()
     const [surveyResponse, setSurveyReponse] = useState();
-    const [flowList, setFlowList] = useState([]);
-    const [flowObject, setFlowObject] = useState({})
 
     const [open, setOpen] = useState(false)
     const [userPresent, setUserPresent] = useState(false)
@@ -97,41 +95,12 @@ export default function AuthProvider({ children }) {
         }
     }
 
-    const getFlows = async () => {
-        let firstGrouping = []
-        await fetch('/api/flows')
-            .then(response => response.json())
-            .then(async data => {
-                console.log(data)
-                await setFlowList(data)
-                console.log(flowList)
-                firstGrouping = _.groupBy(data, (obj) => {
-                    return obj.tags[0]
-                })
-                for (const property in firstGrouping){
-                    firstGrouping[property] =  _.groupBy(firstGrouping[property], (obj) => {
-                            return obj.tags[1]
-                        })
-                    for (const property2 in firstGrouping[property]){
-                        firstGrouping[property][property2] =  _.groupBy(firstGrouping[property][property2], (obj) => {
-                            return obj.tags[2]
-                        })
-                    }
-                }
-            })
-            .then(async () => {
-                await setFlowObject(firstGrouping)
-                setLoadingFlows(false)
-            })
-    }
-
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async user => {
             user ? setUserPresent(true) : setUserPresent(false)
             setOpen(true)
             await setCurrentUser(user);
             await getSurveyReponse(user);
-            await getFlows()
             setTimeout(() => {setLoading(false)}, 1500)
         })
         return unsubscribe;
@@ -151,9 +120,7 @@ export default function AuthProvider({ children }) {
         deleteUser,
         reauthenticate,
         userDB,
-        surveyResponse,
-        flowList,
-        flowObject
+        surveyResponse
     }
 
     if (loading && userPresent) {
@@ -176,14 +143,6 @@ export default function AuthProvider({ children }) {
                     <div style={{ width: '80%' }} className="d-flex justify-content-between">
                         <p>Loading user preferences</p>
                         {loadingUserPreferences ? 
-                            <Spinner style={{ marginTop: '4px' }} size="sm" animation="border" variant="dark" />
-                        : 
-                            <div><Checkmark style={{ marginTop: '4px' }} size='medium' color='#222529' /></div>
-                        }
-                    </div>
-                    <div style={{ width: '80%' }} className="d-flex justify-content-between">
-                        <p>Loading StudyFlows</p>
-                        {loadingFlows ? 
                             <Spinner style={{ marginTop: '4px' }} size="sm" animation="border" variant="dark" />
                         : 
                             <div><Checkmark style={{ marginTop: '4px' }} size='medium' color='#222529' /></div>

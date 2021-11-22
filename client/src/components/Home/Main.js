@@ -12,13 +12,15 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import Flows from './Flows'
 import FlowDisplay from './FlowDisplay'
-import notability from '../../images/notability.png'
-import goodnotes from '../../images/goodnotes.png'
-import onenote from '../../images/onenote.svg'
-import onedrive from '../../images/onedrive.svg'
-import googledrive from '../../images/googledrive.svg'
-import dropbox from '../../images/dropbox.svg'
-import notion from '../../images/notion.svg'
+import Notability from '../../images/notability.png'
+import Goodnotes from '../../images/goodnotes.png'
+import OneNote from '../../images/onenote.svg'
+import OneDrive from '../../images/onedrive.svg'
+import GoogleDrive from '../../images/googledrive.svg'
+import Dropbox from '../../images/dropbox.svg'
+import Notion from '../../images/notion.svg'
+import arrowRight from '../../images/arrowright.svg'
+import refresh from '../../images/refresh.svg'
 import './Fades.scss'
 
 export default function Main() {
@@ -27,12 +29,13 @@ export default function Main() {
     const [classLoading, setClassLoading] = useState(false)
     const [currentClass, setCurrentClass] = useState('')
     const [currentClassKey, setCurrentClassKey] = useState(0)
-    const [userFlows, setUserFlows] = useState([])
+    const [flows, setFlows] = useState({})
+    // const [userFlows, setUserFlows] = useState([])
 
-    const [customFlow, setCustomFlow] = useState([])
-    const [media, setMedia] = useState("Media")
-    const [cloud, setCloud] = useState("Cloud Service")
-    const [difficulty, setDifficulty] = useState('Difficulty')
+    // const [customFlow, setCustomFlow] = useState([])
+    // const [media, setMedia] = useState("Media")
+    // const [cloud, setCloud] = useState("Cloud Service")
+    // const [difficulty, setDifficulty] = useState('Difficulty')
 
     const search = useLocation().search
     const redirectURI = process.env.REACT_APP_REDIRECT_URI
@@ -49,6 +52,17 @@ export default function Main() {
 
     const [step1, setStep1] = useState('')
     const [step2, setStep2] = useState('')
+    const sources = {
+        'Notion': Notion,
+        'OneDrive': OneDrive,
+        'GoogleDrive': GoogleDrive,
+        'Dropbox': Dropbox,
+        'Notability': Notability,
+        'Goodnotes': Goodnotes,
+        'OneNote': OneNote,
+
+    }
+    const arrow =  <img src={arrowRight} className="icon" style={{ width: '50px'}} alt="arrow facing right" />
     
     const checkTodoist = async () => {
         /*
@@ -125,10 +139,35 @@ export default function Main() {
         }
     }
 
-    const createProject = async () => {
-        if (!(userDB.projectid)) {
-            createTodoistProject(surveyResponse.classesarray[0] + ' ' + currentUser.uid, userDB.todoisttoken, currentUser.uid)
-        }
+    const getFlows = async () => {
+        await fetch(`/api/flows/user/${userDB.id}`)
+            .then(response => response.json())
+            .then(data => {
+                const userFlowObject = {}
+                for (let i=0; i<data.length; i++){
+                    userFlowObject[data[i].class] = data[i]
+                }
+                setFlows(userFlowObject)
+            })
+    }
+    console.log(Object.keys(flows))
+
+    const createFlow = async () => {
+        const flow = `${step1}-${step2}-Notion`
+        const bod = `{
+            "uid": "${userDB.id}",
+            "flow": "${flow}",
+            "active": false,
+            "c": "${currentClass}"
+        }`
+        console.log(bod)
+        await fetch('/api/flows/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: bod
+        })
     }
 
     // const getAllFlows = async () => {
@@ -192,61 +231,61 @@ export default function Main() {
     //     .then((firstGrouping) => console.log(firstGrouping))
     // }
 
-    const setFlow = async (id) => {
-        let userFlows = userDB.flows
-        userFlows.splice(currentClassKey, 1, id)
-        const bod = `{
-            "flows": [${userFlows}],
-            "uid": "${currentUser.uid}"
-        }`
-        await fetch('/api/users/flows/', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: bod
-        })
-        .then(() => {
-            setShowModal(false)
-            setClassLoading(false)
-        })
-    }
+    // const setFlow = async (id) => {
+    //     let userFlows = userDB.flows
+    //     userFlows.splice(currentClassKey, 1, id)
+    //     const bod = `{
+    //         "flows": [${userFlows}],
+    //         "uid": "${currentUser.uid}"
+    //     }`
+    //     await fetch('/api/users/flows/', {
+    //         method: 'PUT',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: bod
+    //     })
+    //     .then(() => {
+    //         setShowModal(false)
+    //         setClassLoading(false)
+    //     })
+    // }
 
-    const filterFlows = (filters, difficulty) => {
-        let tempFlows = flowObject
-        for (let i=0; i<filters.length; i++) {
-            tempFlows = tempFlows[filters[i]]
-        }
-        const tempFlowArr = Object.entries(tempFlows)
-        let flowArr = []
-        for (let i=0; i<tempFlowArr.length; i++) {
-            const baseArr = Object.entries(tempFlowArr[i][1])
-            for (let j=0; j<baseArr.length; j++){
-                console.log(baseArr[j][1])
-                flowArr.push(baseArr[j][1])
-            }
-        }
-        flowArr = flowArr.flat()
-        console.log(flowArr)
-        if (difficulty !== 'Difficulty') {
-            flowArr = flowArr.filter(flow => flow.difficulty === difficulty)
-            console.log(flowArr)
-        }
-        setCustomFlow(flowArr)
-    }
+    // const filterFlows = (filters, difficulty) => {
+    //     let tempFlows = flowObject
+    //     for (let i=0; i<filters.length; i++) {
+    //         tempFlows = tempFlows[filters[i]]
+    //     }
+    //     const tempFlowArr = Object.entries(tempFlows)
+    //     let flowArr = []
+    //     for (let i=0; i<tempFlowArr.length; i++) {
+    //         const baseArr = Object.entries(tempFlowArr[i][1])
+    //         for (let j=0; j<baseArr.length; j++){
+    //             console.log(baseArr[j][1])
+    //             flowArr.push(baseArr[j][1])
+    //         }
+    //     }
+    //     flowArr = flowArr.flat()
+    //     console.log(flowArr)
+    //     if (difficulty !== 'Difficulty') {
+    //         flowArr = flowArr.filter(flow => flow.difficulty === difficulty)
+    //         console.log(flowArr)
+    //     }
+    //     setCustomFlow(flowArr)
+    // }
 
-    const clearFilters = async () => {
-        setMedia('Media')
-        setCloud('Cloud Service')
-        setDifficulty('Difficulty')
-        setCustomFlow([])
-    }
+    // const clearFilters = async () => {
+    //     setMedia('Media')
+    //     setCloud('Cloud Service')
+    //     setDifficulty('Difficulty')
+    //     setCustomFlow([])
+    // }
 
     useEffect(() => {
         checkTodoist()
         checkNotion()
         checkOnedrive()
-        console.log(flowList)
+        getFlows()
         console.log(classLoading)
     }, [])
 
@@ -256,6 +295,9 @@ export default function Main() {
             <div style={{margin: '20px 20px' }} className="d-flex flex-column justify-content-center"> 
                 <h4>Your classes</h4>  
                 <div className="d-flex flex-column align-items-center justify-content-center">
+                {Object.keys(flows).map((f, i) => {
+                    return <FlowCard flow={flows[f]} />
+                })}
                 {surveyResponse.classesarray.map((c, i) => {
                     return (
                         <div>
@@ -283,15 +325,16 @@ export default function Main() {
                                         </Card.Body>
                                 </Card>
                             :   
-                                <FlowCard 
-                                    classKey={i} 
-                                    userDB={userDB} 
-                                    currentUser={currentUser} 
-                                    flowList={flowList} c={c} 
-                                    flowObject={flowObject}
-                                    flowid={userDB.flows[i]} 
-                                    onedriveURL={onedriveURL}
-                                />
+                                            <span></span>
+                                // <FlowCard 
+                                //     classKey={i} 
+                                //     userDB={userDB} 
+                                //     currentUser={currentUser} 
+                                //     flowList={flowList} c={c} 
+                                //     flowObject={flowObject}
+                                //     flowid={userDB.flows[i]} 
+                                //     onedriveURL={onedriveURL}
+                                // />
                             }
                         </div>
                     )})
@@ -310,40 +353,40 @@ export default function Main() {
                         <div className="d-flex justify-content-around">
                         
                             {step1 == 'Notability' ? 
-                                <div onClick={() => setStep1('Notability')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={notability} alt="notability icon" /></div>
+                                <div onClick={() => setStep1('Notability')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={Notability} alt="notability icon" /></div>
                             :
-                                <div onClick={() => setStep1('Notability')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={notability} alt="notability icon" /></div>
+                                <div onClick={() => setStep1('Notability')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={Notability} alt="notability icon" /></div>
                             }
                             {step1 == 'Goodnotes' ? 
-                                <div onClick={() => setStep1('Goodnotes')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={goodnotes} alt="goodnotes icon" /></div>
+                                <div onClick={() => setStep1('Goodnotes')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={Goodnotes} alt="goodnotes icon" /></div>
                             :
-                                <div onClick={() => setStep1('Goodnotes')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={goodnotes} alt="goodnotes icon" /></div>
+                                <div onClick={() => setStep1('Goodnotes')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={Goodnotes} alt="goodnotes icon" /></div>
                             }
                             {step1 == 'OneNote' ? 
-                                <div onClick={() => setStep1('OneNote')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={onenote} alt="onenote icon" /></div>
+                                <div onClick={() => setStep1('OneNote')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={OneNote} alt="onenote icon" /></div>
                             :
-                                <div onClick={() => setStep1('OneNote')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={onenote} alt="onenote icon" /></div>
+                                <div onClick={() => setStep1('OneNote')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={OneNote} alt="onenote icon" /></div>
                             }
                         </div>
                         {step1 ? 
-                            <div className="fade-1">
+                            <div style={{ margin: '15px 0px' }} className="fade-1">
                                 <h4>Step 2--Choose Cloud Backup Service</h4>
                                 <p style={{ marginLeft: '5px'}} className="mb-2 text-muted"><span style={{ textDecoration: 'underline' }}>view instructions</span> on how to setup automatic cloud backup with {step1}</p>
                                 <div className="d-flex justify-content-around">
                                     {step2 == 'OneDrive' ? 
-                                        <div onClick={() => setStep2('OneDrive')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={onedrive} alt="onedrive icon" /></div>
+                                        <div onClick={() => setStep2('OneDrive')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={OneDrive} alt="onedrive icon" /></div>
                                     :
-                                        <div onClick={() => setStep2('OneDrive')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={onedrive} alt="onedrives icon" /></div>
+                                        <div onClick={() => setStep2('OneDrive')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={OneDrive} alt="onedrives icon" /></div>
                                     }
                                     {step2 == 'Google Drive' ? 
-                                        <div onClick={() => setStep2('Google Drive')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={googledrive} alt="Google Drive icon" /></div>
+                                        <div onClick={() => setStep2('GoogleDrive')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={GoogleDrive} alt="Google Drive icon" /></div>
                                     :
-                                        <div onClick={() => setStep2('Google Drive')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={googledrive} alt="Google Drive icon" /></div>
+                                        <div onClick={() => setStep2('GoogleDrive')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={GoogleDrive} alt="Google Drive icon" /></div>
                                     }
                                     {step2 == 'Dropbox' ? 
-                                        <div onClick={() => setStep2('Dropbox')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={dropbox} alt="Dropbox icon" /></div>
+                                        <div onClick={() => setStep2('Dropbox')} style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={Dropbox} alt="Dropbox icon" /></div>
                                     :
-                                        <div onClick={() => setStep2('Dropbox')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={dropbox} alt="Dropbox icon" /></div>
+                                        <div onClick={() => setStep2('Dropbox')} style={{cursor: 'pointer'}}><img style={{ width: '53px', margin: '2px'}} src={Dropbox} alt="Dropbox icon" /></div>
                                     }
                                 </div>
                             </div>
@@ -356,12 +399,30 @@ export default function Main() {
                                     upon connection and will automatically create a new database entry with four review tasks every time 
                                     a new file is added to your {step2} folder.</p>
                                 <div className="d-flex justify-content-around">
-                                    <div style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={notion} alt="notion icon" /></div>
+                                    <div style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={Notion} alt="notion icon" /></div>
+                                </div>
+                                <h4 style={{ marginTop: '15px' }}>Step 4--Create Questions and Review</h4>
+                                <p style={{ marginLeft: '5px'}} className="mb-2 text-muted">Studyflow will create five checkboxes in the Notion page to first 
+                                    create review questions about your note, and then review the note by answering those questions over timed intervals
+                                    according to <span style={{ textDecoration: 'underline' }}>spaced repetition</span>. Don't worry, there is a set date for each review task, so you never have
+                                    to think about when to review.</p>
+                                <div style={{marginTop: '15px'}} className="d-flex flex-column align-items-center justify-content-center">
+                                    <div style={{margin: '15px 0px 20px 0px'}} className="d-flex align-items-center">
+                                        <img style={{ width: '50px'}} src={sources[step1]} alt="step1 icon" />
+                                        {arrow}
+                                        <img style={{ width: '50px'}} src={sources[step2]} alt="step1 icon" />
+                                        {arrow}
+                                        <img style={{ width: '50px'}} src={Notion} alt="Notion icon" />
+                                        {arrow}
+                                        <img style={{ width: '50px'}} src={refresh} alt="refresh icon" />
+                                    </div>
+                                    <Button onClick={() => createFlow()}>Create studyflow</Button>
                                 </div>
                             </div>
                         :
                             <span></span>
                         }
+                        
                         {/* <div>
                             <div style={{ marginBottom: '5px' }}className="d-flex justify-content-between">
                                 <span><strong>Filters:</strong></span>

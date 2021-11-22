@@ -4,50 +4,41 @@
  const pool = require("../db.js");
 
  module.exports = function (app) {
+
+
      
     //get all flows
     app.get("/api/flows", async (req, res) => {
         try {
-            const query = await pool.query("SELECT * FROM flowlist");
+            const query = await pool.query("SELECT * FROM flows");
             res.json(query.rows);
         } catch (err) {
             console.error(err.message);
         }
     })
 
-    //digital writing flows with cloud
-    app.get("/api/flows/cloud/:apporcloud/:cloud/:tasks", async (req, res) => {
+    //get flows by user
+    app.get("/api/flows/user/:uid", async (req, res) => {
         try {
-            const { apporcloud, cloud, tasks } = req.params;
-            const query = await pool.query("SELECT * FROM flowlist WHERE $1 = any (tags) AND $2 = any (tags) AND $3 = any (tags) ORDER BY flowlist.difficulty != 'Average', flowlist.difficulty != 'Hard', id asc ", 
-            [apporcloud, cloud, tasks]);
+            const { uid } = req.params;
+            const query = await pool.query("SELECT * FROM flows WHERE userid = $1", 
+            [parseInt(uid)]);
             res.json(query.rows);
         } catch (err) {
             console.error(err.message);
         }
     })
 
-    //digital writing flows without cloud
-    app.get("/api/flows/nocloud/:apporcloud/:tasks", async (req, res) => {
+    //create a flow for user
+    app.post("/api/flows/create", async (req, res) => {
         try {
-            const { apporcloud, tasks } = req.params;
-            const query = await pool.query("SELECT * FROM flowlist WHERE $1 = any (tags) AND $2 = any (tags) ORDER BY flowlist.difficulty != 'Average', flowlist.difficulty != 'Hard', id asc", 
-            [apporcloud, tasks]);
+            const { uid, flow, active, c } = req.body;
+            const query = await pool.query("INSERT INTO flows (userid, flow, active, class) VALUES ($1, $2, $3, $4)", 
+            [uid, flow, active, c]);
             res.json(query.rows);
         } catch (err) {
             console.error(err.message);
         }
     })
 
-    //get a flow by id
-    app.get("/api/flowbyid/:id/", async (req, res) => {
-        try {
-            const { id } = req.params;
-            const query = await pool.query("SELECT * FROM flowlist WHERE id = $1", 
-            [parseInt(id)]);
-            res.json(query.rows[0]);
-        } catch (err) {
-            console.error(err.message);
-        }
-    })
 }
