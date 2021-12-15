@@ -32,7 +32,7 @@ export default function Header() {
                 <Navbar.Collapse className="justify-content-end">
                 {currentUser ? 
                     <Navbar.Text onClick={() => logout()}>
-                        Signed in as: <span style={{ color: '#4FB0AE', textDecoration: 'underline' }}>{currentUser.displayName}</span>
+                        signed in as <span style={{ color: '#4FB0AE', textDecoration: 'underline' }}>{currentUser.displayName}</span>
                     </Navbar.Text>
                 :
                     <Navbar.Text style={{ cursor: 'pointer'}} onClick={() => google()}>
