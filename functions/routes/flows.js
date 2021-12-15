@@ -40,5 +40,28 @@
             console.error(err.message);
         }
     })
+     
+     //activate a flow
+     app.put("/api/flows/activate/:id", async (req, res) => {
+        try {
+            const { id } = req.params;
+            const query = await pool.query("UPDATE flows SET active = true WHERE id = $1", 
+            [parseInt(id)]);
+            res.json(query.rows);
+        } catch (err) {
+            console.error(err.message);
+        }
+     })
 
+     //deactivate a flow
+     app.put("/api/flows/deactivate/:id", async (req, res) => {
+        try {
+            const { id } = req.params;
+            const query = await pool.query("UPDATE flows SET active = false WHERE id = $1", 
+            [parseInt(id)]);
+            res.json(query.rows);
+        } catch (err) {
+            console.error(err.message);
+        }
+    })
 }

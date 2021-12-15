@@ -10,8 +10,6 @@ import Modal from 'react-bootstrap/Modal'
 import Spinner from 'react-bootstrap/Spinner'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
-import Flows from '../Flow/Flows'
-import FlowDisplay from '../Flow/FlowDisplay'
 import Notability from '../../images/notability.png'
 import Goodnotes from '../../images/goodnotes.png'
 import OneNote from '../../images/onenote.svg'
@@ -143,10 +141,12 @@ export default function Main() {
         await fetch(`/api/flows/user/${userDB.id}`)
             .then(response => response.json())
             .then(data => {
+                console.log(data)
                 const userFlowObject = {}
                 for (let i=0; i<data.length; i++){
                     userFlowObject[data[i].class] = data[i]
                 }
+                console.log(userFlowObject)
                 setFlows(userFlowObject)
             })
     }
@@ -298,9 +298,10 @@ export default function Main() {
                     return <FlowCard flow={flows[f]} userDB={userDB} currentUser={currentUser} />
                 })}
                 {surveyResponse.classesarray.map((c, i) => {
+                    console.log(flows[c])
                     return (
                         <div>
-                            {parseInt(userDB.flows[i]) === 0 ?
+                            {!flows[c] ?
                                 <Card style={{ width: '300px', marginBottom: '20px', height: '150px' }}>
                                     <Card.Header as="h5">{c}</Card.Header>
                                         <Card.Body 

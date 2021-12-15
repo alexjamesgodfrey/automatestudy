@@ -7,6 +7,15 @@ import Spinner from 'react-bootstrap/Spinner'
 import FlowDisplay from './FlowDisplay'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
+import Notability from '../../images/notability.png'
+import Goodnotes from '../../images/goodnotes.png'
+import OneNote from '../../images/onenote.svg'
+import OneDrive from '../../images/onedrive.svg'
+import GoogleDrive from '../../images/googledrive.svg'
+import Dropbox from '../../images/dropbox.svg'
+import Notion from '../../images/notion.svg'
+import arrowRight from '../../images/arrowright.svg'
+import refresh from '../../images/refresh.svg'
 
 export default function FlowCard(props) {
     const [flow, setFlow] = useState({})
@@ -18,6 +27,41 @@ export default function FlowCard(props) {
     const [cloud, setCloud] = useState("Cloud Service")
     const [difficulty, setDifficulty] = useState('Difficulty')
         
+    const arrow = <img src={arrowRight} className="icon" style={{ width: '50px' }} alt="arrow facing right" />
+    const sources = {
+        'Notion': Notion,
+        'OneDrive': OneDrive,
+        'GoogleDrive': GoogleDrive,
+        'Dropbox': Dropbox,
+        'Notability': Notability,
+        'Goodnotes': Goodnotes,
+        'OneNote': OneNote,
+    }
+
+    /**
+     * Sets needs state, which is a list of all the account connections the user needs. also sets the
+     * connected state -> if there are no needs, the user is connected for the certain flow and can
+     * activate it
+     */
+    const [needs, setNeeds] = useState([])
+    const [connected, setConnected] = useState(false)
+    const getNeeds = () => {
+        const tempNeeds = []
+        if (props.flow.flow.split('-').indexOf('OneDrive') !== -1 && !props.userDB.onedrivecode) {
+            tempNeeds.push('OneDrive')
+        }
+        if (props.flow.flow.split('-').indexOf('Dropbox') !== -1 && !props.userDB.dropboxcode) {
+            tempNeeds.push('Dropbox')
+        }
+        if (props.flow.flow.split('-').indexOf('Notion') !== -1 && !props.userDB.notioncode) {
+            tempNeeds.push('Notion')
+        }
+        //if the user doesn't need to connect anything, they are fully connected
+        if (tempNeeds.length === 0) {
+            setConnected(true)
+        }
+        setNeeds(tempNeeds)
+    }
  
     const getFlow = async (id) => {
         await fetch(`/api/flowbyid/${id}`)
@@ -27,6 +71,30 @@ export default function FlowCard(props) {
                 console.log(data)
             })
             .then(() => setLoading(false))
+    }
+
+
+    /**
+     * activates the flow via put request, and temporarily shows flow as active
+     * @param {String} id the id of the flow to active
+     */
+    const [tempActive, setTempActive] = useState(props.flow.active)
+    const activateFlow = async (id) => {
+        await fetch(`/api/flows/activate/${id}`, {
+            method: 'PUT'
+        })
+        setTempActive(true)
+    }
+
+    /**
+     * deactivates the flow via put request, and temporarily shows flow as inactive
+     * @param {String} id the id of the flow to active
+     */
+    const deactivateFlow = async (id) => {
+        await fetch(`/api/flows/deactivate/${id}`, {
+            method: 'PUT'
+        })
+        setTempActive(false)
     }
 
     const changeFlow = async (id) => {
@@ -84,15 +152,41 @@ export default function FlowCard(props) {
 
     useEffect(() => {
         getFlow(props.flowid)
+        getNeeds()
         console.log(props.flow.flow.split('-'))
     }, [])
 
     return (
         <Card style={{ marginBottom: '20px', maxWidth: '1000px', minWidth: '300px' }}>
             <Card.Header as="h5">{props.flow.class}</Card.Header>
-            <div style={{ margin: '10px 20px'}}>
-                <h6>Setup</h6>
-                <FlowConnects flow={props.flow.flow.split('-')} userDB={props.userDB} currentUser={props.currentUser} />
+            <div className="d-flex flex-column" style={{ padding: '20px'}}>
+                {!connected ? 
+                    <div style={{ margin: '10px 20px'}}>
+                        <h6>Setup</h6>
+                        <FlowConnects
+                            flow={props.flow.flow.split('-')}
+                            needs={needs}
+                            connected={connected}
+                            userDB={props.userDB}
+                            currentUser={props.currentUser} />
+                    </div>
+                :
+                    <span></span>
+                }
+                <div style={{margin: '10px 0px'}} className="d-flex align-items-center">
+                    <img style={{ width: '50px'}} src={sources[props.flow.flow.split('-')[0]]} alt="step1 icon" />
+                    {arrow}
+                    <img style={{ width: '50px'}} src={sources[props.flow.flow.split('-')[1]]} alt="step1 icon" />
+                    {arrow}
+                    <img style={{ width: '50px'}} src={Notion} alt="Notion icon" />
+                    {arrow}
+                    <img style={{ width: '50px'}} src={refresh} alt="refresh icon" />
+                </div>
+                {tempActive ? 
+                    <Button onClick={() => deactivateFlow(props.flow.id)} variant="danger">Deactivate Flow</Button>
+                :
+                    <Button onClick={() => activateFlow(props.flow.id)}>Activate Flow</Button>
+                }
             </div>
         </Card>
     )

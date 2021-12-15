@@ -3,7 +3,6 @@ import { useAuth } from '../../contexts/AuthContext'
 import Card from 'react-bootstrap/Card'
 import Survey from './Survey'
 import Main from './Main'
-import Test from './Test'
 
 export default function LoggedIn() {
     const { currentUser, surveyResponse } = useAuth()
