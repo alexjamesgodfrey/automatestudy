@@ -62,12 +62,11 @@
                 classesarray.push(req.body.form_response.answers[counter].text)
                 counter += 1
             }
-            const tools = req.body.form_response.answers[counter].choices.labels
             const insertUser = await pool.query(
-                "INSERT INTO surveyresponses (email, uid, studylocation, college, cornellcollege, grade, media, apporcloud, cloud, numberofclasses, classesarray, tools) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)", 
+                "INSERT INTO surveyresponses (email, uid, studylocation, college, cornellcollege, grade, media, apporcloud, cloud, numberofclasses, classesarray) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)", 
                 [email, uid, studylocation, college, cornellcollege,
                     grade, media, apporcloud, cloud, numberofclasses, 
-                    classesarray, tools]);
+                    classesarray]);
             res.json(insertUser.rows);
         } catch (err) {
             console.error(err.message);

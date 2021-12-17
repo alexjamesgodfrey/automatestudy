@@ -19,6 +19,7 @@ import Dropbox from '../../images/dropbox.svg'
 import Notion from '../../images/notion.svg'
 import arrowRight from '../../images/arrowright.svg'
 import refresh from '../../images/refresh.svg'
+import logo from '../../images/wave.svg'
 import './Fades.scss'
 
 export default function Main() {
@@ -394,15 +395,14 @@ export default function Main() {
                             <span></span>}
                         {step1 && step2? 
                             <div className="fade-1">
-                                <h4>Step 3--Automatic Notion Database Entry</h4>
-                                <p style={{ marginLeft: '5px'}} className="mb-2 text-muted">Studyflow creates a Notion database for you
-                                    upon connection and will automatically create a new database entry with four review tasks every time 
-                                    a new file is added to your {step2} folder.</p>
+                                <h4>Step 3--Automatic Upload to Studyflow</h4>
+                                <p style={{ marginLeft: '5px'}} className="mb-2 text-muted">Studyflow creates a entry in your class folder
+                                where you can view the note, enter recall questions, and view tasks.</p>
                                 <div className="d-flex justify-content-around">
-                                    <div style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={Notion} alt="notion icon" /></div>
+                                    <div style={{cursor: 'pointer', border: '2px solid #84CACC', borderRadius: '5%'}}><img style={{ width: '53px', margin: '2px'}} src={logo} alt="studyflow icon" /></div>
                                 </div>
                                 <h4 style={{ marginTop: '15px' }}>Step 4--Create Questions and Review</h4>
-                                <p style={{ marginLeft: '5px'}} className="mb-2 text-muted">Studyflow will create five checkboxes in the Notion page to first 
+                                <p style={{ marginLeft: '5px'}} className="mb-2 text-muted">Studyflow will create five checkboxes in the Studyflow entry to first 
                                     create review questions about your note, and then review the note by answering those questions over timed intervals
                                     according to <span style={{ textDecoration: 'underline' }}>spaced repetition</span>. Don't worry, there is a set date for each review task, so you never have
                                     to think about when to review.</p>
@@ -412,7 +412,7 @@ export default function Main() {
                                         {arrow}
                                         <img style={{ width: '50px'}} src={sources[step2]} alt="step1 icon" />
                                         {arrow}
-                                        <img style={{ width: '50px'}} src={Notion} alt="Notion icon" />
+                                        <img style={{ width: '50px'}} src={logo} alt="studyflow icon" />
                                         {arrow}
                                         <img style={{ width: '50px'}} src={refresh} alt="refresh icon" />
                                     </div>

@@ -25,8 +25,8 @@ app.get("/", async (req, res) => {
 })
 
 if (process.env.DEVELOPMENT === 'true') {
-    app.listen(5000, () => {
-        console.log(`server has started on port ${5000}`);
+    app.listen(process.env.DEVELOPMENT_PORT, () => {
+        console.log(`server has started on port ${process.env.DEVELOPMENT_PORT}`);
         console.log('static file served at ' + path.join(__dirname, "..", "client", "build", "index.html"));
     });
 }
