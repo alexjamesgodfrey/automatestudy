@@ -92,14 +92,17 @@ export default function LoggedIn() {
     if (!takenSurvey) {
         return (
             <div>
-                <ProgressBar style={{marginTop: '20px', width: '400px', height: '25px'}} now={10} label={`Setup: 10%`} />
+                <ProgressBar style={{marginTop: '20px', width: '400px', height: '25px'}} now={16} label={`Setup: 10%`} />
                 <div style={{margin: '20px 20px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '300px', margin: '15px' }}>
                         <Card.Header as="h5">Welcome to Studyflow</Card.Header>
                         <Card.Body>
                             <Card.Text>
-                                Thanks for signing up. Take the getting started survey to begin.
-                            </Card.Text>    
+                                Thanks for signing up. Please take the getting started survey to begin.
+                            </Card.Text>  
+                            <Card.Text>
+                                In 10 minutes, you'll be the most organized student you know.
+                            </Card.Text>  
                         </Card.Body>
                     </Card>
                 </div>
@@ -127,15 +130,15 @@ export default function LoggedIn() {
                                 new file is deteced, a new Notion (see next step) page will be created for your note.
                             </Card.Text>  
                             <Card.Text>
-                                A human will never view any of your files. Here's our privacy policy
+                                A human will never view any of your files. Here's our privacy policy.
                             </Card.Text>    
                         </Card.Body>
                     </Card>
                 </div>
                 <div className="d-flex flex-column align-items-center">
-                    <a href={onedriveURL}><Button variant="info" style={{margin: '0px 30px 10px', width: '250px'}}>Connect OneDrive Account</Button></a>
-                    <a><Button variant="warning" style={{margin: '10px 30px', width: '250px'}}>Connect Google Drive Account</Button></a>
-                    <a><Button variant="secondary" style={{margin: '10px 30px', width: '250px'}}>Connect Dropbox Account</Button></a>
+                    <a href={onedriveURL}><Button variant="info" style={{margin: '0px 30px 10px', width: '250px'}}><span style={{ color: 'white' }}>Connect OneDrive Account</span></Button></a>
+                    <a><Button variant="secondary" style={{ margin: '10px 30px', width: '250px' }}>Connect Dropbox Account</Button></a>
+                    <a><Button variant="success" style={{margin: '10px 30px', width: '250px'}}><span style={{ color: 'white' }}>Connect Google Drive Account</span></Button></a>
                 </div>
                 {!surveyResponse.cloud ? 
                     <FlowDisplay flow={{ tags: ['Pencil', 'OneDrive', 'Notion', 'Todoist'] }} />
@@ -158,7 +161,7 @@ export default function LoggedIn() {
     }
 
     //setup step: connect notion account
-    if (!userDB.notionaccess && !code) { 
+    if (!userDB.notionaccess && state !== 'notion') { 
         return (
             <div>
                 <ProgressBar style={{marginTop: '20px', width: '400px', height: '25px'}} now={50} label={`Setup: 50%`} />
@@ -167,7 +170,7 @@ export default function LoggedIn() {
                         <Card.Header as="h5">Connect to Notion</Card.Header>
                         <Card.Body>
                             <Card.Text>
-                                Thanks for connecting {userDB.cloud}. Next step: connect your
+                                Thanks for connecting{' ' + userDB.cloud}. Next step: connect your
                                 Notion Account.
                             </Card.Text>   
                             <Card.Text>
@@ -177,7 +180,7 @@ export default function LoggedIn() {
                                 to organize other parts of your life, like workouts and books you've read.
                             </Card.Text>  
                             <Card.Text>
-                                Again, a human will never view your Notion page. Here's our privacy policy
+                                Again, a human will never view your Notion page. Here's our privacy policy one more time.
                             </Card.Text>  
                             <Card.Text>
                                 <strong>Only allow us to access a single Notion page. We will remove all previous
@@ -210,7 +213,7 @@ export default function LoggedIn() {
     }
 
     //setup step: connect todoist account
-    if (!userDB.todoistaccess && !code) { 
+    if (!userDB.todoistaccess && state !== 'todoist') { 
         return (
             <div>
                 <ProgressBar style={{marginTop: '20px', width: '400px', height: '25px'}} now={80} label={`Setup: 80%`} />
