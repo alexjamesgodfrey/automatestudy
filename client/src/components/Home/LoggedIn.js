@@ -19,14 +19,26 @@ export default function LoggedIn() {
     /**
      * Checks for onedrive code presence in url and adds if present
      */
-     const onedriveURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${process.env.REACT_APP_ONEDRIVE_CLIENT}&response_type=code&redirect_uri=${process.env.REACT_APP_REDIRECT_URI_URL}&response_mode=query&scope=offline_access%20files.read&state=onedrive`
-     const checkOnedrive = async () => {
-        if (code && state === 'onedrive') {
-            await fetch(`/api/users/initializeonedrive/${code}/${currentUser.uid}`, {
+    const onedriveURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${process.env.REACT_APP_ONEDRIVE_CLIENT}&response_type=code&redirect_uri=${process.env.REACT_APP_REDIRECT_URI_URL}&response_mode=query&scope=offline_access%20files.read&state=onedrive`
+    const checkOnedrive = async () => {
+        if (code && state === 'onedrive' && !userDB.cloudaccess) {
+            await fetch(`/api/onedrive/initialize/${code}/${currentUser.uid}`, {
                 method: 'PUT'
             })
         }
-     }
+    }
+
+    /**
+     * Checks for notion code presence in url and adds if present
+     */
+    const notionURL = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${process.env.REACT_APP_NOTION_CLIENT}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI_URL}&response_type=code&state=notion`
+    const checkNotion = async () => {
+        if (code && state === 'notion' && !userDB.notionaccess){
+            await fetch(`/api/notion/initialize/${code}/${currentUser.uid}/${userDB.id}`, {
+                method: 'PUT'
+            })
+        }
+    }
 
     const createUser = async () => {
         try {
@@ -53,10 +65,11 @@ export default function LoggedIn() {
     useEffect(() => {
         createUser()
         checkOnedrive()
+        checkNotion()
     }, [])
 
     //if setup is complete
-    if (takenSurvey && userDB.cloudaccess) {
+    if (takenSurvey && userDB.cloudaccess && userDB.notionaccess) {
         return <Main />
     }
 
@@ -85,18 +98,18 @@ export default function LoggedIn() {
         return (
             <div>
                 <ProgressBar style={{marginTop: '20px', width: '400px', height: '25px'}} now={30} label={`Setup: 30%`} />
-                <div style={{margin: '20px 20px' }} className="d-flex justify-content-center">
-                    <Card style={{ width: '300px' }}>
+                <div style={{ margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
+                    <Card style={{ width: '400px' }}>
                         <Card.Header as="h5">Connect a cloud service</Card.Header>
                         <Card.Body>
                             <Card.Text>
-                                Your survey results have been recorded. Next step: connect a
+                                Thanks for taking the getting started survey. Next step: connect a
                                 cloud service.
                             </Card.Text>   
                             <Card.Text>
                                 Studyflow will watch a specified folder for new file 
                                 uploads (uploaded by a note-taking app or scan). Once a 
-                                new file is deteced, a new Studyflow entry will be created.
+                                new file is deteced, a new Notion (see next step) page will be created for your note.
                             </Card.Text>  
                             <Card.Text>
                                 A human will never view any of your files. Here's our privacy policy
@@ -108,6 +121,58 @@ export default function LoggedIn() {
                     <a href={onedriveURL}><Button variant="info" style={{margin: '0px 30px 10px', width: '250px'}}>Connect OneDrive Account</Button></a>
                     <a><Button variant="warning" style={{margin: '10px 30px', width: '250px'}}>Connect Google Drive Account</Button></a>
                     <a><Button variant="secondary" style={{margin: '10px 30px', width: '250px'}}>Connect Dropbox Account</Button></a>
+                </div>
+                {!surveyResponse.cloud ? 
+                    <FlowDisplay flow={{ tags: ['Pencil', 'OneDrive', 'Notion', 'Todoist'] }} />
+                :
+                    <span></span>
+                }
+                {surveyResponse.cloud === 'No' ? 
+                    <FlowDisplay flow={{ tags: [surveyResponse.apporcloud, 'OneDrive', 'Notion', 'Todoist'] }} />
+                :
+                    <span></span>
+                }
+                {surveyResponse.cloud && surveyResponse.cloud !== 'No' ?
+                    <FlowDisplay flow={{ tags: [surveyResponse.apporcloud, surveyResponse.cloud, 'Notion', 'Todoist'] }} />
+                :
+                    <span></span>
+                }
+            </div>
+            
+        )
+    }
+
+    //setup step: connect notion account
+    if (!userDB.notionaccess) { 
+        return (
+            <div>
+                <ProgressBar style={{marginTop: '20px', width: '400px', height: '25px'}} now={50} label={`Setup: 50%`} />
+                <div style={{margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
+                    <Card style={{ width: '400px' }}>
+                        <Card.Header as="h5">Connect to Notion</Card.Header>
+                        <Card.Body>
+                            <Card.Text>
+                                Thanks for connecting {userDB.cloud}. Next step: connect your
+                                Notion Account.
+                            </Card.Text>   
+                            <Card.Text>
+                                Once a {userDB.cloud} file is detected, a Notion page will be
+                                created, where you can enter active recall questions and review your note.
+                                Don't worry, we'll organize your Notion for you. We also encourage you to use Notion
+                                to organize other parts of your life, like workouts and books you've read.
+                            </Card.Text>  
+                            <Card.Text>
+                                Again, a human will never view your Notion page. Here's our privacy policy
+                            </Card.Text>  
+                            <Card.Text>
+                                <strong>Only allow us to access a single Notion page. We will remove all previous
+                                content from this page.</strong>
+                            </Card.Text>  
+                        </Card.Body>
+                    </Card>
+                </div>
+                <div className="d-flex flex-column align-items-center">
+                    <a href={notionURL}><Button variant="dark" style={{margin: '10px 30px', width: '250px'}}>Connect Notion Account</Button></a>
                 </div>
                 {!surveyResponse.cloud ? 
                     <FlowDisplay flow={{ tags: ['Pencil', 'OneDrive', 'Notion', 'Todoist'] }} />
