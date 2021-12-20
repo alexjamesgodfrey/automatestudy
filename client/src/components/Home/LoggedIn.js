@@ -40,6 +40,20 @@ export default function LoggedIn() {
         }
     }
 
+    
+    /**
+     * Checks for todoist code presence in url and adds if present
+     */
+    const todoistURL = `https://todoist.com/oauth/authorize?client_id=${process.env.REACT_APP_TODOIST_CLIENT}&scope=data:read_write,data:delete&state=todoist`
+    const checkTodoist = async () => {
+        if (code && state === 'todoist' && !userDB.todoistaccess){
+            await fetch(`/api/todoist/initialize/${code}/${currentUser.uid}`, {
+                method: 'PUT'
+            })
+        }
+    }
+
+
     const createUser = async () => {
         try {
             const here = await fetch(`/api/users/${currentUser.uid}`)
@@ -66,10 +80,11 @@ export default function LoggedIn() {
         createUser()
         checkOnedrive()
         checkNotion()
+        checkTodoist()
     }, [])
 
     //if setup is complete
-    if (takenSurvey && userDB.cloudaccess && userDB.notionaccess) {
+    if (takenSurvey && userDB.cloudaccess && userDB.notionaccess && userDB.todoistaccess) {
         return <Main />
     }
 
@@ -143,7 +158,7 @@ export default function LoggedIn() {
     }
 
     //setup step: connect notion account
-    if (!userDB.notionaccess) { 
+    if (!userDB.notionaccess && !code) { 
         return (
             <div>
                 <ProgressBar style={{marginTop: '20px', width: '400px', height: '25px'}} now={50} label={`Setup: 50%`} />
@@ -173,6 +188,61 @@ export default function LoggedIn() {
                 </div>
                 <div className="d-flex flex-column align-items-center">
                     <a href={notionURL}><Button variant="dark" style={{margin: '10px 30px', width: '250px'}}>Connect Notion Account</Button></a>
+                </div>
+                {!surveyResponse.cloud ? 
+                    <FlowDisplay flow={{ tags: ['Pencil', 'OneDrive', 'Notion', 'Todoist'] }} />
+                :
+                    <span></span>
+                }
+                {surveyResponse.cloud === 'No' ? 
+                    <FlowDisplay flow={{ tags: [surveyResponse.apporcloud, 'OneDrive', 'Notion', 'Todoist'] }} />
+                :
+                    <span></span>
+                }
+                {surveyResponse.cloud && surveyResponse.cloud !== 'No' ?
+                    <FlowDisplay flow={{ tags: [surveyResponse.apporcloud, surveyResponse.cloud, 'Notion', 'Todoist'] }} />
+                :
+                    <span></span>
+                }
+            </div>
+            
+        )
+    }
+
+    //setup step: connect todoist account
+    if (!userDB.todoistaccess && !code) { 
+        return (
+            <div>
+                <ProgressBar style={{marginTop: '20px', width: '400px', height: '25px'}} now={80} label={`Setup: 80%`} />
+                <div style={{margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
+                    <Card style={{ width: '400px' }}>
+                        <Card.Header as="h5">Connect to Todoist</Card.Header>
+                        <Card.Body>
+                            <Card.Text>
+                                Thanks for connecting your Notion account. Final step: connect to a
+                                task manager.
+                            </Card.Text>   
+                            <Card.Text>
+                                After a Notion page is created for your note, 5 tasks will be created in your task 
+                                manager.
+                                <ol>
+                                    <li>(Day of Note) Create Active Recall Questions</li>
+                                    <li>(1 day) Review Note, Answer Questions</li>
+                                    <li>(3 days) Review Note, Answer Questions</li>
+                                    <li>(7 days) Review Note, Answer Questions</li>
+                                    <li>(30 days) Review Note, Answer Questions</li>
+                                </ol>
+                                Don't worry, we'll create a school project for you, with sections for each class.
+                            </Card.Text>  
+                            <Card.Text>
+                                <strong>Congratulations on setting up Studyflow, {currentUser.displayName}!
+                                Look foward to more efficiency and free time!</strong>
+                            </Card.Text>
+                        </Card.Body>
+                    </Card>
+                </div>
+                <div className="d-flex flex-column align-items-center">
+                    <a href={todoistURL}><Button variant="danger" style={{ margin: '10px 30px', width: '250px' }}><span style={{ color: 'white' }}>Connect Todoist Account</span></Button></a>
                 </div>
                 {!surveyResponse.cloud ? 
                     <FlowDisplay flow={{ tags: ['Pencil', 'OneDrive', 'Notion', 'Todoist'] }} />

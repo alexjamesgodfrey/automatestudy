@@ -32,12 +32,12 @@ const getAccessToken = async (code, uid, user_id) => {
     }`
     try {
         await fetch(`https://api.notion.com/v1/oauth/token`, {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Basic ' + base64.encode(process.env.NOTION_CLIENT + ":" + process.env.NOTION_SECRET),
-            'Content-Type': 'application/json'
-        }, 
-        body: body
+            method: 'POST',
+            headers: {
+                'Authorization': 'Basic ' + base64.encode(process.env.NOTION_CLIENT + ":" + process.env.NOTION_SECRET),
+                'Content-Type': 'application/json'
+            }, 
+            body: body
         })
         .then(response => response.json())
         .then(async data => {
@@ -78,18 +78,18 @@ module.exports = function (app) {
             const updateUsers = await pool.query("UPDATE users set notionaccess=$1 WHERE uid = $2", [access_token, uid]);
             logger.trace("Notion access token successfully added to users database for user " + uid)
             const insertNotion = await pool.query(
-                "INSERT INTO notioninformation (userid, access_token, workspace_id, workspace_name, workspace_icon, bot_id, owner) VALUES ($1, $2, $3, $4, $5, $6, $7)", 
+                "INSERT INTO notion (userid, access_token, workspace_id, workspace_name, workspace_icon, bot_id, owner) VALUES ($1, $2, $3, $4, $5, $6, $7)", 
                 [parseInt(userid), access_token, workspace_id, workspace_name, workspace_icon, bot_id, owner]);
-            logger.trace("Notion information successfully added to notioninformation database for user " + uid)
+            logger.trace("Notion information successfully added to notion database for user " + uid)
         } catch (err) {
             console.error(err.message);
         }
     })
 
-    app.get('/api/notioninformation', async (req, res) => {
+    app.get('/api/notion', async (req, res) => {
         try {
             const getAll = await pool.query(
-                "SELECT * FROM notioninformation"
+                "SELECT * FROM notion"
             )
             res.json(getAll.rows)
         } catch (err) {
@@ -97,12 +97,12 @@ module.exports = function (app) {
         }
     })
 
-    app.put('/api/notioninformation/database/:userid', async (req, res) => {
+    app.put('/api/notion/database/:userid', async (req, res) => {
         try {
             const { userid } = req.params
             const { id, url } = req.body
             const getAll = await pool.query(
-                "UPDATE notioninformation SET database_id=$1, database_url=$2 WHERE userid=$3", 
+                "UPDATE notion SET database_id=$1, database_url=$2 WHERE userid=$3", 
                 [id, url, parseInt(userid)])
             res.json(getAll.rows)
         } catch (err) {
