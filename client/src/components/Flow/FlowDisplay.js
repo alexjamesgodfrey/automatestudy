@@ -10,6 +10,7 @@ import notion from '../../images/notion.svg'
 import check from '../../images/check2.svg'
 import todoist from '../../images/todoist.svg'
 import arrowRight from '../../images/arrowright.svg'
+import pencil from '../../images/pencil.svg'
 
 export default function FlowDisplay(props) {
     const arrow =  <img src={arrowRight} className="icon" style={{ width: '50px'}} alt="arrow facing right" />
@@ -28,6 +29,13 @@ export default function FlowDisplay(props) {
             }
             
             <div className="d-flex align-items-start justify-content-center">
+                {props.flow.tags.indexOf('Pencil') !== -1 ?
+                    <div className="d-flex align-items-center">
+                        <img style={{ width: '45px'}} src={pencil} alt="pencil icon" />
+                        {arrow}
+                    </div>
+                    :<span></span>
+                }
                 {props.flow.tags.indexOf('Notability') !== -1 ?
                     <div className="d-flex align-items-center">
                         <img style={{ width: '45px'}} src={notability} alt="notability icon" />
