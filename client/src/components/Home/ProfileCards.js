@@ -13,7 +13,18 @@ export default function ProfileCards() {
     const [showPublicAccountTip, setShowPublicAccountTip] = useState(false)
     const publicAccountTarget = useRef(null)
 
-    console.log(currentUser.uid)
+    const handlePublicChange = async () => {
+        const checked = document.getElementById('public-status').checked
+        if (checked) {
+            await fetch(`/api/users/makepublic/${currentUser.uid}`, {
+                method: 'PUT'
+            })
+        } else {
+            await fetch(`/api/users/makeprivate/${currentUser.uid}`, {
+                method: 'PUT'
+            })
+        }
+    }
 
     return (
         <div style={{ margin: '20px 0px' }} className="d-flex justify-content-center"> 
@@ -45,12 +56,13 @@ export default function ProfileCards() {
             <Card style={{ margin: '0px 20px' }}>
                 <Card.Header as="h5" style={{ width: '250px' }}>Settings</Card.Header>
                 <Card.Text style={{ margin: '5px 10px' }} className="d-flex align-items-center">
-                    <span 
+                    <label 
+                        htmlFor='public-status'
                         style={{ width: '160px' }}
                         ref={publicAccountTarget}
                         onMouseEnter={() => setShowPublicAccountTip(true)}
                         onMouseLeave={() => setShowPublicAccountTip(false)}
-                    >Public Account </span>
+                    >Public Account </label>
                     <Overlay target={publicAccountTarget.current} show={showPublicAccountTip} placement="bottom">
                         <Tooltip id="overlay-example">
                             If enabled, users in the Studyflow community will be able to view your username,
@@ -58,8 +70,10 @@ export default function ProfileCards() {
                         </Tooltip>
                     </Overlay>
                     <Toggle
+                        id='public-status'
+                        defaultChecked={userDB.public}
+                        onChange={handlePublicChange}
                         className='custom-colors'
-                        defaultChecked={false}
                         // onChange={this.handleCheeseChange} 
                     />
                     

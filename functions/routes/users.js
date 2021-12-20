@@ -135,7 +135,19 @@ module.exports = function (app) {
             logger.trace("Account made public for user " + uid)
             res.json("Account made public for user " + uid)
         } catch (err) {
-            logger.error("Account could not be made public for user " + uid)
+            logger.error("Account could not be made public for user " + uid + "\n error message: " + err.message)
+        }
+    })
+
+    //make a user's account private (not public)
+    app.put("/api/users/makeprivate/:uid", async (req, res) => {
+        try {
+            const { uid } = req.params;
+            const changePublic = await pool.query("UPDATE users set public = false WHERE uid = $1", [uid]);
+            logger.trace("Account made public for user " + uid)
+            res.json("Account made private for user " + uid)
+        } catch (err) {
+            logger.error("Account could not be made private for user " + uid + "\n error message: " + err.message)
         }
     })
 }
