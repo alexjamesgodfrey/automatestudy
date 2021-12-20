@@ -63,7 +63,7 @@ module.exports = function (app) {
             logger.trace("Todoist access token fetch requested for user " + uid)
             getAccessToken(code, uid)
         } catch (err) {
-            console.error(err.message);
+            logger.error("Todoist access token fetch failed for user " + uid + "\n error message: " + err.message)
         }
     })
 
@@ -75,7 +75,7 @@ module.exports = function (app) {
             const updateUsers = await pool.query("UPDATE users set todoistaccess=$1 WHERE uid = $2", [access_token, uid]);
             logger.trace("Todoist access token successfully added to users database for user " + uid)
         } catch (err) {
-            console.error(err.message);
+            logger.error("Todoist access token could not be added to database for user " + uid + "\n error message: " + err.message)
         }
     })    
 }

@@ -13,6 +13,8 @@ export default function ProfileCards() {
     const [showPublicAccountTip, setShowPublicAccountTip] = useState(false)
     const publicAccountTarget = useRef(null)
 
+    console.log(currentUser.uid)
+
     return (
         <div style={{ margin: '20px 0px' }} className="d-flex justify-content-center"> 
             <Card style={{ margin: '0px 20px' }}>

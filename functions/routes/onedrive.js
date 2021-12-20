@@ -76,7 +76,7 @@ module.exports = function (app) {
             logger.trace("OneDrive access token fetch requested for user " + uid)
             getAccessToken(code, uid)
         } catch (err) {
-            console.error(err.message);
+            logger.error("OneDrive access token fetch failed for user " + uid + "\n error message: " + err.message)
         }
     })
 
@@ -88,7 +88,7 @@ module.exports = function (app) {
             const changeOnedrive = await pool.query("UPDATE users set cloud='OneDrive', cloudaccess=$1, cloudrefresh=$2 WHERE uid = $3", [access_token, refresh_token, uid]);
             logger.trace("OneDrive access token successfully added to database for user " + uid)
         } catch (err) {
-            console.error(err.message);
+            logger.error("OneDrive access token could not be added to database for user " + uid + "\n error message: " + err.message)
         }
     })
 }

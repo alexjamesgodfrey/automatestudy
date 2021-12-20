@@ -66,7 +66,7 @@ module.exports = function (app) {
             logger.trace("Notion access token fetch requested for user " + uid)
             getAccessToken(code, uid, userid)
         } catch (err) {
-            console.error(err.message);
+            logger.error("Notion access token fetch failed for user " + uid + "\n error message: " + err.message)
         }
     })
 
@@ -81,8 +81,9 @@ module.exports = function (app) {
                 "INSERT INTO notion (userid, access_token, workspace_id, workspace_name, workspace_icon, bot_id, owner) VALUES ($1, $2, $3, $4, $5, $6, $7)", 
                 [parseInt(userid), access_token, workspace_id, workspace_name, workspace_icon, bot_id, owner]);
             logger.trace("Notion information successfully added to notion database for user " + uid)
+            res.json("Notion information successfully added to notion database for user " + uid)
         } catch (err) {
-            console.error(err.message);
+            logger.error("Notion access token could not be added to database for user " + uid + "\n error message: " + err.message)
         }
     })
 

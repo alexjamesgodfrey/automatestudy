@@ -1,10 +1,20 @@
 /**
  * MAIN ROUTES
  */
- const pool = require("../db.js");
+const pool = require("../db.js");
+ 
+const log4js = require("log4js");
+log4js.configure({
+    appenders: {
+      everything: { type: 'file', filename: 'log.log' }
+    },
+    categories: {
+      default: { appenders: [ 'everything' ], level: 'trace' }
+    }
+});
+var logger = log4js.getLogger();
 
- module.exports = function (app) {
-
+module.exports = function (app) {
     //get all users
     app.get("/api/users", async (req, res) => {
         try {
@@ -114,6 +124,18 @@
             res.json(changeFlows.rows);
         } catch (err) {
             console.error(err.message);
+        }
+    })
+        
+    //make a user's account public
+    app.put("/api/users/makepublic/:uid", async (req, res) => {
+        try {
+            const { uid } = req.params;
+            const changePublic = await pool.query("UPDATE users set public = true WHERE uid = $1", [uid]);
+            logger.trace("Account made public for user " + uid)
+            res.json("Account made public for user " + uid)
+        } catch (err) {
+            logger.error("Account could not be made public for user " + uid)
         }
     })
 }
