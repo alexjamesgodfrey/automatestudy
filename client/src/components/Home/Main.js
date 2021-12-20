@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import _, { first, property } from 'underscore'
 import { useAuth } from '../../contexts/AuthContext'
 import { createTodoistProject } from '../../functions/TodoistCalls'
 import FlowCard from '../Flow/FlowCard'
+import ProfileCards from './ProfileCards'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import Spinner from 'react-bootstrap/Spinner'
+import Toggle from 'react-toggle'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import Notability from '../../images/notability.png'
@@ -21,6 +23,8 @@ import arrowRight from '../../images/arrowright.svg'
 import refresh from '../../images/refresh.svg'
 import logo from '../../images/wave.svg'
 import './Fades.scss'
+import "react-toggle/style.css"
+
 
 export default function Main() {
     const { currentUser, userDB, surveyResponse, flowList, flowObject } = useAuth()
@@ -29,6 +33,7 @@ export default function Main() {
     const [currentClass, setCurrentClass] = useState('')
     const [currentClassKey, setCurrentClassKey] = useState(0)
     const [flows, setFlows] = useState({})
+    
     // const [userFlows, setUserFlows] = useState([])
 
     // const [customFlow, setCustomFlow] = useState([])
@@ -286,14 +291,17 @@ export default function Main() {
         checkNotion()
         //checkOnedrive()
         getFlows()
-        console.log(classLoading)
+        console.log(currentUser.photoURL)
     }, [])
 
     return (
-        <div style={{width: '100vw' }}>
-            <h4 style={{ textAlign: 'center', margin: '20px'}}>Welcome, <span style={{ textTransform: 'capitalize'}}>{currentUser.displayName}</span> | {surveyResponse.grade} at {surveyResponse.college}</h4>
-            <div style={{margin: '20px 20px' }} className="d-flex flex-column justify-content-center"> 
-                <h4>Your classes</h4>  
+        <div style={{ width: '1000px', margin: '0px auto' }} className='d-flex flex-column justify-content-center'>
+            <h4 style={{ textAlign: 'center', margin: '20px' }}>Welcome, <span style={{ textTransform: 'capitalize' }}>{currentUser.displayName}</span> | {surveyResponse.grade} at {surveyResponse.college}</h4>
+            <h4>Your Profile</h4>
+            <ProfileCards />
+            <h4>Your classes</h4>
+            <div className="d-flex flex-column justify-content-center"> 
+                
                 <div className="d-flex flex-column align-items-center justify-content-center">
                 {Object.keys(flows).map((f, i) => {
                     return <FlowCard flow={flows[f]} userDB={userDB} currentUser={currentUser} />

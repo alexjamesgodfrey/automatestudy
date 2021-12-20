@@ -19,7 +19,7 @@ export default function Home() {
         <Fade in={open}>
             <div>
                 <Header />
-                <div className="d-flex justify-content-center">
+                <div>
                 {currentUser ?
                     <div>
                         <LoggedIn />

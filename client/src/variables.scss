@@ -1,5 +1,7 @@
+$primary-color: #84cacc;
+
 $theme-colors: (
-  "primary": #84cacc,
+  "primary": $primary-color,
   "danger": #e44332,
   "info": #4f89d8,
   "dark": #222529,

@@ -1,0 +1,19 @@
+@import "../../variables.scss";
+
+.custom-colors.react-toggle--checked .react-toggle-track {
+  background-color: $primary-color;
+}
+.custom-colors.react-toggle--checked:hover:not(.react-toggle--disabled)
+  .react-toggle-track {
+  background-color: darken($primary-color, 10);
+}
+
+.custom-colors.react-toggle:hover:not(.react-toggle--disabled)
+  .react-toggle-track {
+  background-color: $primary-color;
+}
+
+.custom-colors.react-toggle--checked .react-toggle-thumb {
+  left: 27px;
+  border-color: darken($primary-color, 20);
+}
