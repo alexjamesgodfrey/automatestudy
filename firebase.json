@@ -12,5 +12,8 @@
         "function": "automatestudy"
       }
     ]
+  },
+  "storage": {
+    "rules": "storage.rules"
   }
 }
