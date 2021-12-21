@@ -11,7 +11,7 @@ import Button from 'react-bootstrap/Button'
 import './ProfileCards.scss'
 
 export default function ProfileCards() {
-    const { currentUser, userDB, updatePhotoURL, updateDisplayName } = useAuth()
+    const { currentUser, userDB, updatePhotoURL, updateDisplayName, logout } = useAuth()
     const [loading, setLoading] = useState(false)
     const [tempURL, setTempURL] = useState('')
     const [editDisplayName, setEditDisplayName] = useState(false)
@@ -122,7 +122,7 @@ export default function ProfileCards() {
             <Card style={{ margin: '0px 20px', width: '300px' }}>
                 <Card.Header as="h5">Connections</Card.Header>
                 <Card.Text style={{ margin: '5px 10px 0px 10px' }} className="d-flex align-items-center">
-                    <span style={{ width: '180px'}}>Cloud service: {userDB.cloud}</span>
+                    <span style={{ width: '180px'}}>{userDB.cloud} connected</span>
                     <Checkmark size="small" color={primaryColor} />
                 </Card.Text>
                 <Card.Text style={{ margin: '0px 10px'}} className="d-flex align-items-center">
@@ -160,7 +160,9 @@ export default function ProfileCards() {
                         onChange={handlePublicChange}
                         className='custom-colors'
                     />
+                    
                 </Card.Text>
+                <Button onClick={logout} size="sm" style={{ width: '100px', marginLeft: '10px' }} variant="danger"><span style={{ color: 'white' }}>Log out</span></Button>
             </Card>
         </div>
     )
