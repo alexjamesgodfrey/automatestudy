@@ -150,4 +150,30 @@ module.exports = function (app) {
             logger.error("Account could not be made private for user " + uid + "\n error message: " + err.message)
         }
     })
+
+    //update a user's photourl
+    app.put("/api/users/photourl/:uid", async (req, res) => {
+        try {
+            const { url } = req.body;
+            const { uid } = req.params;
+            const changePublic = await pool.query("UPDATE users set photourl = $1 WHERE uid = $2", [url, uid]);
+            logger.trace(`Changed photourl to ${url} for ${uid}`)
+            res.json(`Changed photourl to ${url} for ${uid}`)
+        } catch (err) {
+            logger.error("Photourl could not be changed for user " + uid + "\n error message: " + err.message)
+        }
+    })
+
+    //update a user's displayname
+    app.put("/api/users/displayname/:uid", async (req, res) => {
+        try {
+            const { displayname } = req.body;
+            const { uid } = req.params;
+            const changePublic = await pool.query("UPDATE users set displayname = $1 WHERE uid = $2", [displayname, uid]);
+            logger.trace(`Changed displayname to ${displayname} for ${uid}`)
+            res.json(`Changed displayname to ${displayname} for ${uid}`)
+        } catch (err) {
+            logger.error("displayname could not be changed for user " + displayname + "\n error message: " + err.message)
+        }
+    })
 }

@@ -50,21 +50,21 @@ export default function AuthProvider({ children }) {
     //     return currentUser.updateEmail(email);
     // }
 
-    // function updateDisplayName(newDisplayName) {
-    //     return currentUser.updateProfile({
-    //         displayName: newDisplayName
-    //     });
-    // }
+    function updateDisplayName(newDisplayName) {
+        return currentUser.updateProfile({
+            displayName: newDisplayName
+        });
+    }
 
     // function updatePassword(password) {
     //     return currentUser.updatePassword(password)
     // }
 
-    // function updatePhotoURL(url) {
-    //     return currentUser.updateProfile({
-    //         photoURL: url
-    //     });
-    // }
+    function updatePhotoURL(url) {
+        return currentUser.updateProfile({
+            photoURL: url
+        });
+    }
 
     function deleteUser() {
         return currentUser.delete();
@@ -114,9 +114,9 @@ export default function AuthProvider({ children }) {
         logout,
         //resetPassword,
         //updateEmail,
-        //updateDisplayName,
+        updateDisplayName,
         //updatePassword,
-        //updatePhotoURL,
+        updatePhotoURL,
         deleteUser,
         reauthenticate,
         userDB,
