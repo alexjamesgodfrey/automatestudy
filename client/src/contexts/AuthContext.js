@@ -17,6 +17,7 @@ export default function AuthProvider({ children }) {
 
     const [currentUser, setCurrentUser] = useState();
     const [userDB, setUserDB] = useState()
+    const [userFlows, setUserFlows] = useState()
     const [surveyResponse, setSurveyReponse] = useState();
 
     const [open, setOpen] = useState(false)
@@ -80,6 +81,15 @@ export default function AuthProvider({ children }) {
                 .then(response => response.json())
                 .then(async data => {
                     await setUserDB(data[0])
+                    await fetch(`/api/flows/user/${data[0].id}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const flows = {}
+                            for (let i = 0; i < data.length; i++) {
+                                flows[data[i].class] = data[i]
+                            }
+                            setUserFlows(flows)
+                        })
                     setLoadingUserData(false)
                 })
             await fetch(`/api/surveyresponses/${user.uid}`)
@@ -120,6 +130,7 @@ export default function AuthProvider({ children }) {
         deleteUser,
         reauthenticate,
         userDB,
+        userFlows,
         surveyResponse
     }
 

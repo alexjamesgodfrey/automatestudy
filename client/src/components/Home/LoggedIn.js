@@ -14,13 +14,20 @@ export default function LoggedIn() {
     const [takenSurvey, setTakenSurvey] = useState(surveyResponse)
 
     const [loading, setLoading] = useState(false)
+    const [classesConfirmed, setClassesConfirmed] = useState(false)
     const search = useLocation().search
     const code = new URLSearchParams(search).get('code');
     const state = new URLSearchParams(search).get('state');
-    
 
+
+    /**
+     * uploads the user's classes to the users table, and creates a flow for each class and uploads it
+     * to the flows table
+     */
     const confirmClasses = async () => {
         if (!loading) {
+            //create classes array
+            setClassesConfirmed(true)
             setLoading(true)
             const classIds = ['class-one', 'class-two', 'class-three', 'class-four', 'class-five', 'class-six']
             const classNames = []
@@ -30,7 +37,7 @@ export default function LoggedIn() {
                     classNames.push(className)
                 }
             }
-            console.log(classNames)
+            //push classes array to userDB
             const json = `{
                 "cs": "${classNames}"
             }`
@@ -41,6 +48,21 @@ export default function LoggedIn() {
                 },
                 body: json
             })
+            //create flows and push to db
+            for (let i = 0; i < classNames.length; i++) {
+                const json = `{
+                    "active": false,
+                    "c": "${classNames[i]}"
+                }`
+                console.log(json)
+                await fetch(`/api/flows/create/${userDB.id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: json
+                })
+            }
             setLoading(false)
         }
     }
@@ -140,7 +162,7 @@ export default function LoggedIn() {
     }
 
     //setup step: confirm classes
-    if (!userDB.classes) { 
+    if (!userDB.classes && !classesConfirmed) { 
         return (
             <div>
                 <ProgressBar style={{margin: '20px auto', width: '400px', height: '25px'}} now={30} label={`Setup: 30%`} />

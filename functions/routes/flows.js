@@ -26,11 +26,11 @@ var logger = log4js.getLogger();
     })
 
     //get flows by user
-    app.get("/api/flows/user/:uid", async (req, res) => {
+    app.get("/api/flows/user/:userid", async (req, res) => {
         try {
-            const { uid } = req.params;
+            const { userid } = req.params;
             const query = await pool.query("SELECT * FROM flows WHERE userid = $1", 
-            [parseInt(uid)]);
+            [parseInt(userid)]);
             res.json(query.rows);
         } catch (err) {
             console.error(err.message);
@@ -47,7 +47,9 @@ var logger = log4js.getLogger();
             logger.trace(`Successfully created flow for class ${c} for userid ${userid}`)
             res.json(`Successfully created flow for class ${c} for userid ${userid}`);
         } catch (err) {
-            logger.error(`Could not create flow for class ${c} for userid ${userid}. \n ${err.message}`)
+            const { userid } = req.params;
+            console.log(err.message)
+            logger.error(`Could not create flow for userid ${userid}. \n ${err.message}`)
         }
     })
      
@@ -60,7 +62,8 @@ var logger = log4js.getLogger();
             logger.trace(`Successfully activated flow for class ${c} for userid ${userid}`)
             res.json(`Successfully activated flow for class ${c} for userid ${userid}`);
         } catch (err) {
-            logger.error(`Could not activate flow for class ${c} for userid ${userid}. \n ${err.message}`)
+            const { userid } = req.params;
+            logger.error(`Could not activate flow for userid ${userid}. \n ${err.message}`)
         }
     })
 
@@ -73,7 +76,8 @@ var logger = log4js.getLogger();
             logger.trace(`Successfully deactivated flow for class ${c} for userid ${userid}`)
             res.json(`Successfully deactivated flow for class ${c} for userid ${userid}`);
         } catch (err) {
-            logger.error(`Could not deactivate flow for class ${c} for userid ${userid}. \n ${err.message}`)
+            const { userid } = req.params;
+            logger.error(`Could not deactivate flow for userid ${userid}. \n ${err.message}`)
         }
     })
      
@@ -87,7 +91,8 @@ var logger = log4js.getLogger();
             logger.trace(`Successfully set path to ${path} for flow ${id}`)
             res.json(`Successfully set path to ${path} for flow ${id}`);
         } catch (err) {
-            logger.error(`Could not set path to ${path} for flow ${id}. \n ${err.message}`)
+            const { id } = req.params;
+            logger.error(`Could not set path for flow ${id}. \n ${err.message}`)
         }
     })
 }

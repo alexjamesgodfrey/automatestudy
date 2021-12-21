@@ -28,7 +28,7 @@ import "react-toggle/style.css"
 
 
 export default function Main() {
-    const { currentUser, userDB, surveyResponse, flowList, flowObject } = useAuth()
+    const { currentUser, userDB, userFlows, surveyResponse } = useAuth()
     const [showModal, setShowModal] = useState(false)
     const [classLoading, setClassLoading] = useState(false)
     const [currentClass, setCurrentClass] = useState('')
@@ -143,20 +143,6 @@ export default function Main() {
     //         }
     //     }
     // }
-
-    const getFlows = async () => {
-        await fetch(`/api/flows/user/${userDB.id}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-                const userFlowObject = {}
-                for (let i=0; i<data.length; i++){
-                    userFlowObject[data[i].class] = data[i]
-                }
-                console.log(userFlowObject)
-                setFlows(userFlowObject)
-            })
-    }
 
     const createFlow = async () => {
         const flow = `${step1}-${step2}-Notion`
@@ -287,14 +273,6 @@ export default function Main() {
     //     setCustomFlow([])
     // }
 
-    useEffect(() => {
-        checkTodoist()
-        checkNotion()
-        //checkOnedrive()
-        getFlows()
-        console.log(currentUser.photoURL)
-    }, [])
-
     return (
         <div style={{ width: '1000px', margin: '0px auto' }} className='d-flex flex-column justify-content-center'>
             <h4 style={{ textAlign: 'center', margin: '20px' }}>Welcome, <span style={{ textTransform: 'capitalize' }}>{currentUser.displayName}</span> | {surveyResponse.grade} at {surveyResponse.college}</h4>
@@ -302,8 +280,13 @@ export default function Main() {
             <ProfileCards />
             <h4>Your classes</h4>
             <div className="d-flex flex-column justify-content-center"> 
-                {surveyResponse.classesarray.map((c, i) => {
-                    return <Class title={c} />
+                {userDB.classes.map((c, i) => {
+                    return <Class
+                        class={userFlows[c].class}
+                        id={userFlows[c].id}
+                        active={userFlows[c].active} 
+                        path={userFlows[c].path}
+                    />
                 })}
             </div>
         </div>
