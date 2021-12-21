@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom'
 import ProgressBar from 'react-bootstrap/ProgressBar'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
 import Survey from './Survey'
 import Main from './Main'
 import FlowDisplay from '../Flow/FlowDisplay'
@@ -12,9 +13,37 @@ export default function LoggedIn() {
     const { currentUser, userDB, surveyResponse } = useAuth()
     const [takenSurvey, setTakenSurvey] = useState(surveyResponse)
 
+    const [loading, setLoading] = useState(false)
     const search = useLocation().search
     const code = new URLSearchParams(search).get('code');
     const state = new URLSearchParams(search).get('state');
+    
+
+    const confirmClasses = async () => {
+        if (!loading) {
+            setLoading(true)
+            const classIds = ['class-one', 'class-two', 'class-three', 'class-four', 'class-five', 'class-six']
+            const classNames = []
+            for (let i = 0; i < classIds.length; i++) {
+                const className = document.getElementById(classIds[i]).value
+                if (className) {
+                    classNames.push(className)
+                }
+            }
+            console.log(classNames)
+            const json = `{
+                "cs": "${classNames}"
+            }`
+            await fetch(`/api/users/classes/${currentUser.uid}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: json
+            })
+            setLoading(false)
+        }
+    }
 
     /**
      * Checks for onedrive code presence in url and adds if present
@@ -53,7 +82,6 @@ export default function LoggedIn() {
         }
     }
 
-
     const createUser = async () => {
         try {
             const here = await fetch(`/api/users/${currentUser.uid}`)
@@ -84,7 +112,7 @@ export default function LoggedIn() {
     }, [])
 
     //if setup is complete
-    if (takenSurvey && userDB.cloudaccess && userDB.notionaccess && userDB.todoistaccess) {
+    if (takenSurvey && userDB.cloudaccess && userDB.notionaccess && userDB.todoistaccess && userDB.classes) {
         return <Main />
     }
 
@@ -92,7 +120,7 @@ export default function LoggedIn() {
     if (!takenSurvey) {
         return (
             <div>
-                <ProgressBar style={{marginTop: '20px', width: '400px', height: '25px'}} now={16} label={`Setup: 10%`} />
+                <ProgressBar style={{marginTop: '20px auto', width: '400px', height: '25px'}} now={16} label={`Setup: 10%`} />
                 <div style={{margin: '20px 20px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '300px', margin: '15px' }}>
                         <Card.Header as="h5">Welcome to Studyflow</Card.Header>
@@ -111,17 +139,46 @@ export default function LoggedIn() {
         )
     }
 
+    //setup step: confirm classes
+    if (!userDB.classes) { 
+        return (
+            <div>
+                <ProgressBar style={{margin: '20px auto', width: '400px', height: '25px'}} now={30} label={`Setup: 30%`} />
+                <div style={{ margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
+                    <Card style={{ width: '400px' }}>
+                        <Card.Header as="h5">Confirm Your Classes</Card.Header>
+                        <Card.Body className="d-flex flex-column">
+                            <Card.Text>
+                                Thanks for taking the getting started survey. Please confirm your classes.
+                                Only enter classes you are currently taking which you plan on taking notes for.
+                                If you aren't sure yet, don't worry: classes can be removed and added later.
+                            </Card.Text>  
+                            <Card.Text><strong> Enter a maximum of 6 classes.</strong></Card.Text>
+                            <Form.Control id="class-one" style={{ margin: '8px 0px' }} type="text" defaultValue={surveyResponse.classesarray[0]} placeholder="Class One" />
+                            <Form.Control id="class-two" style={{ margin: '8px 0px' }} type="text" defaultValue={surveyResponse.classesarray[1]} placeholder="Class Two" />
+                            <Form.Control id="class-three" style={{ margin: '8px 0px' }} type="text" defaultValue={surveyResponse.classesarray[2]} placeholder="Class Three" />
+                            <Form.Control id="class-four" style={{ margin: '8px 0px' }} type="text" defaultValue={surveyResponse.classesarray[3]} placeholder="Class Four" />
+                            <Form.Control id="class-five" style={{ margin: '8px 0px' }} type="text" defaultValue={surveyResponse.classesarray[4]} placeholder="Class Five" />
+                            <Form.Control id="class-six" style={{ margin: '8px 0px' }} type="text" defaultValue={surveyResponse.classesarray[5]} placeholder="Class Six" />
+                            <Button variant="primary" disabled={loading} onClick={() => confirmClasses()}>Confirm Classes</Button>
+                        </Card.Body>
+                    </Card>
+                </div>
+            </div>
+        )
+    }
+
     //setup step: connect cloud service
     if (!userDB.cloudaccess && !code) { 
         return (
             <div>
-                <ProgressBar style={{marginTop: '20px', width: '400px', height: '25px'}} now={30} label={`Setup: 30%`} />
+                <ProgressBar style={{marginTop: '20px auto', width: '400px', height: '25px'}} now={40} label={`Setup: 40%`} />
                 <div style={{ margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '400px' }}>
                         <Card.Header as="h5">Connect a cloud service</Card.Header>
                         <Card.Body>
                             <Card.Text>
-                                Thanks for taking the getting started survey. Next step: connect a
+                                Classes confirmed. Next step: connect a
                                 cloud service.
                             </Card.Text>   
                             <Card.Text>
@@ -164,7 +221,7 @@ export default function LoggedIn() {
     if (!userDB.notionaccess && state !== 'notion') { 
         return (
             <div>
-                <ProgressBar style={{marginTop: '20px', width: '400px', height: '25px'}} now={50} label={`Setup: 50%`} />
+                <ProgressBar style={{marginTop: '20px auto', width: '400px', height: '25px'}} now={60} label={`Setup: 60%`} />
                 <div style={{margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '400px' }}>
                         <Card.Header as="h5">Connect to Notion</Card.Header>
@@ -216,7 +273,7 @@ export default function LoggedIn() {
     if (!userDB.todoistaccess && state !== 'todoist') { 
         return (
             <div>
-                <ProgressBar style={{marginTop: '20px', width: '400px', height: '25px'}} now={80} label={`Setup: 80%`} />
+                <ProgressBar style={{marginTop: '20px auto', width: '400px', height: '25px'}} now={80} label={`Setup: 80%`} />
                 <div style={{margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '400px' }}>
                         <Card.Header as="h5">Connect to Todoist</Card.Header>

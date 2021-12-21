@@ -57,7 +57,22 @@ module.exports = function (app) {
             logger.trace(`Successfully created user ${userid}`)
             res.json(`Successfully created user ${userid}`);
         } catch (err) {
-            logger.error(`Failed to create user ${userid}`);
+            logger.error(`Failed to create user ${userid}. \n ${err.message}`);
+        }
+    })
+
+    //update a user's classes
+    app.put("/api/users/classes/:uid", async (req, res) => {
+        try {
+            const { uid } = req.params;
+            const classes = '{' + req.body.cs.split() + '}'
+            const changeClasses = await pool.query("UPDATE users set classes = $1 WHERE uid = $2", [classes, uid]);
+            logger.trace(`Classes updated to ${classes} for user ${uid}`)
+            res.json(`Classes updated to ${classes} for user ${uid}`)
+        } catch (err) {
+            const { uid } = req.params;
+            logger.error(`Classes could not be updated for user ${uid}. \n ${err.message}`)
+            console.error(err.message)
         }
     })
         
@@ -69,7 +84,8 @@ module.exports = function (app) {
             logger.trace("Account made public for user " + uid)
             res.json("Account made public for user " + uid)
         } catch (err) {
-            logger.error("Account could not be made public for user " + uid + "\n error message: " + err.message)
+            const { uid } = req.params;
+            logger.error(`Account could not be made public for user ${uid} \n error message: ${err.message}`)
         }
     })
 
@@ -81,7 +97,8 @@ module.exports = function (app) {
             logger.trace("Account made public for user " + uid)
             res.json("Account made private for user " + uid)
         } catch (err) {
-            logger.error("Account could not be made private for user " + uid + "\n error message: " + err.message)
+            const { uid } = req.params;
+            logger.error(`Account could not be made private for user ${uid} \n error message: ${err.message}`)
         }
     })
 
@@ -94,7 +111,8 @@ module.exports = function (app) {
             logger.trace(`Changed photourl to ${url} for ${uid}`)
             res.json(`Changed photourl to ${url} for ${uid}`)
         } catch (err) {
-            logger.error("Photourl could not be changed for user " + uid + "\n error message: " + err.message)
+            const { uid } = req.params;
+            logger.error(`Photourl could not be changed for user ${uid} \n error message: ${err.message}`)
         }
     })
 
@@ -107,7 +125,8 @@ module.exports = function (app) {
             logger.trace(`Changed displayname to ${displayname} for ${uid}`)
             res.json(`Changed displayname to ${displayname} for ${uid}`)
         } catch (err) {
-            logger.error("displayname could not be changed for user " + displayname + "\n error message: " + err.message)
+            const { uid } = req.params;
+            logger.error(`displayname could not be changed for user ${uid} \n error message: ${err.message}`)
         }
     })
 }
