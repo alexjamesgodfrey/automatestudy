@@ -1,12 +1,20 @@
 /**
  * MAIN ROUTES
  */
- const pool = require("../db.js");
+const pool = require("../db.js");
+ 
+const log4js = require("log4js");
+log4js.configure({
+    appenders: {
+      everything: { type: 'file', filename: 'log.log' }
+    },
+    categories: {
+      default: { appenders: [ 'everything' ], level: 'trace' }
+    }
+});
+var logger = log4js.getLogger();
 
- module.exports = function (app) {
-
-
-     
+ module.exports = function (app) {     
     //get all flows
     app.get("/api/flows", async (req, res) => {
         try {
@@ -30,12 +38,14 @@
     })
 
     //create a flow for user
-    app.post("/api/flows/create", async (req, res) => {
+    app.post("/api/flows/create/:userid", async (req, res) => {
         try {
-            const { uid, flow, active, c } = req.body;
-            const query = await pool.query("INSERT INTO flows (userid, flow, active, class) VALUES ($1, $2, $3, $4)", 
-            [uid, flow, active, c]);
-            res.json(query.rows);
+            const { userid } = req.params;
+            const { active, c } = req.body;
+            const query = await pool.query("INSERT INTO flows (userid, active, class) VALUES ($1, $2, $3)", 
+                [userid, active, c]);
+            logger.trace(`Successfully created flow for class ${c} for userid ${userid}`)
+            res.json(`Successfully created flow for class ${c} for userid ${userid}`);
         } catch (err) {
             console.error(err.message);
         }

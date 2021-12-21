@@ -151,7 +151,7 @@ export default function ProfileCards() {
                     <Overlay target={publicAccountTarget.current} show={showPublicAccountTip} placement="bottom">
                         <Tooltip>
                             If enabled, users in the Studyflow community will be able to view your username,
-                            profile picture, notes, and classes.
+                            profile picture, school, notes, and classes.
                         </Tooltip>
                     </Overlay>
                     <Toggle
@@ -159,9 +159,7 @@ export default function ProfileCards() {
                         defaultChecked={userDB.public}
                         onChange={handlePublicChange}
                         className='custom-colors'
-                        // onChange={this.handleCheeseChange} 
                     />
-                    
                 </Card.Text>
             </Card>
         </div>

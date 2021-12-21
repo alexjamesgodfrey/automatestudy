@@ -54,76 +54,10 @@ module.exports = function (app) {
             const insertUser = await pool.query(
                 "INSERT INTO users (displayname, email, photourl, uid, flows) VALUES ($1, $2, $3, $4, $5)", 
                 [displayname, email, photourl, uid, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]);
-            res.json(insertUser.rows);
+            logger.trace(`Successfully created user ${userid}`)
+            res.json(`Successfully created user ${userid}`);
         } catch (err) {
-            console.error(err.message);
-        }
-    })
-
-    //update a user's todoistcode
-    app.put("/api/users/todoistcode/:code/:uid", async (req, res) => {
-        try {
-            const { code, uid } = req.params;
-            const changeTodoist = await pool.query("UPDATE users set todoistcode = $1 WHERE uid = $2", [code, uid]);
-            res.json(changeTodoist.rows);
-        } catch (err) {
-            console.error(err.message);
-        }
-    })
-
-    //update a user's todoisttoken
-    app.put("/api/users/todoisttoken/:code/:uid", async (req, res) => {
-        try {
-            const { code, uid } = req.params;
-            const changeTodoist = await pool.query("UPDATE users set todoisttoken = $1 WHERE uid = $2", [code, uid]);
-            res.json(changeTodoist.rows);
-        } catch (err) {
-            console.error(err.message);
-        }
-    })
-
-    //update a user's notioncode
-    app.put("/api/users/notioncode/:code/:uid", async (req, res) => {
-        try {
-            const { code, uid } = req.params;
-            const changeNotion = await pool.query("UPDATE users set notioncode = $1 WHERE uid = $2", [code, uid]);
-            res.json(changeNotion.rows);
-        } catch (err) {
-            console.error(err.message);
-        }
-    })
-
-
-    //update a user's dropboxcode
-    app.put("/api/users/dropboxcode/:code/:uid", async (req, res) => {
-        try {
-            const { code, uid } = req.params;
-            const changeDropbox = await pool.query("UPDATE users set dropboxcode = $1 WHERE uid = $2", [code, uid]);
-            res.json(changeDropbox.rows);
-        } catch (err) {
-            console.error(err.message);
-        }
-    })
-
-    //update a user's projectid
-    app.put("/api/users/projectid/:code/:uid", async (req, res) => {
-        try {
-            const { code, uid } = req.params;
-            const changeProjectCode = await pool.query("UPDATE users set projectid = $1 WHERE uid = $2", [code, uid]);
-            res.json(changeProjectCode.rows);
-        } catch (err) {
-            console.error(err.message);
-        }
-    })
-
-    //update a user's flows
-    app.put("/api/users/flows/", async (req, res) => {
-        try {
-            const { flows, uid } = req.body;
-            const changeFlows = await pool.query("UPDATE users set flows = $1 WHERE uid = $2", [flows, uid]);
-            res.json(changeFlows.rows);
-        } catch (err) {
-            console.error(err.message);
+            logger.error(`Failed to create user ${userid}`);
         }
     })
         
