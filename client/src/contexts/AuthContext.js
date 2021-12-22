@@ -80,8 +80,8 @@ export default function AuthProvider({ children }) {
             await fetch(`/api/users/${user.uid}`)
                 .then(response => response.json())
                 .then(async data => {
-                    await setUserDB(data[0])
-                    await fetch(`/api/flows/user/${data[0].id}`)
+                    await setUserDB(data)
+                    await fetch(`/api/flows/user/${data.id}`)
                         .then(response => response.json())
                         .then(data => {
                             const flows = {}
@@ -89,6 +89,7 @@ export default function AuthProvider({ children }) {
                                 flows[data[i].class] = data[i]
                             }
                             setUserFlows(flows)
+                            setLoadingFlows(false)
                         })
                     setLoadingUserData(false)
                 })
@@ -154,6 +155,14 @@ export default function AuthProvider({ children }) {
                     <div style={{ width: '80%' }} className="d-flex justify-content-between">
                         <p>Loading user preferences</p>
                         {loadingUserPreferences ? 
+                            <Spinner style={{ marginTop: '4px' }} size="sm" animation="border" variant="dark" />
+                        : 
+                            <div><Checkmark style={{ marginTop: '4px' }} size='medium' color='#222529' /></div>
+                        }
+                        </div>
+                    <div style={{ width: '80%' }} className="d-flex justify-content-between">
+                        <p>Loading user's studyflows</p>
+                        {loadingFlows ? 
                             <Spinner style={{ marginTop: '4px' }} size="sm" animation="border" variant="dark" />
                         : 
                             <div><Checkmark style={{ marginTop: '4px' }} size='medium' color='#222529' /></div>

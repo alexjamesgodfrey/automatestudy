@@ -11,7 +11,6 @@ import FlowDisplay from '../Flow/FlowDisplay'
 
 export default function LoggedIn() {
     const { currentUser, userDB, surveyResponse } = useAuth()
-    const [takenSurvey, setTakenSurvey] = useState(surveyResponse)
 
     const [loading, setLoading] = useState(false)
     const [classesConfirmed, setClassesConfirmed] = useState(false)
@@ -134,15 +133,15 @@ export default function LoggedIn() {
     }, [])
 
     //if setup is complete
-    if (takenSurvey && userDB.cloudaccess && userDB.notionaccess && userDB.todoistaccess && userDB.classes) {
+    if (surveyResponse && userDB.cloudaccess && userDB.notionaccess && userDB.todoistaccess && userDB.classes) {
         return <Main />
     }
 
     //setup step: take survey
-    if (!takenSurvey) {
+    if (!surveyResponse) {
         return (
             <div>
-                <ProgressBar style={{marginTop: '20px auto', width: '400px', height: '25px'}} now={16} label={`Setup: 10%`} />
+                <ProgressBar style={{ margin: '20px auto', width: '400px', height: '25px'}} now={16} label={`Setup: 10%`} />
                 <div style={{margin: '20px 20px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '300px', margin: '15px' }}>
                         <Card.Header as="h5">Welcome to Studyflow</Card.Header>
@@ -165,7 +164,7 @@ export default function LoggedIn() {
     if (!userDB.classes && !classesConfirmed) { 
         return (
             <div>
-                <ProgressBar style={{margin: '20px auto', width: '400px', height: '25px'}} now={30} label={`Setup: 30%`} />
+                <ProgressBar style={{ margin: '20px auto', width: '400px', height: '25px'}} now={30} label={`Setup: 30%`} />
                 <div style={{ margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '400px' }}>
                         <Card.Header as="h5">Confirm Your Classes</Card.Header>
@@ -194,7 +193,7 @@ export default function LoggedIn() {
     if (!userDB.cloudaccess && !code) { 
         return (
             <div>
-                <ProgressBar style={{marginTop: '20px auto', width: '400px', height: '25px'}} now={40} label={`Setup: 40%`} />
+                <ProgressBar style={{ margin: '20px auto', width: '400px', height: '25px'}} now={40} label={`Setup: 40%`} />
                 <div style={{ margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '400px' }}>
                         <Card.Header as="h5">Connect a cloud service</Card.Header>
@@ -243,7 +242,7 @@ export default function LoggedIn() {
     if (!userDB.notionaccess && state !== 'notion') { 
         return (
             <div>
-                <ProgressBar style={{marginTop: '20px auto', width: '400px', height: '25px'}} now={60} label={`Setup: 60%`} />
+                <ProgressBar style={{ margin: '20px auto', width: '400px', height: '25px'}} now={60} label={`Setup: 60%`} />
                 <div style={{margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '400px' }}>
                         <Card.Header as="h5">Connect to Notion</Card.Header>
