@@ -105,8 +105,10 @@ export default function LoggedIn() {
 
     const createUser = async () => {
         try {
+            console.log(currentUser.uid)
             const here = await fetch(`/api/users/${currentUser.uid}`)
-            const hereJSON = await here.json()
+            const hereJSON = await here.text()
+            console.log(hereJSON.length)
             if (hereJSON.length === 0) {
                 const user = `{
                     "displayname": "${currentUser.displayName}",
@@ -248,7 +250,7 @@ export default function LoggedIn() {
                         <Card.Header as="h5">Connect to Notion</Card.Header>
                         <Card.Body>
                             <Card.Text>
-                                Thanks for connecting{' ' + userDB.cloud}. Next step: connect your
+                                Thanks for connecting{'' || ' ' + userDB.cloud}. Next step: connect your
                                 Notion Account.
                             </Card.Text>   
                             <Card.Text>
@@ -294,7 +296,7 @@ export default function LoggedIn() {
     if (!userDB.todoistaccess && state !== 'todoist') { 
         return (
             <div>
-                <ProgressBar style={{marginTop: '20px auto', width: '400px', height: '25px'}} now={80} label={`Setup: 80%`} />
+                <ProgressBar style={{margin: '20px auto', width: '400px', height: '25px'}} now={80} label={`Setup: 80%`} />
                 <div style={{margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '400px' }}>
                         <Card.Header as="h5">Connect to Todoist</Card.Header>

@@ -11,6 +11,7 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import Overlay from 'react-bootstrap/Overlay'
 import '../Home/ProfileCards.scss'
 import DropdownItem from 'react-bootstrap/esm/DropdownItem'
+import { isNull } from 'underscore'
 
 export default function Class(props) {
     const { currentUser, userDB } = useAuth()
@@ -129,6 +130,14 @@ export default function Class(props) {
         window.location.reload(true)
     }
 
+    const toggleActive = async () => {
+        if (props.active) {
+            await fetch(`/api/flows/deactivate/${props.id}`, { method: "PUT" })
+        } else {
+            await fetch(`/api/flows/activate/${props.id}`, { method: "PUT" })
+        }
+    }
+
     useEffect(() => {
         getDrives()
     }, [])
@@ -141,8 +150,9 @@ export default function Class(props) {
                     <Toggle
                         id='public-status'
                         className='custom-colors'
-                        disabled={!props.path}
+                        disabled={props.path === isNull}
                         defaultChecked={props.active}
+                        onChange={() => toggleActive()}
                     />
                 </div>
             </Card.Header>

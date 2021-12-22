@@ -30,7 +30,7 @@ module.exports = function (app) {
         try {
             const { uid } = req.params;
             const user = await pool.query("SELECT * FROM users WHERE uid = $1", [uid]);
-            res.json(user.rows);
+            res.json(user.rows[0]);
         } catch (err) {
             console.error(err.message);
         }
@@ -52,12 +52,13 @@ module.exports = function (app) {
         try {
             const { displayname, email, photourl, uid } = req.body;
             const insertUser = await pool.query(
-                "INSERT INTO users (displayname, email, photourl, uid, flows) VALUES ($1, $2, $3, $4, $5)", 
-                [displayname, email, photourl, uid, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]);
-            logger.trace(`Successfully created user ${userid}`)
-            res.json(`Successfully created user ${userid}`);
+                "INSERT INTO users (displayname, email, photourl, uid) VALUES ($1, $2, $3, $4)", 
+                [displayname, email, photourl, uid]);
+            logger.trace(`Successfully created user ${uid}`)
+            res.json(`Successfully created user ${uid}`);
         } catch (err) {
-            logger.error(`Failed to create user ${userid}. \n ${err.message}`);
+            const { uid } = req.body
+            logger.error(`Failed to create user ${uid}. \n ${err.message}`);
         }
     })
 

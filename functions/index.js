@@ -18,6 +18,7 @@ require('./routes/notion.js')(app);
 require('./routes/onedrive.js')(app);
 require('./routes/todoist.js')(app);
 
+//serve 
 app.get("/", async (req, res) => {
     try {
         res.sendFile(path.join(__dirname, "..", "client", "build", "index.html"));

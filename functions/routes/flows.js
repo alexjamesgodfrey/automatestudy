@@ -59,11 +59,11 @@ var logger = log4js.getLogger();
             const { id } = req.params;
             const query = await pool.query("UPDATE flows SET active = true WHERE id = $1", 
                 [parseInt(id)]);
-            logger.trace(`Successfully activated flow for class ${c} for userid ${userid}`)
-            res.json(`Successfully activated flow for class ${c} for userid ${userid}`);
+            logger.trace(`Successfully activated flow ${id}`)
+            res.json(`Successfully activated flow ${id}`);
         } catch (err) {
-            const { userid } = req.params;
-            logger.error(`Could not activate flow for userid ${userid}. \n ${err.message}`)
+            const { id } = req.params;
+            logger.error(`Could not activate flow ${id}`)
         }
     })
 
@@ -73,11 +73,11 @@ var logger = log4js.getLogger();
             const { id } = req.params;
             const query = await pool.query("UPDATE flows SET active = false WHERE id = $1", 
                 [parseInt(id)]);
-            logger.trace(`Successfully deactivated flow for class ${c} for userid ${userid}`)
-            res.json(`Successfully deactivated flow for class ${c} for userid ${userid}`);
+            logger.trace(`Successfully deactivated flow ${id}`)
+            res.json(`Successfully deactivated flow ${id}`);
         } catch (err) {
-            const { userid } = req.params;
-            logger.error(`Could not deactivate flow for userid ${userid}. \n ${err.message}`)
+            const { id } = req.params;
+            logger.error(`Could not deactivate flow ${id}`)
         }
     })
      
@@ -87,12 +87,42 @@ var logger = log4js.getLogger();
             const { id } = req.params;
             const { path } = req.body;
             const query = await pool.query("UPDATE flows SET path = $1 WHERE id = $2", 
-                [parseInt(id)]);
+                [path, parseInt(id)]);
             logger.trace(`Successfully set path to ${path} for flow ${id}`)
             res.json(`Successfully set path to ${path} for flow ${id}`);
         } catch (err) {
             const { id } = req.params;
             logger.error(`Could not set path for flow ${id}. \n ${err.message}`)
+        }
+    })
+     
+    //update the folderid for a flow
+    app.put("/api/flows/folderid/:id", async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { folderid } = req.body;
+            const query = await pool.query("UPDATE flows SET folderid = $1 WHERE id = $2", 
+                [folderid, parseInt(id)]);
+            logger.trace(`Successfully set folderid to ${folderid} for flow ${id}`)
+            res.json(`Successfully set folderid to ${folderid} for flow ${id}`);
+        } catch (err) {
+            const { id } = req.params;
+            logger.error(`Could not set folderid for flow ${id}. \n ${err.message}`)
+        }
+    })
+     
+    //update the driveid for a flow
+    app.put("/api/flows/driveid/:id", async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { driveid } = req.body;
+            const query = await pool.query("UPDATE flows SET driveid = $1 WHERE id = $2", 
+                [driveid, parseInt(id)]);
+            logger.trace(`Successfully set driveid to ${driveid} for flow ${id}`)
+            res.json(`Successfully set driveid to ${driveid} for flow ${id}`);
+        } catch (err) {
+            const { id } = req.params;
+            logger.error(`Could not set driveid for flow ${id}. \n ${err.message}`)
         }
     })
 }
