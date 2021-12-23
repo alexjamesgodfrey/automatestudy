@@ -138,35 +138,37 @@ export default function AuthProvider({ children }) {
     if (loading && userPresent) {
         return (
             <Fade in={open}>
-            <div style={{marginTop: '20%'}} className="d-flex justify-content-center">
-                <div style={{ width: '300px' }} className="d-flex flex-column align-items-center">
-                    <div className="d-flex flex-column">
-                        <h3><strong>studyflow.ai</strong></h3> 
-                        <strong style={{fontSize: '17px', textAlign: 'right', lineHeight: 0.75, marginBottom: '15px'}}>beta</strong>
-                    </div>
-                    <div style={{ width: '80%' }} className="d-flex justify-content-between">
-                        <p>Loading user data</p>
-                        {loadingUserData ? 
-                            <Spinner style={{ marginTop: '4px' }} size="sm" animation="border" variant="dark" />
-                        : 
-                            <div><Checkmark style={{ margin: '4px' }} size='medium' color='#222529' /></div>
-                        }
-                    </div>
-                    <div style={{ width: '80%' }} className="d-flex justify-content-between">
-                        <p>Loading user preferences</p>
-                        {loadingUserPreferences ? 
-                            <Spinner style={{ marginTop: '4px' }} size="sm" animation="border" variant="dark" />
-                        : 
-                            <div><Checkmark style={{ marginTop: '4px' }} size='medium' color='#222529' /></div>
-                        }
+                <div style={{ height: '100vh' }} className='d-flex flex-column justify-content-center'>
+                    <div style={{ marginBottom: '100px' }} className="d-flex justify-content-center">
+                    <div style={{ width: '300px' }} className="d-flex flex-column align-items-center">
+                        <div className="d-flex flex-column">
+                            <h3><strong>studyflow.ai</strong></h3> 
+                            <strong style={{fontSize: '17px', textAlign: 'right', lineHeight: 0.75, marginBottom: '15px'}}>beta</strong>
                         </div>
-                    <div style={{ width: '80%' }} className="d-flex justify-content-between">
-                        <p>Loading user's studyflows</p>
-                        {loadingFlows ? 
-                            <Spinner style={{ marginTop: '4px' }} size="sm" animation="border" variant="dark" />
-                        : 
-                            <div><Checkmark style={{ marginTop: '4px' }} size='medium' color='#222529' /></div>
-                        }
+                        <div style={{ width: '80%' }} className="d-flex justify-content-between">
+                            <p>Loading user data</p>
+                            {loadingUserData ? 
+                                <Spinner style={{ marginTop: '4px' }} size="sm" animation="border" variant="dark" />
+                            : 
+                                <div><Checkmark style={{ margin: '4px' }} size='medium' color='#222529' /></div>
+                            }
+                        </div>
+                        <div style={{ width: '80%' }} className="d-flex justify-content-between">
+                            <p>Loading user preferences</p>
+                            {loadingUserPreferences ? 
+                                <Spinner style={{ marginTop: '4px' }} size="sm" animation="border" variant="dark" />
+                            : 
+                                <div><Checkmark style={{ marginTop: '4px' }} size='medium' color='#222529' /></div>
+                            }
+                            </div>
+                        <div style={{ width: '80%' }} className="d-flex justify-content-between">
+                            <p>Loading user's studyflows</p>
+                            {loadingFlows ? 
+                                <Spinner style={{ marginTop: '4px' }} size="sm" animation="border" variant="dark" />
+                            : 
+                                <div><Checkmark style={{ marginTop: '4px' }} size='medium' color='#222529' /></div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>

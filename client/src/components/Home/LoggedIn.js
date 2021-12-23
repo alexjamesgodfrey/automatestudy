@@ -122,7 +122,7 @@ export default function LoggedIn() {
             console.log(currentUser.uid)
             const here = await fetch(`/api/users/${currentUser.uid}`)
             const hereJSON = await here.text()
-            console.log(hereJSON.length)
+            console.log(hereJSON)
             if (hereJSON.length === 0) {
                 const user = `{
                     "displayname": "${currentUser.displayName}",

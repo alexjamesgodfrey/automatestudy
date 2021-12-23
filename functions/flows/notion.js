@@ -901,7 +901,7 @@ const createPageInDatabase = async (access_token, database_id, page_title, date,
             },
           ],
     });
-    console.log(response)
+    return response
 }
 
 module.exports = { formParent, createPageInDatabase }

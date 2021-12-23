@@ -178,7 +178,7 @@ export default function Class(props) {
                     <Toggle
                         id='public-status'
                         className='custom-colors'
-                        disabled={props.path === isNull}
+                        disabled={props.path === null}
                         defaultChecked={props.active}
                         onChange={() => toggleActive()}
                     />

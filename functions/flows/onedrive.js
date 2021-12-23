@@ -19,8 +19,9 @@ const Todoist = require('./todoist')
  * gets all onedrive cloud users and refreshes their access tokens (runs every 55 minutes, access
  * tokens expire every 60 minutes)
  */
-const refreshAccessTokens = async () => {
+const refreshAccessTokens = async (refresh_time) => {
     //get all onedrive users
+    console.log('refresh onedrive tokens')
     try {
         await fetch(`${process.env.BASE_REQUEST_URL}/api/onedrive/getusers`)
             .then(response => response.json())
@@ -38,7 +39,7 @@ const refreshAccessTokens = async () => {
         logger.trace(`{refreshAccessTokens} Access token failed for user ${data[i].uid}`)
     }
 
-    setTimeout(refreshAccessTokens, 3300000)
+    setTimeout(() => refreshAccessTokens(refresh_time), refresh_time)
 }
 
 /**
@@ -51,7 +52,8 @@ const refreshAccessTokens = async () => {
  * (5) creates set of todoist tasks for each difference
  * (6) updates the pastfiles in database
  */
-const getDifferences = async () => {
+const executeOneDriveFlows = async (refresh_time) => {
+    console.log('running onedrive flows')
     let pastData;
     let newData;
     // (1)
@@ -89,72 +91,70 @@ const getDifferences = async () => {
                         // get notion info for databaseid
                         await fetch(`${process.env.BASE_REQUEST_URL}/api/notion/${userData.id}`)
                             .then(response => response.json())
-                            .then(data => {
-                                console.log(difference)
+                            .then(async data => {
                                 // (4)
                                 for (let j = 0; j < difference.length; j++) {
-                                    notionImports.createPageInDatabase(
+                                    const notionPageInfo = await notionImports.createPageInDatabase(
                                         userData.notionaccess,
                                         data.database_id,
                                         difference[j].name,
                                         difference[j].lastModifiedDateTime.substring(0, 10),
                                         difference[j].parentReference.name //folder name
                                     )
+                                    // get todoist info for section id
+                                    await fetch(`${process.env.BASE_REQUEST_URL}/api/todoist/${userData.id}`)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                        // (5)
+                                            Todoist.createTask(
+                                                userData.todoistaccess,
+                                                `Create Active Recall Questions for ${difference[j].name}`,
+                                                `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
+                                                null,
+                                                data.sections.find(section => section.name === difference[j].parentReference.name).id,
+                                                [data.labels.find(label => label.name === 'review').id],
+                                                'today'
+                                            )
+                                            Todoist.createTask(
+                                                userData.todoistaccess,
+                                                `(1) Review ${difference[j].name}`,
+                                                `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
+                                                null,
+                                                data.sections.find(section => section.name === difference[j].parentReference.name).id,
+                                                [data.labels.find(label => label.name === 'review').id],
+                                                'tomorrow'
+                                            )
+                                            Todoist.createTask(
+                                                userData.todoistaccess,
+                                                `(2) Review ${difference[j].name}`,
+                                                `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
+                                                null,
+                                                data.sections.find(section => section.name === difference[j].parentReference.name).id,
+                                                [data.labels.find(label => label.name === 'review').id],
+                                                'in 3 days'
+                                            )
+                                            Todoist.createTask(
+                                                userData.todoistaccess,
+                                                `(3) Review ${difference[j].name}`,
+                                                `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
+                                                null,
+                                                data.sections.find(section => section.name === difference[j].parentReference.name).id,
+                                                [data.labels.find(label => label.name === 'review').id],
+                                                'in 7 days'
+                                            )
+                                            Todoist.createTask(
+                                                userData.todoistaccess,
+                                                `(4) Review ${difference[j].name}`,
+                                                `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
+                                                null,
+                                                data.sections.find(section => section.name === difference[j].parentReference.name).id,
+                                                [data.labels.find(label => label.name === 'review').id],
+                                                'in 30 days'
+                                            )
+                                        })
                                 }
                             })
-                        // get todoist info for section id
-                        await fetch(`${process.env.BASE_REQUEST_URL}/api/todoist/${userData.id}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                // (5)
-                                for (let k = 0; k < difference.length; k++) {
-                                    Todoist.createTask(
-                                        userData.todoistaccess,
-                                        `Create Active Recall Questions for ${difference[k].name}`,
-                                        null,
-                                        null,
-                                        data.sections.find(section => section.name === difference[k].parentReference.name).id,
-                                        [data.labels.find(label => label.name === 'review').id],
-                                        'today'
-                                    )
-                                    Todoist.createTask(
-                                        userData.todoistaccess,
-                                        `(1) Review ${difference[k].name}`,
-                                        null,
-                                        null,
-                                        data.sections.find(section => section.name === difference[k].parentReference.name).id,
-                                        [data.labels.find(label => label.name === 'review').id],
-                                        'tomorrow'
-                                    )
-                                    Todoist.createTask(
-                                        userData.todoistaccess,
-                                        `(2) Review ${difference[k].name}`,
-                                        null,
-                                        null,
-                                        data.sections.find(section => section.name === difference[k].parentReference.name).id,
-                                        [data.labels.find(label => label.name === 'review').id],
-                                        'in 3 days'
-                                    )
-                                    Todoist.createTask(
-                                        userData.todoistaccess,
-                                        `(3) Review ${difference[k].name}`,
-                                        null,
-                                        null,
-                                        data.sections.find(section => section.name === difference[k].parentReference.name).id,
-                                        [data.labels.find(label => label.name === 'review').id],
-                                        'in 7 days'
-                                    )
-                                    Todoist.createTask(
-                                        userData.todoistaccess,
-                                        `(4) Review ${difference[k].name}`,
-                                        null,
-                                        null,
-                                        data.sections.find(section => section.name === difference[k].parentReference.name).id,
-                                        [data.labels.find(label => label.name === 'review').id],
-                                        'in 30 days'
-                                    )
-                                }
-                            })
+                        
                         //(6)
                         await fetch(`${process.env.BASE_REQUEST_URL}/api/flows/pastfiles/${pastData[i].id}`, {
                             method: "PUT",
@@ -168,8 +168,10 @@ const getDifferences = async () => {
                     })
             })
     }
+
+    setTimeout(() => executeOneDriveFlows(refresh_time), refresh_time)
 }
 
 
 
-module.exports = { refreshAccessTokens, getDifferences }
+module.exports = { refreshAccessTokens, executeOneDriveFlows }

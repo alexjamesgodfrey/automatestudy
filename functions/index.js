@@ -40,8 +40,9 @@ if (process.env.DEVELOPMENT === 'true') {
 }
 
 //refreshes OneDrive access tokens every 55 minutes
-OneDrive.refreshAccessTokens()
-OneDrive.getDifferences()
+const refresh_time = 3300000
+OneDrive.refreshAccessTokens(refresh_time)
+OneDrive.executeOneDriveFlows(refresh_time)
 
 
 exports.automatestudy = functions.https.onRequest(app)
