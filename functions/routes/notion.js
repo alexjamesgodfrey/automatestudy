@@ -94,13 +94,27 @@ module.exports = function (app) {
             logger.error("Notion access token could not be added to database for user " + uid + "\n error message: " + err.message)
         }
     })
-
+    
+    //get all from notion
     app.get('/api/notion', async (req, res) => {
         try {
             const getAll = await pool.query(
                 "SELECT * FROM notion"
             )
             res.json(getAll.rows)
+        } catch (err) {
+            console.error(err.message)
+        }
+    })
+
+    //get from notion based on userid
+    app.get('/api/notion/:userid', async (req, res) => {
+        try {
+            const { userid } = req.params;
+            const getAll = await pool.query(
+                "SELECT * FROM notion WHERE userid=$1", [parseInt(userid)]
+            )
+            res.json(getAll.rows[0])
         } catch (err) {
             console.error(err.message)
         }

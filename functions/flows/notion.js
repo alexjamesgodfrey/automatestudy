@@ -1,6 +1,6 @@
 const { Client } = require('@notionhq/client');
 require("dotenv").config();
-const moment = require('moment')
+
 var log4js = require("log4js");
 log4js.configure({
     appenders: {
@@ -11,6 +11,7 @@ log4js.configure({
     }
 });
 var logger = log4js.getLogger();
+
 
 /**
  * Returns a list of all non-archived page id's users Notion
@@ -589,7 +590,10 @@ const formParent = async (access_token, classes_array, user_id) => {
  * @param {String} class_name name of the class property
  */
 const createPageInDatabase = async (access_token, database_id, page_title, date, class_name) => {
+    logger.trace(`Creating entry ${page_title} for ${access_token}`)
+
     const notion = new Client({ auth: access_token });
+    
     const response = await notion.pages.create({
         parent: {
             database_id: database_id,
@@ -637,7 +641,7 @@ const createPageInDatabase = async (access_token, database_id, page_title, date,
                         {
                             type: "text",
                             text: {
-                                content: `${page_title} `,
+                                content: `${page_title}`,
                             }, 
                             annotations: {
                                 italic: true
@@ -897,6 +901,7 @@ const createPageInDatabase = async (access_token, database_id, page_title, date,
             },
           ],
     });
+    console.log(response)
 }
 
 module.exports = { formParent, createPageInDatabase }

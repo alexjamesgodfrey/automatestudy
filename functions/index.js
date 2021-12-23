@@ -43,4 +43,5 @@ if (process.env.DEVELOPMENT === 'true') {
 OneDrive.refreshAccessTokens()
 OneDrive.getDifferences()
 
+
 exports.automatestudy = functions.https.onRequest(app)

@@ -103,9 +103,16 @@ export default function LoggedIn() {
      */
     const todoistURL = `https://todoist.com/oauth/authorize?client_id=${process.env.REACT_APP_TODOIST_CLIENT}&scope=data:read_write,data:delete&state=todoist`
     const checkTodoist = async () => {
-        if (code && state === 'todoist' && !userDB.todoistaccess){
-            await fetch(`/api/todoist/initialize/${code}/${currentUser.uid}`, {
-                method: 'PUT'
+        if (code && state === 'todoist' && !userDB.todoistaccess) {
+            const json = {
+                classes_array: userDB.classes
+            }
+            await fetch(`/api/todoist/initialize/${code}/${currentUser.uid}/${userDB.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(json)
             })
         }
     }
