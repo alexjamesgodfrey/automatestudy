@@ -36,6 +36,17 @@ module.exports = function (app) {
         }
     })
 
+    //get user based on id
+    app.get("/api/userbyid/:id", async (req, res) => {
+        try {
+            const { id } = req.params;
+            const user = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
+            res.json(user.rows[0]);
+        } catch (err) {
+            console.error(err.message);
+        }
+    })
+
     //get a user's survey response based on uid
     app.get("/api/survey/:uid", async (req, res) => {
         try {

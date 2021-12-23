@@ -6,11 +6,13 @@ const cors = require("cors");
 const bodyParser = require('body-parser')
 const path = require("path");
 
+//initiate app
 app.use(cors());
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(express.static(path.join(__dirname, "..", "client", "build")));
 
+//routes
 require('./routes/users.js')(app);
 require('./routes/surveyresponses.js')(app);
 require('./routes/flows.js')(app);
@@ -18,7 +20,10 @@ require('./routes/notion.js')(app);
 require('./routes/onedrive.js')(app);
 require('./routes/todoist.js')(app);
 
-//serve 
+//flows
+const OneDrive = require("./flows/onedrive.js");
+
+//serve client
 app.get("/", async (req, res) => {
     try {
         res.sendFile(path.join(__dirname, "..", "client", "build", "index.html"));
@@ -33,5 +38,9 @@ if (process.env.DEVELOPMENT === 'true') {
         console.log('static file served at ' + path.join(__dirname, "..", "client", "build", "index.html"));
     });
 }
+
+//refreshes OneDrive access tokens every 55 minutes
+OneDrive.refreshAccessTokens()
+OneDrive.getDifferences()
 
 exports.automatestudy = functions.https.onRequest(app)

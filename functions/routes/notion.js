@@ -17,14 +17,17 @@ log4js.configure({
 });
 var logger = log4js.getLogger();
 
+const notionImports = require('../flows/notion.js')
+
 /**
  * requests an access code from notions api then stores it in 
  * database.
  * @param {String} code notion grant code that is used to obtain access token
  * @param {String} uid the user's uid
  * @param {String} user_id the user's user_id (in relational database)
+ * @param {String} classes_array a list of the user's classes (used to form the parent)
  */
-const getAccessToken = async (code, uid, user_id) => {
+const getAccessToken = async (code, uid, user_id, classes_array) => {
     const body = `{
         "grant_type": "authorization_code",
         "code": "${code}",
@@ -43,6 +46,7 @@ const getAccessToken = async (code, uid, user_id) => {
         .then(async data => {
             logger.trace("Notion access token received from Notion for user " + uid)
             if (data.access_token) {
+                //add access token to database
                 await fetch(`${process.env.BASE_REQUEST_URL}/api/notion/store/${uid}/${user_id}`, {
                     method: 'POST',
                     headers: {
@@ -50,6 +54,8 @@ const getAccessToken = async (code, uid, user_id) => {
                     },
                     body: JSON.stringify(data)
                 })
+                //form the user's notion page
+                notionImports.formParent(data.access_token, classes_array, user_id)
             }
         })
     } catch (err) {
@@ -59,13 +65,15 @@ const getAccessToken = async (code, uid, user_id) => {
 }
 
 module.exports = function (app) {
-    //calls getAccessToken function
+    //calls getAccessToken function, which calls formparent, which initializes the notion page
     app.put("/api/notion/initialize/:code/:uid/:userid", async (req, res) => {
         try {
             const { code, uid, userid } = req.params;
+            const { classes_array } = req.body;
             logger.trace("Notion access token fetch requested for user " + uid)
-            getAccessToken(code, uid, userid)
+            getAccessToken(code, uid, userid, classes_array)
         } catch (err) {
+            const { code, uid, userid } = req.params;
             logger.error("Notion access token fetch failed for user " + uid + "\n error message: " + err.message)
         }
     })

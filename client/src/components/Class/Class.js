@@ -118,7 +118,7 @@ export default function Class(props) {
             },
             body: JSON.stringify(json)
         })
-        //updatedriveid
+        //update driveid
         await fetch(`/api/flows/driveid/${props.id}`, {
             method: 'PUT',
             headers: {
@@ -126,6 +126,34 @@ export default function Class(props) {
             },
             body: JSON.stringify(json)
         })
+        const json2 = {
+            access_token: userDB.cloudaccess,
+            driveid: driveID,
+            childid: folderID 
+        }
+        console.log(json2)
+        //update pastfiles, but get children first
+        await fetch(`/api/onedrive/children`, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(json2)
+        })
+            .then(response => response.json())
+            .then(async data => {
+                console.log(data)
+                const json3 = {
+                    pastfiles: data
+                }
+                await fetch(`/api/flows/pastfiles/${props.id}`, {
+                    method: "PUT",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(json3)
+                })
+            })
         setFlowActivating(false)
         window.location.reload(true)
     }

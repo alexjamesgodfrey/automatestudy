@@ -83,9 +83,16 @@ export default function LoggedIn() {
      */
     const notionURL = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${process.env.REACT_APP_NOTION_CLIENT}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI_URL}&response_type=code&state=notion`
     const checkNotion = async () => {
-        if (code && state === 'notion' && !userDB.notionaccess){
+        if (code && state === 'notion' && !userDB.notionaccess) {
+            const json = {
+                classes_array: userDB.classes
+            }
             await fetch(`/api/notion/initialize/${code}/${currentUser.uid}/${userDB.id}`, {
-                method: 'PUT'
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(json)
             })
         }
     }

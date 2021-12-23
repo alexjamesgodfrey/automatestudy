@@ -118,8 +118,19 @@ const getAccessTokenFromRefresh = async (refresh, uid) => {
         logger.error("OneDrive access token could not be fetched and added to database for user " + uid + "\nError message: " + err.message)
     }
 }
+
  
 module.exports = function (app) {
+    //get all onedrive users
+    app.get("/api/onedrive/getusers", async (req, res) => {
+        try {
+            const oneDriveUsers = await pool.query("SELECT * FROM users WHERE cloud='OneDrive'")
+            res.json(oneDriveUsers.rows)
+        } catch (err) {
+            
+        }
+    })
+
     //calls getAccessToken function -> run on OneDrive initialization
     app.put("/api/onedrive/initialize/:code/:uid", async (req, res) => {
         try {

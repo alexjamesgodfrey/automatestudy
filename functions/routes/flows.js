@@ -24,7 +24,19 @@ var logger = log4js.getLogger();
             console.error(err.message);
         }
     })
-
+     
+    //get all active onedrive flows with non-null pastfiles
+    app.get("/api/flows/onedrive/active", async (req, res) => {
+        try {
+            const query = await pool.query(
+                "SELECT * FROM flows WHERE pastfiles is not null AND active = true AND userid IN (SELECT id FROM users WHERE cloud = 'OneDrive')"
+            );
+            res.json(query.rows);
+        } catch (err) {
+            console.error(err.message);
+        }
+    })
+     
     //get flows by user
     app.get("/api/flows/user/:userid", async (req, res) => {
         try {
@@ -53,7 +65,7 @@ var logger = log4js.getLogger();
         }
     })
      
-     //activate a flow
+    //activate a flow
     app.put("/api/flows/activate/:id", async (req, res) => {
         try {
             const { id } = req.params;
@@ -123,6 +135,21 @@ var logger = log4js.getLogger();
         } catch (err) {
             const { id } = req.params;
             logger.error(`Could not set driveid for flow ${id}. \n ${err.message}`)
+        }
+    })
+     
+    //update the pastfiles for a flow
+    app.put("/api/flows/pastfiles/:id", async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { pastfiles } = req.body;
+            const query = await pool.query("UPDATE flows SET pastfiles = $1 WHERE id = $2", 
+                [pastfiles, parseInt(id)]);
+            logger.trace(`Successfully set pastfiles for flow ${id}`)
+            res.json(`Successfully set pastfiles for flow ${id}`);
+        } catch (err) {
+            const { id } = req.params;
+            logger.error(`Could not set pastfiles for flow ${id}. \n ${err.message}`)
         }
     })
 }

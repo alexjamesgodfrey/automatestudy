@@ -256,7 +256,7 @@ const createWelcomePage = async (access_token, database_id, date) => {
                         {
                             type: "text",
                             text: {
-                                "content": ('On the day you take notes, you should create review questions. These are known as "active recall quetions" and answering them periodically helps you learn quickly. ' +
+                                "content": ('On the day you take notes, you should create review questions. These are known as "active recall questions" and answering them periodically helps you learn quickly. ' +
                                 "Below are the three possible question types to ask in your toggles. " +
                                 "But please experiment! As the Studyflow community grows, more efficient ways of studying will be discovered--" +
                                 "and we will all benefit from them."),
