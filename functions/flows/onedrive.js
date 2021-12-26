@@ -54,6 +54,17 @@ const refreshAccessTokens = async (refresh_time) => {
  */
 const executeOneDriveFlows = async (refresh_time) => {
     console.log('running onedrive flows')
+    //create history for flow run
+    await fetch(`${process.env.BASE_REQUEST_URL}/api/history`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            type: 'allflow',
+            message: Date.now()
+        })
+    })
     let pastData;
     let newData;
     // (1)

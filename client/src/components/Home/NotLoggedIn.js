@@ -38,7 +38,7 @@ export default function NotLoggedIn() {
         setLoading(false);
     }
     return (
-        <div style={{ maxWidth: '1300px', margin: '0px 20px'}}>
+        <div style={{ maxWidth: '1300px', margin: '0px auto'}}>
             <h3 style={{ textAlign: 'center' }}>welcome to <span style={{ color: '#4FB0AE' }}>studyflow.ai</span></h3>
             <p className="mb-2 text-muted" style={{ textAlign: 'center' }}>automated workflow for students</p>
             <div style={{margin: '0px 20px' }} className="d-flex justify-content-around flex-wrap">
@@ -68,24 +68,6 @@ export default function NotLoggedIn() {
                         </Card.Text>    
                     </Card.Body>
                 </Card>
-                {/* <Card style={{ marginTop: '15px' }} className="text-center">
-                    <Card.Header as="h5">Our system in a nutshell</Card.Header>
-                    <Card.Body>
-                        <Card.Subtitle className="mb-2 text-muted">Full setup takes just 10 minutes</Card.Subtitle>
-                        <Card.Text>
-                            1. You <span style={{ color: '#4FB0AE' }}>take a note</span> in your medium of choice: digital writing, paper, or computer.
-                            <br />
-                            2. A <span style={{ color: '#4FB0AE', textDecoration: 'underline' }}>notion</span> page will automatically be created for your note.
-                            <br />
-                            3. You fill out this notion page after class with <span style={{ color: '#4FB0AE', textDecoration: 'underline' }}>active recall questions</span>.
-                            <br />
-                            4. <span style={{ color: '#4FB0AE' }}>Four review tasks</span> are automatically created in Todoist based on <span style={{ color: '#4FB0AE', textDecoration: 'underline' }}>spaced repetition.</span>
-                            <br />
-                            5. You will review your note based on the Todoist tasks, so you <span style={{ color: '#4FB0AE' }}>never have to cram again.</span>
-                        </Card.Text>
-                    </Card.Body>
-                    <Card.Footer><Button disabled={loading} onClick={() => google()}variant="primary"><span style={{ color: 'white' }}>Get Started</span></Button></Card.Footer>
-                </Card> */}
             </div>
             <h4>Example <span style={{ color: '#4FB0AE' }}>studyflow</span></h4>
             <div onClick={() => google()} style={{ margin: '20px 20px'}}>

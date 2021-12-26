@@ -19,6 +19,7 @@ require('./routes/flows.js')(app);
 require('./routes/notion.js')(app);
 require('./routes/onedrive.js')(app);
 require('./routes/todoist.js')(app);
+require('./routes/history.js')(app);
 
 //flows
 const OneDrive = require("./flows/onedrive.js");

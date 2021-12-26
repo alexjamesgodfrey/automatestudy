@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import Toggle from 'react-toggle'
+import Countdown from 'react-countdown';
 import Card from 'react-bootstrap/Card'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
@@ -25,13 +26,13 @@ export default function Class(props) {
     const [pathOptions, setPathOptions] = useState([])
     const pathRef = useRef(null)
     const [flowActivating, setFlowActivating] = useState(false)
+    const [lastFlowUTC, setLastFlowUTC] = useState()
 
     const getDrives = async () => {
         const json = {
             access_token: userDB.cloudaccess,
             refresh_token: userDB.cloudrefresh
         }
-        console.log(JSON.stringify(json))
         await fetch(`/api/onedrive/drives`, {
             method: 'PUT',
             headers: {
@@ -49,7 +50,6 @@ export default function Class(props) {
                         children: getFolders(data[i].id, '')
                     })
                 }
-                console.log(driveArr)
                 setDrives(driveArr)
                 setDriveName(driveArr[0].driveType)
                 setDriveID(driveArr[0].id)
@@ -63,7 +63,6 @@ export default function Class(props) {
             driveid: driveid,
             childid: childid
         }
-        console.log(json)
         await fetch(`/api/onedrive/children`, {
             method: 'PUT',
             headers: {
@@ -73,10 +72,8 @@ export default function Class(props) {
         })
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 const withoutFolders = data.filter((d) => d.folder ? d : null)
                 const namesAndIds = withoutFolders.map((d) => {
-                    console.log(d)
                     if (d.folder) {
                         return {
                             name: d.name,
@@ -131,7 +128,6 @@ export default function Class(props) {
             driveid: driveID,
             childid: folderID 
         }
-        console.log(json2)
         //update pastfiles, but get children first
         await fetch(`/api/onedrive/children`, {
             method: "PUT",
@@ -142,7 +138,6 @@ export default function Class(props) {
         })
             .then(response => response.json())
             .then(async data => {
-                console.log(data)
                 const json3 = {
                     pastfiles: data
                 }
@@ -166,15 +161,28 @@ export default function Class(props) {
         }
     }
 
+    const getLastRunTime = async () => {
+        await fetch(`/api/history/allflow`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(Date.now()-parseInt(data.message))
+                setLastFlowUTC(parseInt(data.message))
+            })
+    }
+
     useEffect(() => {
         getDrives()
+        getLastRunTime()
     }, [])
 
     return (
         <Card style={{ margin: '10px'}}>
             <Card.Header as="h5">
                 <div className='d-flex justify-content-between'>
-                    {props.class}
+                    <div>
+                        {`${props.class} `}
+                        {lastFlowUTC && props.active ? <Countdown date={(Date.now() + 3600000 - (Date.now() - lastFlowUTC))} /> : <span></span>}
+                    </div>
                     <Toggle
                         id='public-status'
                         className='custom-colors'
@@ -186,7 +194,9 @@ export default function Class(props) {
             </Card.Header>
             <Card.Body>
                 {props.path ? 
-                    <p>flow</p>
+                    <div>
+                        <strong>History</strong>
+                    </div>
                 :
                     <Card.Text>
                         To active this Studyflow, you must select the {userDB.cloud} file path for this class.

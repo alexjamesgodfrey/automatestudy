@@ -231,8 +231,8 @@ export default function LoggedIn() {
                 </div>
                 <div className="d-flex flex-column align-items-center">
                     <a href={onedriveURL}><Button variant="info" style={{margin: '0px 30px 10px', width: '250px'}}><span style={{ color: 'white' }}>Connect OneDrive Account</span></Button></a>
-                    <a><Button variant="secondary" style={{ margin: '10px 30px', width: '250px' }}>Connect Dropbox Account</Button></a>
-                    <a><Button variant="success" style={{margin: '10px 30px', width: '250px'}}><span style={{ color: 'white' }}>Connect Google Drive Account</span></Button></a>
+                    <a><Button disabled={true} variant="secondary" style={{ margin: '10px 30px', width: '250px' }}>Connect Dropbox Account</Button></a>
+                    <a><Button disabled={true} variant="success" style={{margin: '10px 30px', width: '250px'}}><span style={{ color: 'white' }}>Connect Google Drive Account</span></Button></a>
                 </div>
                 {!surveyResponse.cloud ? 
                     <FlowDisplay flow={{ tags: ['Pencil', 'OneDrive', 'Notion', 'Todoist'] }} />
