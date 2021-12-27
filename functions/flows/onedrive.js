@@ -211,18 +211,23 @@ const executeOneDriveFlows = async (refresh_time) => {
                     
                 })
         } catch (error) {
-            await fetch(`${process.env.BASE_REQUEST_URL}/api/history`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    type: 'flow',
-                    message: `[Error][${dateString}] Flow execution failed`,
-                    userid: userData.id,
-                    flowid: pastData[i].id
+            await fetch(`${process.env.BASE_REQUEST_URL}/api/userbyid/${pastData[i].userid}`)
+                .then(response => response.json())
+                .then(async data => {
+                    const userData = data
+                    await fetch(`${process.env.BASE_REQUEST_URL}/api/history`, {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            type: 'flow',
+                            message: `[Error][${dateString}] Flow execution failed`,
+                            userid: userData.id,
+                            flowid: pastData[i].id
+                        })
+                    })
                 })
-            })
         }
         
     }
