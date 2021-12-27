@@ -166,7 +166,6 @@ export default function Class(props) {
         await fetch(`/api/history/allflow`)
             .then(response => response.json())
             .then(data => {
-                console.log(Date.now()-parseInt(data.message))
                 setLastFlowUTC(parseInt(data.message))
             })
     }
@@ -189,7 +188,7 @@ export default function Class(props) {
                 <div className='d-flex justify-content-between'>
                     <div>
                         {`${props.class} `}
-                        {lastFlowUTC && props.active ? <Countdown date={(Date.now() + 3600000 - (Date.now() - lastFlowUTC))} /> : <span></span>}
+                        {lastFlowUTC && props.active ? <Countdown onComplete={() => window.location.reload(true)}date={(Date.now() + 3600000 - (Date.now() - lastFlowUTC))} /> : <span></span>}
                     </div>
                     <Toggle
                         id='public-status'
