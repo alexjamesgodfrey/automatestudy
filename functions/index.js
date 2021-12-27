@@ -3,13 +3,12 @@ const functions = require("firebase-functions");
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const bodyParser = require('body-parser')
 const path = require("path");
 
 //initiate app
 app.use(cors());
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use('/api/stripewebhook', express.raw({type: "*/*"}));
+app.use(express.json());
 app.use(express.static(path.join(__dirname, "..", "client", "build")));
 
 //routes
@@ -20,6 +19,7 @@ require('./routes/notion.js')(app);
 require('./routes/onedrive.js')(app);
 require('./routes/todoist.js')(app);
 require('./routes/history.js')(app);
+require('./routes/stripe.js')(app);
 
 //flows
 const OneDrive = require("./flows/onedrive.js");
@@ -32,6 +32,7 @@ app.get("/", async (req, res) => {
         console.error(err.message);
     }
 })
+
 
 if (process.env.DEVELOPMENT === 'true') {
     app.listen(process.env.DEVELOPMENT_PORT, () => {

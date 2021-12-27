@@ -141,4 +141,43 @@ module.exports = function (app) {
             logger.error(`displayname could not be changed for user ${uid} \n error message: ${err.message}`)
         }
     })
+
+    //update a user's stripecustomer
+    app.put("/api/users/stripecustomer", async (req, res) => {
+        try {
+            const { stripecustomer, email } = req.body;
+            await pool.query("UPDATE users set stripecustomer = $1 WHERE email = $2", [stripecustomer, stripecustomer.email]);
+            logger.trace(`Updated stripecustomer for ${email}`)
+            res.json(`Updated stripecustomer for ${email}`)
+        } catch (err) {
+            const { stripecustomer, email } = req.body;
+            logger.error(`Could not update stripcustomer for ${email}`)
+        }
+    })
+
+    //update a user's stripecustomerid
+    app.put("/api/users/stripecustomerid", async (req, res) => {
+        try {
+            const { stripecustomerid, email } = req.body;
+            await pool.query("UPDATE users set stripecustomerid = $1 WHERE email = $2", [stripecustomerid, email]);
+            logger.trace(`Updated stripecustomerid for ${email}`)
+            res.json(`Updated stripecustomerid for ${email}`)
+        } catch (err) {
+            const { stripecustomerid, email } = req.body;
+            logger.error(`Could not update stripcustomer for ${email}`)
+        }
+    })
+
+    //update a user's stripesubscription
+    app.put("/api/users/stripesubscription", async (req, res) => {
+        try {
+            const { stripesubscription } = req.body;
+            await pool.query("UPDATE users set stripesubscription = $1 WHERE stripecustomerid = $2", [stripesubscription, stripesubscription.customer]);
+            logger.trace(`Updated stripecustomer for ${stripesubscription.customer}`)
+            res.json(`Updated stripecustomer for ${stripesubscription.customer}`)
+        } catch (err) {
+            const { stripecustomer } = req.body;
+            logger.error(`Could not update stripcustomer for ${stripesubscription.customer}`)
+        }
+    })
 }
