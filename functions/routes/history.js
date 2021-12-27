@@ -28,9 +28,9 @@ module.exports = function (app) {
     //create history
     app.post("/api/history", async (req, res) => {
         try {
-            const { type, message, userid } = req.body;
-            const request = await pool.query("INSERT INTO history (type, message, userid) VALUES ($1, $2, $3)",
-                [type, message, userid]);
+            const { type, message, userid, flowid } = req.body;
+            const request = await pool.query("INSERT INTO history (type, message, userid, flowid) VALUES ($1, $2, $3, $4)",
+                [type, message, userid, flowid]);
             res.json(request.rows);
         } catch (err) {
             console.error(err.message);
@@ -38,11 +38,21 @@ module.exports = function (app) {
     })
 
     //get the utc of last flow run
-    //get all history
     app.get("/api/history/allflow", async (req, res) => {
         try {
             const request = await pool.query("SELECT message FROM history WHERE type = 'allflow' ORDER BY message::bigint DESC");
             res.json(request.rows[0]);
+        } catch (err) {
+            console.error(err.message);
+        }
+    })
+
+    //get history for a certain flow
+    app.get("/api/history/flow/:flowid", async (req, res) => {
+        try {
+            const { flowid } = req.params;
+            const request = await pool.query("SELECT * FROM history WHERE flowid = $1 ORDER BY id DESC", [parseInt(flowid)]);
+            res.json(request.rows);
         } catch (err) {
             console.error(err.message);
         }

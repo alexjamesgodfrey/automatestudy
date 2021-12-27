@@ -27,6 +27,7 @@ export default function Class(props) {
     const pathRef = useRef(null)
     const [flowActivating, setFlowActivating] = useState(false)
     const [lastFlowUTC, setLastFlowUTC] = useState()
+    const [flowHistory, setFlowHistory] = useState([])
 
     const getDrives = async () => {
         const json = {
@@ -170,9 +171,16 @@ export default function Class(props) {
             })
     }
 
+    const getFlowHistory = async () => {
+        await fetch(`/api/history/flow/${props.id}`)
+            .then(response => response.json())
+            .then(data => setFlowHistory(data))
+    }
+
     useEffect(() => {
         getDrives()
         getLastRunTime()
+        getFlowHistory()
     }, [])
 
     return (
@@ -196,6 +204,11 @@ export default function Class(props) {
                 {props.path ? 
                     <div>
                         <strong>History</strong>
+                        <div style={{ overflowY: 'scroll', height: '100px', marginTop: '10px', paddingTop: '5px'}}>
+                            {flowHistory.map((hist, i) => {
+                                return <p style={{ lineHeight: 0.6 }}>{hist.message}</p>
+                            })}
+                        </div>
                     </div>
                 :
                     <Card.Text>

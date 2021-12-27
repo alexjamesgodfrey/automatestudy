@@ -54,6 +54,8 @@ const refreshAccessTokens = async (refresh_time) => {
  */
 const executeOneDriveFlows = async (refresh_time) => {
     console.log('running onedrive flows')
+    const date = new Date()
+    const dateString = date.toString()
     //create history for flow run
     await fetch(`${process.env.BASE_REQUEST_URL}/api/history`, {
         method: "POST",
@@ -66,7 +68,6 @@ const executeOneDriveFlows = async (refresh_time) => {
         })
     })
     let pastData;
-    let newData;
     // (1)
     await fetch(`${process.env.BASE_REQUEST_URL}/api/flows/onedrive/active`)
         .then(response => response.json())
@@ -74,110 +75,156 @@ const executeOneDriveFlows = async (refresh_time) => {
             pastData = data
         })
     for (let i = 0; i < pastData.length; i++) {
-        //get user for cloud access token
-        await fetch(`${process.env.BASE_REQUEST_URL}/api/userbyid/${pastData[i].userid}`)
-            .then(response => response.json())
-            .then(async data => {
-                const userData = data
-                const json = {
-                    access_token: userData.cloudaccess,
-                    driveid: pastData[i].driveid,
-                    childid: pastData[i].folderid 
-                }
-                // (2)
-                await fetch(`${process.env.BASE_REQUEST_URL}/api/onedrive/children`, {
-                    method: "PUT",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(json)
-                })
-                    .then(response => response.json())
-                    .then(async data => {
-                        const files = data.filter(x => x.file)
-                        // (3)
-                        const difference = files.filter(
-                            x => !pastData[i].pastfiles.some(file => file.id === x.id)
-                        )
-                        // get notion info for databaseid
-                        await fetch(`${process.env.BASE_REQUEST_URL}/api/notion/${userData.id}`)
-                            .then(response => response.json())
-                            .then(async data => {
-                                // (4)
-                                for (let j = 0; j < difference.length; j++) {
-                                    const notionPageInfo = await notionImports.createPageInDatabase(
-                                        userData.notionaccess,
-                                        data.database_id,
-                                        difference[j].name,
-                                        difference[j].lastModifiedDateTime.substring(0, 10),
-                                        difference[j].parentReference.name //folder name
-                                    )
-                                    // get todoist info for section id
-                                    await fetch(`${process.env.BASE_REQUEST_URL}/api/todoist/${userData.id}`)
-                                        .then(response => response.json())
-                                        .then(data => {
-                                        // (5)
-                                            Todoist.createTask(
-                                                userData.todoistaccess,
-                                                `Create Active Recall Questions for ${difference[j].name}`,
-                                                `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
-                                                null,
-                                                data.sections.find(section => section.name === difference[j].parentReference.name).id,
-                                                [data.labels.find(label => label.name === 'review').id],
-                                                'today'
-                                            )
-                                            Todoist.createTask(
-                                                userData.todoistaccess,
-                                                `(1) Review ${difference[j].name}`,
-                                                `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
-                                                null,
-                                                data.sections.find(section => section.name === difference[j].parentReference.name).id,
-                                                [data.labels.find(label => label.name === 'review').id],
-                                                'tomorrow'
-                                            )
-                                            Todoist.createTask(
-                                                userData.todoistaccess,
-                                                `(2) Review ${difference[j].name}`,
-                                                `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
-                                                null,
-                                                data.sections.find(section => section.name === difference[j].parentReference.name).id,
-                                                [data.labels.find(label => label.name === 'review').id],
-                                                'in 3 days'
-                                            )
-                                            Todoist.createTask(
-                                                userData.todoistaccess,
-                                                `(3) Review ${difference[j].name}`,
-                                                `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
-                                                null,
-                                                data.sections.find(section => section.name === difference[j].parentReference.name).id,
-                                                [data.labels.find(label => label.name === 'review').id],
-                                                'in 7 days'
-                                            )
-                                            Todoist.createTask(
-                                                userData.todoistaccess,
-                                                `(4) Review ${difference[j].name}`,
-                                                `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
-                                                null,
-                                                data.sections.find(section => section.name === difference[j].parentReference.name).id,
-                                                [data.labels.find(label => label.name === 'review').id],
-                                                'in 30 days'
-                                            )
-                                        })
-                                }
-                            })
-                        
-                        //(6)
-                        await fetch(`${process.env.BASE_REQUEST_URL}/api/flows/pastfiles/${pastData[i].id}`, {
-                            method: "PUT",
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                pastfiles: files
-                            })
-                        })
+        try {
+            //get user for cloud access token
+            await fetch(`${process.env.BASE_REQUEST_URL}/api/userbyid/${pastData[i].userid}`)
+                .then(response => response.json())
+                .then(async data => {
+                    const userData = data
+                    const json = {
+                        access_token: userData.cloudaccess,
+                        driveid: pastData[i].driveid,
+                        childid: pastData[i].folderid 
+                    }
+                    // (2)
+                    await fetch(`${process.env.BASE_REQUEST_URL}/api/onedrive/children`, {
+                        method: "PUT",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(json)
                     })
+                        .then(response => response.json())
+                        .then(async data => {
+                            const files = data.filter(x => x.file)
+                            // (3)
+                            const difference = files.filter(
+                                x => !pastData[i].pastfiles.some(file => file.id === x.id)
+                            )
+                            if (difference.length === 0) {
+                                await fetch(`${process.env.BASE_REQUEST_URL}/api/history`, {
+                                    method: "POST",
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        type: 'flow',
+                                        message: `[Success][${dateString}] No new files in ${pastData[i].path}`,
+                                        userid: userData.id,
+                                        flowid: pastData[i].id
+                                    })
+                                })
+                            } else {
+                                // get notion info for databaseid
+                                await fetch(`${process.env.BASE_REQUEST_URL}/api/notion/${userData.id}`)
+                                    .then(response => response.json())
+                                    .then(async data => {
+                                        // (4)
+                                        for (let j = 0; j < difference.length; j++) {
+                                            const notionPageInfo = await notionImports.createPageInDatabase(
+                                                userData.notionaccess,
+                                                data.database_id,
+                                                difference[j].name,
+                                                difference[j].lastModifiedDateTime.substring(0, 10),
+                                                difference[j].parentReference.name //folder name
+                                            )
+                                            // get todoist info for section id
+                                            await fetch(`${process.env.BASE_REQUEST_URL}/api/todoist/${userData.id}`)
+                                                .then(response => response.json())
+                                                .then(data => {
+                                                // (5)
+                                                    Todoist.createTask(
+                                                        userData.todoistaccess,
+                                                        `Create Active Recall Questions for ${difference[j].name}`,
+                                                        `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
+                                                        null,
+                                                        data.sections.find(section => section.name === difference[j].parentReference.name).id,
+                                                        [data.labels.find(label => label.name === 'review').id],
+                                                        'today'
+                                                    )
+                                                    Todoist.createTask(
+                                                        userData.todoistaccess,
+                                                        `(1) Review ${difference[j].name}`,
+                                                        `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
+                                                        null,
+                                                        data.sections.find(section => section.name === difference[j].parentReference.name).id,
+                                                        [data.labels.find(label => label.name === 'review').id],
+                                                        'tomorrow'
+                                                    )
+                                                    Todoist.createTask(
+                                                        userData.todoistaccess,
+                                                        `(2) Review ${difference[j].name}`,
+                                                        `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
+                                                        null,
+                                                        data.sections.find(section => section.name === difference[j].parentReference.name).id,
+                                                        [data.labels.find(label => label.name === 'review').id],
+                                                        'in 3 days'
+                                                    )
+                                                    Todoist.createTask(
+                                                        userData.todoistaccess,
+                                                        `(3) Review ${difference[j].name}`,
+                                                        `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
+                                                        null,
+                                                        data.sections.find(section => section.name === difference[j].parentReference.name).id,
+                                                        [data.labels.find(label => label.name === 'review').id],
+                                                        'in 7 days'
+                                                    )
+                                                    Todoist.createTask(
+                                                        userData.todoistaccess,
+                                                        `(4) Review ${difference[j].name}`,
+                                                        `[View ${difference[j].name} in Notion](${notionPageInfo.url})`,
+                                                        null,
+                                                        data.sections.find(section => section.name === difference[j].parentReference.name).id,
+                                                        [data.labels.find(label => label.name === 'review').id],
+                                                        'in 30 days'
+                                                    )
+                                                })
+                                        }
+                                    })
+                                
+                                //(6)
+                                await fetch(`${process.env.BASE_REQUEST_URL}/api/flows/pastfiles/${pastData[i].id}`, {
+                                    method: "PUT",
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        pastfiles: files
+                                    })
+                                })
+
+                                await fetch(`${process.env.BASE_REQUEST_URL}/api/history`, {
+                                    method: "POST",
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        type: 'flow',
+                                        message: `[Success][${dateString}] Flow executed for ${difference[j].name}`,
+                                        userid: userData.id,
+                                        flowid: pastData[i].id
+                                    })
+                                })
+                            }
+                            
+                        })
+                    
+                })
+        } catch (error) {
+            await fetch(`${process.env.BASE_REQUEST_URL}/api/history`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    type: 'flow',
+                    message: `[Error][${dateString}] Flow execution failed`,
+                    userid: userData.id,
+                    flowid: pastData[i].id
+                })
             })
+        }
+        
     }
 
     setTimeout(() => executeOneDriveFlows(refresh_time), refresh_time)

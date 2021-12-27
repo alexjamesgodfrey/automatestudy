@@ -82,6 +82,17 @@ module.exports = function (app) {
                         stripesubscription: subscription
                     })
                 })
+                const date = new Date()
+                await fetch(`${process.env.BASE_REQUEST_URL}/api/history`, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        body: JSON.stringify({
+                            type: 'subscription',
+                            message: `1 month subscription created for ${subscription.customer} at ${date.toISOString().substring(0, 10)}`
+                        })
+                    }
+                })
                 // Then define and call a function to handle the event customer.subscription.created
                 break;
             // ... handle other event types
