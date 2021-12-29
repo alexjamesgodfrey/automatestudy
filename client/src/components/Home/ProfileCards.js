@@ -19,6 +19,7 @@ export default function ProfileCards() {
     const primaryColor = '#84cacc'
     const [showPublicAccountTip, setShowPublicAccountTip] = useState(false)
     const publicAccountTarget = useRef(null)
+    const [endDate, setEndDate] = useState(new Date(userDB.stripesubscription.current_period_end*1000))
 
     const handlePublicChange = async () => {
         const checked = document.getElementById('public-status').checked
@@ -162,16 +163,18 @@ export default function ProfileCards() {
                     />
                     
                 </Card.Text>
-                <a href={process.env.REACT_APP_STRIPE_LINK} target="_blank"><Card.Text style={{ margin: '5px 10px' }} className="d-flex align-items-center">
-                    <span style={{ width: '160px' }}>Acitvate Account</span>
-                    <Toggle
-                        id='public-status'
-                        defaultChecked={userDB.public}
-                        onChange={handlePublicChange}
-                        className='custom-colors'
-                    />
-                    
-                </Card.Text></a>
+                {!userDB.stripesubscription ?
+                    <a style={{ color: 'red' }} href={process.env.REACT_APP_STRIPE_LINK} target="_blank">
+                        <Card.Text style={{ margin: '5px 10px' }} className="d-flex align-items-center">
+                            <span style={{ width: '160px' }}>Activate Account</span>
+                        </Card.Text>
+                    </a>
+                :
+                    <Card.Text style={{ margin: '5px 10px' }} className="d-flex align-items-center">
+                        Subscription renews {endDate.toDateString()}
+                    </Card.Text>
+                }
+                
                 <Button onClick={logout} size="sm" style={{ width: '100px', margin: '20px auto' }} variant="danger"><span style={{ color: 'white' }}>Log out</span></Button>
             </Card>
         </div>

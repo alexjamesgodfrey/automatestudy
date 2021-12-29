@@ -12,6 +12,8 @@
 /client/.env
 /server/.env
 
+/server/studyflowserver.pem
+
 #logs
 /functions/log.log
 

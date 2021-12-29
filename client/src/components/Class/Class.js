@@ -92,8 +92,10 @@ export default function Class(props) {
 
     const activateWithPath = async () => {
         setFlowActivating(true)
-        //activate flow
-        await fetch(`/api/flows/activate/${props.id}`, {method: "PUT"})
+        //activate flow if the user has a subscription
+        if (userDB.stripesubscription) {
+            await fetch(`/api/flows/activate/${props.id}`, {method: "PUT"})
+        }
         //general json
         const json = {
             path: path,
@@ -193,7 +195,7 @@ export default function Class(props) {
                     <Toggle
                         id='public-status'
                         className='custom-colors'
-                        disabled={props.path === null}
+                        disabled={props.path === null || !userDB.stripesubscription}
                         defaultChecked={props.active}
                         onChange={() => toggleActive()}
                     />
@@ -203,15 +205,16 @@ export default function Class(props) {
                 {props.path ? 
                     <div>
                         <strong>History</strong>
-                        <div style={{ overflowY: 'scroll', height: '100px', marginTop: '10px', paddingTop: '5px'}}>
+                        <div style={{ overflowY: 'scroll', maxHeight: '100px', marginTop: '10px', paddingTop: '5px'}}>
                             {flowHistory.map((hist, i) => {
-                                return <p style={{ lineHeight: 0.6 }}>{hist.message}</p>
+                                return <p style={{ lineHeight: 0.6, marginLeft: '20px' }}>{hist.message}</p>
                             })}
+                            {flowHistory.length === 0 ? <p style={{ marginLeft: '20px'}}>nothing yet!</p> : <span></span>}
                         </div>
                     </div>
                 :
                     <Card.Text>
-                        To active this Studyflow, you must select the {userDB.cloud} file path for this class.
+                        To activate this Studyflow, you must select the {userDB.cloud} file path for this class.
                         Whenever a new file appears in this folder, this Studyflow will execute. 
                         <div>
                             Choose Drive

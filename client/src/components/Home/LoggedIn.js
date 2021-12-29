@@ -53,7 +53,6 @@ export default function LoggedIn() {
                     "active": false,
                     "c": "${classNames[i]}"
                 }`
-                console.log(json)
                 await fetch(`/api/flows/create/${userDB.id}`, {
                     method: 'POST',
                     headers: {
@@ -119,10 +118,8 @@ export default function LoggedIn() {
 
     const createUser = async () => {
         try {
-            console.log(currentUser.uid)
             const here = await fetch(`/api/users/${currentUser.uid}`)
             const hereJSON = await here.text()
-            console.log(hereJSON)
             if (hereJSON.length === 0) {
                 const user = `{
                     "displayname": "${currentUser.displayName}",

@@ -154,6 +154,14 @@ export default function AuthProvider({ children }) {
                             }
                         </div>
                         <div style={{ width: '80%' }} className="d-flex justify-content-between">
+                            <p>Loading user subscription</p>
+                            {loadingUserData ? 
+                                <Spinner style={{ marginTop: '4px' }} size="sm" animation="border" variant="dark" />
+                            : 
+                                <div><Checkmark style={{ margin: '4px' }} size='medium' color='#222529' /></div>
+                            }
+                        </div>
+                        <div style={{ width: '80%' }} className="d-flex justify-content-between">
                             <p>Loading user preferences</p>
                             {loadingUserPreferences ? 
                                 <Spinner style={{ marginTop: '4px' }} size="sm" animation="border" variant="dark" />
@@ -162,7 +170,7 @@ export default function AuthProvider({ children }) {
                             }
                             </div>
                         <div style={{ width: '80%' }} className="d-flex justify-content-between">
-                            <p>Loading user's studyflows</p>
+                            <p>Loading user studyflows</p>
                             {loadingFlows ? 
                                 <Spinner style={{ marginTop: '4px' }} size="sm" animation="border" variant="dark" />
                             : 
