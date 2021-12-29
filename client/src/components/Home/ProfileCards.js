@@ -162,7 +162,17 @@ export default function ProfileCards() {
                     />
                     
                 </Card.Text>
-                <Button onClick={logout} size="sm" style={{ width: '100px', marginLeft: '10px' }} variant="danger"><span style={{ color: 'white' }}>Log out</span></Button>
+                <a href={process.env.REACT_APP_STRIPE_LINK} target="_blank"><Card.Text style={{ margin: '5px 10px' }} className="d-flex align-items-center">
+                    <span style={{ width: '160px' }}>Acitvate Account</span>
+                    <Toggle
+                        id='public-status'
+                        defaultChecked={userDB.public}
+                        onChange={handlePublicChange}
+                        className='custom-colors'
+                    />
+                    
+                </Card.Text></a>
+                <Button onClick={logout} size="sm" style={{ width: '100px', margin: '20px auto' }} variant="danger"><span style={{ color: 'white' }}>Log out</span></Button>
             </Card>
         </div>
     )

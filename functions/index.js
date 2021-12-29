@@ -21,9 +21,6 @@ require('./routes/todoist.js')(app);
 require('./routes/history.js')(app);
 require('./routes/stripe.js')(app);
 
-//flows
-const OneDrive = require("./flows/onedrive.js");
-
 //serve client
 app.get("/", async (req, res) => {
     try {
@@ -42,9 +39,6 @@ if (process.env.DEVELOPMENT === 'true') {
 }
 
 //refreshes OneDrive access tokens every 55 minutes
-const refresh_time = 3300000
-OneDrive.refreshAccessTokens(refresh_time)
-OneDrive.executeOneDriveFlows(refresh_time)
 
 
 exports.automatestudy = functions.https.onRequest(app)

@@ -2,6 +2,7 @@
  * MAIN ROUTES
  */
 const pool = require("../db.js");
+require("dotenv").config();
 const express = require('express')
 const stripe = require('stripe');
  
@@ -24,7 +25,7 @@ module.exports = function (app) {
         let event;
 
         try {
-            event = stripe.webhooks.constructEvent(request.body, sig, process.env.STRIPE_SECRET);
+            event = stripe.webhooks.constructEvent(request.body, sig, 'whsec_f4FRrTkIXPRX9sOi5CY0vyHs8GtcCcqB');
         } catch (err) {
             response.status(400).send(`Webhook Error: ${err.message}`);
             return;
