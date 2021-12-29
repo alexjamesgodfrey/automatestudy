@@ -21,7 +21,8 @@ const Todoist = require('./todoist')
  */
 const refreshAccessTokens = async (refresh_time) => {
     //get all onedrive users
-    console.log('refresh onedrive tokens')
+    const dateString = new Date().toLocaleString("en-US", { timeZone: "America/New_York" })
+    console.log(`[${dateString}] refreshing onedrive access tokens, refreshing every ${refresh_time/1000/60} minutes`)
     try {
         await fetch(`${process.env.BASE_REQUEST_URL}/api/onedrive/getusers`)
             .then(response => response.json())
@@ -30,6 +31,17 @@ const refreshAccessTokens = async (refresh_time) => {
                     try {
                         logger.trace(`{refreshAccessTokens} Refreshing access token for user ${data[i].uid}`)
                         await fetch(`${process.env.BASE_REQUEST_URL}/api/onedrive/refresh/${data[i].uid}`, { method: 'PUT' })
+                        await fetch(`${process.env.BASE_REQUEST_URL}/api/history`, {
+                            method: "POST",
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                type: 'refreshonedrive',
+                                message: `[Success][${dateString}] OneDrive token refreshed`,
+                                userid: data[i].id
+                            })
+                        })
                     } catch (err) {
                         logger.trace(`{refreshAccessTokens} Access token failed for user ${data[i].uid}`)
                     }
@@ -37,6 +49,17 @@ const refreshAccessTokens = async (refresh_time) => {
             })
     } catch (err) {
         logger.trace(`{refreshAccessTokens} Access token failed for user ${data[i].uid}`)
+        await fetch(`${process.env.BASE_REQUEST_URL}/api/history`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                type: 'refreshonedrive',
+                message: `[Error][${dateString}] OneDrive token refresh failed`,
+                userid: data[i].id
+            })
+        })
     }
 
     setTimeout(() => refreshAccessTokens(refresh_time), refresh_time)
@@ -53,8 +76,8 @@ const refreshAccessTokens = async (refresh_time) => {
  * (6) updates the pastfiles in database
  */
 const executeOneDriveFlows = async (refresh_time) => {
-    console.log('running onedrive flows')
-    const dateString = new Date().toLocaleString("en-US", {timeZone: "America/New_York"})
+    const dateString = new Date().toLocaleString("en-US", { timeZone: "America/New_York" })
+    console.log(`[${dateString}] running onedrive flows, refreshing every ${refresh_time/1000/60} minutes`)
     //create history for flow run
     await fetch(`${process.env.BASE_REQUEST_URL}/api/history`, {
         method: "POST",
