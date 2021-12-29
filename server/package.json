@@ -1,0 +1,24 @@
+{
+  "name": "studyflow-server",
+  "description": "server for studyflow.ai",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "14"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@notionhq/client": "^0.4.11",
+    "base-64": "^1.0.0",
+    "dotenv": "^10.0.0",
+    "isomorphic-unfetch": "^3.1.0",
+    "log4js": "^6.3.0",
+    "nodemon": "^2.0.13"
+  },
+  "private": true
+}
