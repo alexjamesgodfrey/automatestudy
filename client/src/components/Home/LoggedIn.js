@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useLocation } from 'react-router-dom'
 import ProgressBar from 'react-bootstrap/ProgressBar'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
+import Overlay from 'react-bootstrap/Overlay'
+import Tooltip from 'react-bootstrap/Tooltip'
 import Survey from './Survey'
 import Main from './Main'
 import FlowDisplay from '../Flow/FlowDisplay'
@@ -18,6 +20,10 @@ export default function LoggedIn() {
     const code = new URLSearchParams(search).get('code');
     const state = new URLSearchParams(search).get('state');
 
+    const [showGoogleTip, setShowGoogleTip] = useState(false)
+    const googleTarget = useRef(null)
+    const [showDropboxTip, setShowDropboxTip] = useState(false)
+    const dropboxTarget = useRef(null)
 
     /**
      * uploads the user's classes to the users table, and creates a flow for each class and uploads it
@@ -228,8 +234,38 @@ export default function LoggedIn() {
                 </div>
                 <div className="d-flex flex-column align-items-center">
                     <a href={onedriveURL}><Button variant="info" style={{margin: '0px 30px 10px', width: '250px'}}><span style={{ color: 'white' }}>Connect OneDrive Account</span></Button></a>
-                    <a><Button disabled={true} variant="secondary" style={{ margin: '10px 30px', width: '250px' }}>Connect Dropbox Account</Button></a>
-                    <a><Button disabled={true} variant="success" style={{margin: '10px 30px', width: '250px'}}><span style={{ color: 'white' }}>Connect Google Drive Account</span></Button></a>
+                    <span
+                        ref={googleTarget}
+                        onMouseEnter={() => setShowGoogleTip(true)}
+                        onMouseLeave={() => setShowGoogleTip(false)}
+                    >
+                        <Button
+                            disabled={true} variant="success" style={{ margin: '10px 30px', width: '250px' }}>
+                            Connect Google Account
+                        </Button>
+                    </span>
+                    
+                    <Overlay target={googleTarget.current} show={showGoogleTip} placement="right">
+                        <Tooltip>
+                            Google Drive support coming soon.
+                        </Tooltip>
+                    </Overlay>
+                    <span
+                        ref={dropboxTarget}
+                        onMouseEnter={() => setShowDropboxTip(true)}
+                        onMouseLeave={() => setShowDropboxTip(false)}
+                    >
+                        <Button
+                            disabled={true} variant="secondary" style={{ margin: '10px 30px', width: '250px' }}
+                            >
+                            Connect Dropbox Account
+                        </Button>
+                    </span>
+                    <Overlay target={dropboxTarget.current} show={showDropboxTip} placement="right">
+                        <Tooltip>
+                            Dropbox support coming soon.
+                        </Tooltip>
+                    </Overlay>
                 </div>
                 {!surveyResponse.cloud ? 
                     <FlowDisplay flow={{ tags: ['Pencil', 'OneDrive', 'Notion', 'Todoist'] }} />

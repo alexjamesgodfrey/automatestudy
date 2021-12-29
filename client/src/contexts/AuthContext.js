@@ -1,9 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
 import { auth, googleProvider } from '../firebase.js';
-import Fade from 'react-bootstrap/Fade'
 import { Checkmark } from 'react-checkmark'
-import _, { first } from 'underscore'
+import Fade from 'react-bootstrap/Fade'
 import Spinner from 'react-bootstrap/Spinner'
 
 const AuthContext = React.createContext();
@@ -13,8 +11,6 @@ export function useAuth() {
 }
 
 export default function AuthProvider({ children }) {
-    const search = useLocation().search
-
     const [currentUser, setCurrentUser] = useState();
     const [userDB, setUserDB] = useState()
     const [userFlows, setUserFlows] = useState()

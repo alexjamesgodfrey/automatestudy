@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import Fade from 'react-bootstrap/Fade'
 import { useAuth } from '../../contexts/AuthContext'
 import Header from '../Header/Header'
-import Survey from './Survey'
 import NotLoggedIn from './NotLoggedIn'
 import LoggedIn from './LoggedIn'
 

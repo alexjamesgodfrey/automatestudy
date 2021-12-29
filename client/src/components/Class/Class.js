@@ -4,18 +4,16 @@ import Toggle from 'react-toggle'
 import Countdown from 'react-countdown';
 import Card from 'react-bootstrap/Card'
 import DropdownButton from 'react-bootstrap/DropdownButton'
+import DropdownItem from 'react-bootstrap/esm/DropdownItem'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Popover from 'react-bootstrap/Popover'
 import Spinner from 'react-bootstrap/Spinner'
 import Button from 'react-bootstrap/Button'
-import Dropdown from 'react-bootstrap/Dropdown'
-import Overlay from 'react-bootstrap/Overlay'
 import '../Home/ProfileCards.scss'
-import DropdownItem from 'react-bootstrap/esm/DropdownItem'
-import { isNull } from 'underscore'
+
 
 export default function Class(props) {
-    const { currentUser, userDB } = useAuth()
+    const { userDB } = useAuth()
     const [drives, setDrives] = useState([])
     const [driveName, setDriveName] = useState('')
     const [driveID, setDriveID] = useState('')
@@ -190,7 +188,7 @@ export default function Class(props) {
                 <div className='d-flex justify-content-between'>
                     <div>
                         {`${props.class} `}
-                        {lastFlowUTC && props.active ? <Countdown onComplete={() => window.location.reload(true)}date={(Date.now() + 3600000 - (Date.now() - lastFlowUTC))} /> : <span></span>}
+                        {lastFlowUTC && props.active ? <Countdown onComplete={() => window.location.reload(true)}date={(Date.now() + 900000 - (Date.now() - lastFlowUTC))} /> : <span></span>}
                     </div>
                     <Toggle
                         id='public-status'
@@ -207,7 +205,19 @@ export default function Class(props) {
                         <strong>History</strong>
                         <div style={{ overflowY: 'scroll', maxHeight: '100px', marginTop: '10px', paddingTop: '5px'}}>
                             {flowHistory.map((hist, i) => {
-                                return <p style={{ lineHeight: 0.6, marginLeft: '20px' }}>{hist.message}</p>
+                                if (hist.message.substring(0, 2) === '[S') {
+                                    return (
+                                        <p style={{ lineHeight: 0.6, marginLeft: '20px' }}>
+                                            <span style={{ color: 'green' }}>[Success]</span>{hist.message.substring(9)}
+                                        </p>
+                                    )
+                                } else {
+                                    return (
+                                        <p style={{ lineHeight: 0.6, marginLeft: '20px' }}>
+                                            <span style={{ color: 'red' }}>[Error]</span>{hist.message.substring(7)}
+                                        </p>
+                                    )
+                                }
                             })}
                             {flowHistory.length === 0 ? <p style={{ marginLeft: '20px'}}>nothing yet!</p> : <span></span>}
                         </div>

@@ -82,7 +82,7 @@ export default function ProfileCards() {
                 <div style={{ margin: '10px' }}>
                     <div className="d-flex">
                         <div style={{ height: '80px', marginBottom: '5px'}}>
-                            <img style={{ width: '80px', maxHeight: '80px', borderRadius: '50%' }} src={tempURL || currentUser.photoURL} alt="upload profile picture" />
+                            <img style={{ width: '80px', maxHeight: '80px', borderRadius: '50%' }} src={tempURL || currentUser.photoURL} alt="upload profile" />
                         </div>
                         <div style={{ marginLeft: '10px'}}>
                             <p style={{ lineHeight: 0.5 }}>username:</p>
@@ -113,7 +113,7 @@ export default function ProfileCards() {
                                 <p
                                     style={{ lineHeight: 0.5, marginLeft: '5px', cursor: 'pointer' }}
                                     onClick={() => setEditDisplayName(true)}
-                                >{tempDisplayName || currentUser.displayName} ✎</p>
+                                >{tempDisplayName || currentUser.displayName} <span style={{ textDecoration: 'underline'}}>edit</span></p>
                             }
                         </div>
                     </div>
@@ -164,14 +164,14 @@ export default function ProfileCards() {
                     
                 </Card.Text>
                 {!userDB.stripesubscription ?
-                    <a style={{ color: 'red' }} href={process.env.REACT_APP_STRIPE_LINK} target="_blank">
+                    <a style={{ color: 'red' }} href={process.env.REACT_APP_STRIPE_LINK} target="_blank" rel="noreferrer">
                         <Card.Text style={{ margin: '5px 10px' }} className="d-flex align-items-center">
                             <span style={{ width: '160px' }}>Activate Account</span>
                         </Card.Text>
                     </a>
                 :
                     <Card.Text style={{ margin: '5px 10px' }} className="d-flex align-items-center">
-                        Subscription renews {new Date(userDB.stripesubscription.current_period_end*1000) || null}
+                        Subscription renews {new Date(userDB.stripesubscription.current_period_end*1000).toDateString()}
                     </Card.Text>
                 }
                 

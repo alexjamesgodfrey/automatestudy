@@ -1,22 +1,17 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import Navbar from 'react-bootstrap/Navbar'
 
 
 export default function Header() {
     const { currentUser, googleSignup, logout } = useAuth()
-    const [loading, setLoading] = useState(false)
 
     const google = async () => {
-        setLoading(true);
-
         try {
             await googleSignup();
         } catch (error) {
             return null
         }
-
-        setLoading(false);
     }
 
     return (
