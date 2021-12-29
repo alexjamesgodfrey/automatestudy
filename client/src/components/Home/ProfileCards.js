@@ -19,7 +19,7 @@ export default function ProfileCards() {
     const primaryColor = '#84cacc'
     const [showPublicAccountTip, setShowPublicAccountTip] = useState(false)
     const publicAccountTarget = useRef(null)
-    const [endDate, setEndDate] = useState(new Date(userDB.stripesubscription.current_period_end*1000))
+    
 
     const handlePublicChange = async () => {
         const checked = document.getElementById('public-status').checked
@@ -171,7 +171,7 @@ export default function ProfileCards() {
                     </a>
                 :
                     <Card.Text style={{ margin: '5px 10px' }} className="d-flex align-items-center">
-                        Subscription renews {endDate.toDateString()}
+                        Subscription renews {new Date(userDB.stripesubscription.current_period_end*1000) || null}
                     </Card.Text>
                 }
                 
