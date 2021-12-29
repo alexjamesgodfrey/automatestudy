@@ -146,7 +146,7 @@ module.exports = function (app) {
     app.put("/api/users/stripecustomer", async (req, res) => {
         try {
             const { stripecustomer, email } = req.body;
-            await pool.query("UPDATE users set stripecustomer = $1 WHERE email = $2", [stripecustomer, stripecustomer.email]);
+            await pool.query("UPDATE users set stripecustomer = $1 WHERE email = $2", [stripecustomer, email]);
             logger.trace(`Updated stripecustomer for ${email}`)
             res.json(`Updated stripecustomer for ${email}`)
         } catch (err) {

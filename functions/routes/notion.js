@@ -17,7 +17,7 @@ log4js.configure({
 });
 var logger = log4js.getLogger();
 
-const notionImports = require('../flows/notion.js')
+const notionImports = require('../methods/notion.js')
 
 /**
  * requests an access code from notions api then stores it in 

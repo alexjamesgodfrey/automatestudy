@@ -1,10 +1,9 @@
 /**
  * MAIN ROUTES
  */
-const pool = require("../db.js");
 require("dotenv").config();
-const express = require('express')
-const stripe = require('stripe');
+const bodyParser = require("body-parser");
+const stripe = require('stripe')(process.env.STRIPE_SECRET)
  
 const log4js = require("log4js");
 log4js.configure({
@@ -19,22 +18,22 @@ var logger = log4js.getLogger();
 
 
 module.exports = function (app) {
-    app.post('/api/stripewebhook', express.raw({type: '*/*'}), async (request, response) => {
-        const sig = request.headers['stripe-signature'];
+    app.post('/webhook/stripe', async (req, res) => {
 
         let event;
 
         try {
-            event = stripe.webhooks.constructEvent(request.body, sig, 'whsec_f4FRrTkIXPRX9sOi5CY0vyHs8GtcCcqB');
+            event = req.body
         } catch (err) {
-            response.status(400).send(`Webhook Error: ${err.message}`);
+            console.log(err.message)
+            res.status(400).send(`Webhook Error: ${err.message}`);
             return;
         }
 
         // Handle the event
         switch (event.type) {
             case 'customer.created':
-                const customer = event.data.object;
+                const customer = event.data.object
                 console.log(customer)
                 await fetch(`${process.env.BASE_REQUEST_URL}/api/users/stripecustomer`, {
                     method: "PUT",
@@ -58,7 +57,7 @@ module.exports = function (app) {
                 })
                 break;
             case 'customer.updated':
-                const customerUpdate = event.data.object;
+                const customerUpdate = event.data.object
                 console.log(customerUpdate)
                 await fetch(`${process.env.BASE_REQUEST_URL}/api/users/stripecustomer`, {
                     method: "PUT",
@@ -72,7 +71,7 @@ module.exports = function (app) {
                 })
                 break;
             case 'customer.subscription.created':
-                const subscription = event.data.object;
+                const subscription = event.data.object
                 console.log(subscription)
                 await fetch(`${process.env.BASE_REQUEST_URL}/api/users/stripesubscription`, {
                     method: "PUT",
@@ -102,6 +101,6 @@ module.exports = function (app) {
         }
 
         // Return a 200 response to acknowledge receipt of the event
-        response.send();
+        res.send();
     })
 }

@@ -1,14 +1,15 @@
 require("dotenv").config();
 const functions = require("firebase-functions");
 const express = require("express");
+const bodyParser = require('body-parser');
 const app = express();
 const cors = require("cors");
 const path = require("path");
 
 //initiate app
 app.use(cors());
-app.use('/api/stripewebhook', express.raw({type: "*/*"}));
-app.use(express.json());
+//used so we can get raw body for stripe signature verification
+app.use(express.json())
 app.use(express.static(path.join(__dirname, "..", "client", "build")));
 
 //routes
@@ -20,6 +21,7 @@ require('./routes/onedrive.js')(app);
 require('./routes/todoist.js')(app);
 require('./routes/history.js')(app);
 require('./routes/stripe.js')(app);
+
 
 //serve client
 app.get("/", async (req, res) => {

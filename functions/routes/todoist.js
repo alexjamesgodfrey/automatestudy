@@ -6,7 +6,7 @@ const fetch = require('isomorphic-unfetch')
 const pool = require("../db.js");
 
 const log4js = require("log4js");
-const Todoist = require("../flows/todoist.js");
+const Todoist = require("../methods/todoist.js");
 log4js.configure({
     appenders: {
       everything: { type: 'file', filename: 'log.log' }
