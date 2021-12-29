@@ -54,8 +54,7 @@ const refreshAccessTokens = async (refresh_time) => {
  */
 const executeOneDriveFlows = async (refresh_time) => {
     console.log('running onedrive flows')
-    const date = new Date()
-    const dateString = date.toString()
+    const dateString = new Date().toLocaleString("en-US", {timeZone: "America/New_York"})
     //create history for flow run
     await fetch(`${process.env.BASE_REQUEST_URL}/api/history`, {
         method: "POST",
