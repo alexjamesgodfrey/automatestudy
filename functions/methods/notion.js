@@ -67,7 +67,7 @@ const createWelcomePage = async (access_token, database_id, date) => {
                         {
                             type: "text",
                             text: {
-                                content: `[${new Date().toLocaleString()}] Entry `,
+                                content: `[${new Date().toLocaleString("en-US", { timeZone: "America/New_York" })}] Entry `,
                             }
                         },
                         {
@@ -635,7 +635,7 @@ const createPageInDatabase = async (access_token, database_id, page_title, date,
                         {
                             type: "text",
                             text: {
-                                content: `[${new Date().toLocaleString()}] Entry `,
+                                content: `[${new Date().toLocaleString("en-US", { timeZone: "America/New_York" })}] Entry `,
                             }
                         },
                         {
