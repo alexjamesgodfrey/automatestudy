@@ -18,16 +18,11 @@ export default function Home() {
         <Fade in={open}>
             <div>
                 <Header />
-                <div>
                 {currentUser ?
-                    <div>
-                        <LoggedIn />
-                    </div>
+                    <LoggedIn />
                 :
-                    <div style={{ marginTop: '10px' }}>
-                        <NotLoggedIn />
-                    </div>}
-                </div>
+                    <NotLoggedIn />
+                }
             </div>
         </Fade>
     )

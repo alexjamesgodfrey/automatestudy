@@ -51,7 +51,7 @@ module.exports = function (app) {
     app.get("/api/history/flow/:flowid", async (req, res) => {
         try {
             const { flowid } = req.params;
-            const request = await pool.query("SELECT * FROM history WHERE flowid = $1 ORDER BY id DESC", [parseInt(flowid)]);
+            const request = await pool.query("SELECT * FROM history WHERE flowid = $1 ORDER BY id DESC LIMIT 96", [parseInt(flowid)]);
             res.json(request.rows);
         } catch (err) {
             console.error(err.message);

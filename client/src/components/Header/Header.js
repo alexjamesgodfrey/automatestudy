@@ -15,7 +15,7 @@ export default function Header() {
     }
 
     return (
-        <div style={{ borderBottom: '2px solid lightgrey'}}>
+        <div style={{ position: 'sticky', top: '0' }}>
             <Navbar style={{ margin: '0px 20px'}}>
                 <Navbar.Brand href="#home">
                     <div className="d-flex flex-column">
