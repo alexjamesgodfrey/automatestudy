@@ -123,20 +123,7 @@ const executeOneDriveFlows = async (refresh_time) => {
                             const difference = files.filter(
                                 x => !pastData[i].pastfiles.some(file => file.id === x.id)
                             )
-                            if (difference.length === 0) {
-                                await fetch(`${process.env.BASE_REQUEST_URL}/api/history`, {
-                                    method: "POST",
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        type: 'flow',
-                                        message: `[Success][${dateString}] No new files in ${pastData[i].path}`,
-                                        userid: userData.id,
-                                        flowid: pastData[i].id
-                                    })
-                                })
-                            } else {
+                            if (difference.length !== 0) {
                                 // get notion info for databaseid
                                 await fetch(`${process.env.BASE_REQUEST_URL}/api/notion/${userData.id}`)
                                     .then(response => response.json())

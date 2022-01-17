@@ -485,27 +485,7 @@ const createMasterDatabase = async (access_token, page_id, classes_array, user_i
                 multi_select: {
                     options: classes
                 }
-            },
-            "Next Task": {
-                formula: {
-                    expression: `if(prop("📓Create") == true, if(prop("📓R1") == true, if(prop("📓R2") == true, if(prop("📓R3") == true, if(prop("📓R4") == true, "Fully Reviewed", "[" + formatDate(dateAdd(prop("Date"), 30, "days"), "M/D/YY") + "] Fourth Review"), "[" + formatDate(dateAdd(prop("Date"), 7, "days"), "M/D/YY") + "] Third Review"), "[" + formatDate(dateAdd(prop("Date"), 3, "days"), "M/D/YY") + "] Second Review"), "[" + formatDate(dateAdd(prop("Date"), 1, "days"), "M/D/YY") + "] First Review"), "[" + formatDate(prop("Date"), "M/D/YY") + "] Create Review Questions")`
-                }
-            },
-            "📓Create": {
-                checkbox: {}
-            },
-            "📓R1": {
-                checkbox: {}
-            },
-            "📓R2": {
-                checkbox: {}
-            },
-            "📓R3": {
-                checkbox: {}
-            },
-            "📓R4": {
-                checkbox: {}
-            },
+            }
         }
     });
     await fetch(`${process.env.BASE_REQUEST_URL}/api/notion/database/${user_id}`, {
@@ -553,27 +533,59 @@ const formParent = async (access_token, classes_array, user_id) => {
     const response = await notion.blocks.children.append({
         block_id: page_id,
         children: [
-          {
-            object: 'block',
-            type: 'callout',
-            "callout": {
-                "text": [
-                    {
-                        "type": "text",
-                        "text": {
-                            "content": "Click below to view all your notes",
-                            "link": null
-                        },
-                        "plain_text": "Click below to view all your notes",
-                        "href": null
+            {
+                object: 'block',
+                type: 'callout',
+                "callout": {
+                    "text": [
+                        {
+                            "type": "text",
+                            "text": {
+                                "content": "Click below to view all your notes",
+                                "link": null
+                            },
+                            "plain_text": "Click below to view all your notes",
+                            "href": null
+                        }
+                    ],
+                    "icon": {
+                        "type": "emoji",
+                        "emoji": "💡"
                     }
-                ],
-                "icon": {
-                    "type": "emoji",
-                    "emoji": "💡"
                 }
-            }
-          },
+            },
+            {
+                object: 'block',
+                type: "paragraph",
+                paragraph: {
+                    text: [
+                        {
+                            type: "text",
+                            text: {
+                                content: 'Please view the '
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: 'Studyflow Documentation ',
+                                link: {
+                                    url: process.env.DOCS_LINK
+                                }
+                            },
+                            annotations: {
+                                bold: true
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: 'if you have any questions! '
+                            }
+                        },
+                    ]
+                }
+            },
         ],
       });
 

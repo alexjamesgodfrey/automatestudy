@@ -219,7 +219,7 @@ export default function Class(props) {
                                     )
                                 }
                             })}
-                            {flowHistory.length === 0 ? <p style={{ marginLeft: '20px'}}>nothing yet!</p> : <span></span>}
+                            {flowHistory.length === 0 ? <p style={{ marginLeft: '20px' }}>Nothing yet! Take a note in {props.path} for this Studyflow to run.</p> : <span></span>}
                         </div>
                     </div>
                 :

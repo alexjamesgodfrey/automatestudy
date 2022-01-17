@@ -2,6 +2,17 @@
   position: absolute;
 }
 
+.optimized-learning-text {
+  font-size: calc(max(6vw, 85px));
+  text-align: center;
+  font-weight: 700;
+}
+
+.optimized-learning-subtext {
+  text-align: center;
+  font-weight: 700;
+}
+
 @media only screen and (max-width: 800px) {
   #showBig {
     display: none !important;

@@ -16,7 +16,7 @@ export default function Main() {
     const [showClassTip, setShowClassTip] = useState(false)
 
     return (
-        <div style={{ width: '1000px', margin: '0px auto' }} className='d-flex flex-column justify-content-center'>
+        <div style={{ width: '1000px', margin: '20px auto' }} className='d-flex flex-column justify-content-center'>
             <h4 style={{ textAlign: 'center', margin: '20px' }}>Welcome, <span style={{ textTransform: 'capitalize' }}>{currentUser.displayName}</span> | {surveyResponse.grade} at {surveyResponse.college}</h4>
             <h4>Your Profile</h4>
             {!userDB.stripesubscription ? 

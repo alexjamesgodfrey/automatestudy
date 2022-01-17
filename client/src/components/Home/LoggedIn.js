@@ -160,7 +160,7 @@ export default function LoggedIn() {
     if (!surveyResponse) {
         return (
             <div>
-                <ProgressBar style={{ margin: '20px auto', width: '400px', height: '25px'}} now={16} label={`Setup: 10%`} />
+                <ProgressBar style={{ margin: '60px auto 20px auto', width: '400px', height: '25px'}} now={16} label={`Setup: 10%`} />
                 <div style={{margin: '20px 20px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '300px', margin: '15px' }}>
                         <Card.Header as="h5">Welcome to Studyflow</Card.Header>
@@ -183,7 +183,7 @@ export default function LoggedIn() {
     if (!userDB.classes && !classesConfirmed) { 
         return (
             <div>
-                <ProgressBar style={{ margin: '20px auto', width: '400px', height: '25px'}} now={30} label={`Setup: 30%`} />
+                <ProgressBar style={{ margin: '60px auto 20px auto', width: '400px', height: '25px'}} now={30} label={`Setup: 30%`} />
                 <div style={{ margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '400px' }}>
                         <Card.Header as="h5">Confirm Your Classes</Card.Header>
@@ -212,7 +212,7 @@ export default function LoggedIn() {
     if (!userDB.cloudaccess && !code) { 
         return (
             <div>
-                <ProgressBar style={{ margin: '20px auto', width: '400px', height: '25px'}} now={40} label={`Setup: 40%`} />
+                <ProgressBar style={{ margin: '60px auto 20px auto', width: '400px', height: '25px'}} now={40} label={`Setup: 40%`} />
                 <div style={{ margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '400px' }}>
                         <Card.Header as="h5">Connect a cloud service</Card.Header>
@@ -227,7 +227,8 @@ export default function LoggedIn() {
                                 new file is deteced, a new Notion (see next step) page will be created for your note.
                             </Card.Text>  
                             <Card.Text>
-                                A human will never view any of your files. Here's our privacy policy.
+                                A human will never view any of your files. Here's our
+                                <a href={process.env.REACT_APP_PRIVACY_LINK} target="_blank">privacy policy.</a>
                             </Card.Text>    
                         </Card.Body>
                     </Card>
@@ -291,7 +292,7 @@ export default function LoggedIn() {
     if (!userDB.notionaccess && state !== 'notion') { 
         return (
             <div>
-                <ProgressBar style={{ margin: '20px auto', width: '400px', height: '25px'}} now={60} label={`Setup: 60%`} />
+                <ProgressBar style={{ margin: '60px auto 20px auto', width: '400px', height: '25px'}} now={60} label={`Setup: 60%`} />
                 <div style={{margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '400px' }}>
                         <Card.Header as="h5">Connect to Notion</Card.Header>
@@ -303,11 +304,12 @@ export default function LoggedIn() {
                             <Card.Text>
                                 Once a {userDB.cloud} file is detected, a Notion page will be
                                 created, where you can enter active recall questions and review your note.
-                                Don't worry, we'll organize your Notion for you. We also encourage you to use Notion
-                                to organize other parts of your life, like workouts and books you've read.
+                                Don't worry, we'll organize your Notion for you. 
                             </Card.Text>  
                             <Card.Text>
-                                Again, a human will never view your Notion page. Here's our privacy policy one more time.
+                                {`Again, a human will never view your Notion page. Here's our `}
+                                <a href={process.env.REACT_APP_PRIVACY_LINK} target="_blank">privacy policy </a>
+                                one more time.
                             </Card.Text>  
                             <Card.Text>
                                 <strong>Only allow us to access a single Notion page. We will remove all previous
@@ -343,7 +345,7 @@ export default function LoggedIn() {
     if (!userDB.todoistaccess && state !== 'todoist') { 
         return (
             <div>
-                <ProgressBar style={{margin: '20px auto', width: '400px', height: '25px'}} now={80} label={`Setup: 80%`} />
+                <ProgressBar style={{margin: '60px auto 20px auto', width: '400px', height: '25px'}} now={80} label={`Setup: 80%`} />
                 <div style={{margin: '20px 0px 10px 0px' }} className="d-flex justify-content-center">
                     <Card style={{ width: '400px' }}>
                         <Card.Header as="h5">Connect to Todoist</Card.Header>

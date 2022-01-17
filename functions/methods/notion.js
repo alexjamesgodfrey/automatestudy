@@ -1,4 +1,5 @@
 const { Client } = require('@notionhq/client');
+const fetch = require('isomorphic-unfetch');
 require("dotenv").config();
 
 var log4js = require("log4js");
@@ -485,27 +486,7 @@ const createMasterDatabase = async (access_token, page_id, classes_array, user_i
                 multi_select: {
                     options: classes
                 }
-            },
-            "Next Task": {
-                formula: {
-                    expression: `if(prop("📓Create") == true, if(prop("📓R1") == true, if(prop("📓R2") == true, if(prop("📓R3") == true, if(prop("📓R4") == true, "Fully Reviewed", "[" + formatDate(dateAdd(prop("Date"), 30, "days"), "M/D/YY") + "] Fourth Review"), "[" + formatDate(dateAdd(prop("Date"), 7, "days"), "M/D/YY") + "] Third Review"), "[" + formatDate(dateAdd(prop("Date"), 3, "days"), "M/D/YY") + "] Second Review"), "[" + formatDate(dateAdd(prop("Date"), 1, "days"), "M/D/YY") + "] First Review"), "[" + formatDate(prop("Date"), "M/D/YY") + "] Create Review Questions")`
-                }
-            },
-            "📓Create": {
-                checkbox: {}
-            },
-            "📓R1": {
-                checkbox: {}
-            },
-            "📓R2": {
-                checkbox: {}
-            },
-            "📓R3": {
-                checkbox: {}
-            },
-            "📓R4": {
-                checkbox: {}
-            },
+            }
         }
     });
     await fetch(`${process.env.BASE_REQUEST_URL}/api/notion/database/${user_id}`, {
@@ -553,31 +534,287 @@ const formParent = async (access_token, classes_array, user_id) => {
     const response = await notion.blocks.children.append({
         block_id: page_id,
         children: [
-          {
-            object: 'block',
-            type: 'callout',
-            "callout": {
-                "text": [
+            {
+                object: 'block',
+                type: "paragraph",
+                paragraph: {
+                    text: [
+                        {
+                            type: "text",
+                            text: {
+                                content: 'Feel free to customize this page to your liking!',
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                object: 'block',
+                type: "paragraph",
+                paragraph: {
+                    text: [
+                        {
+                            type: "text",
+                            text: {
+                                content: 'Studyflow Website',
+                                link: {
+                                    url: "https://studyflow.ai"
+                                },
+                            },
+                            annotations: {
+                                bold: true
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: ' | ',
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: 'Studyflow Documentation',
+                                link: {
+                                    url: process.env.DOCS_LINK
+                                },
+                            },
+                            annotations: {
+                                bold: true
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: ' | ',
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: 'Contact Support ',
+                                link: {
+                                    url: "mailto:studyflowai@gmail.com"
+                                },
+                            },
+                            annotations: {
+                                bold: true
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                object: 'block',
+                type: 'callout',
+                "callout": {
+                    "text": [
+                        {
+                            "type": "text",
+                            "text": {
+                                "content": "Click below to view all your notes",
+                                "link": null
+                            },
+                            "plain_text": "Click below to view all your notes",
+                            "href": null
+                        }
+                    ],
+                    "icon": {
+                        "type": "emoji",
+                        "emoji": "💡"
+                    }
+                }
+            },
+        ],
+    });
+
+    await createMasterDatabase(access_token, page_id, classes_array, user_id)
+
+    const response2 = await notion.blocks.children.append({
+        block_id: page_id,
+        children: [
+            {
+                object: 'block',
+                type: 'callout',
+                "callout": {
+                    "text": [
+                        {
+                            "type": "text",
+                            "text": {
+                                "content": "Below are class-specific pages",
+                            },
+                        }
+                    ],
+                    "icon": {
+                        "type": "emoji",
+                        "emoji": "💡"
+                    }
+                }
+            },
+        ],
+    });
+
+    //create class pages
+    for (let i = 0; i < classes_array.length; i++) {
+        const response = await notion.pages.create({
+            parent: {
+                type: 'page_id',
+                "page_id": page_id,
+            },
+            properties: {
+                "title": {
+                    "title": [
                     {
                         "type": "text",
                         "text": {
-                            "content": "Click below to view all your notes",
-                            "link": null
-                        },
-                        "plain_text": "Click below to view all your notes",
-                        "href": null
+                            "content": classes_array[i]
+                        }
                     }
-                ],
-                "icon": {
-                    "type": "emoji",
-                    "emoji": "💡"
+                ]
                 }
-            }
-          },
-        ],
-      });
-
-    createMasterDatabase(access_token, page_id, classes_array, user_id)
+            },
+            icon: {
+                type: "emoji",
+                emoji: "📔"
+            },
+            children: [
+                {
+                    object: 'block',
+                    type: 'paragraph',
+                    paragraph: {
+                    text: [
+                        {
+                        type: 'text',
+                        text: {
+                            content: 'As always, experiment and customize this page to your liking!',
+                            },
+                        },
+                    ],
+                    },
+                },
+                {
+                    object: 'block',
+                    type: 'paragraph',
+                    paragraph: {
+                    text: [
+                        {
+                        type: 'text',
+                        text: {
+                            content: 'Important class link 1',
+                            link: {
+                                url: "https://en.wikipedia.org/wiki/Five_Suns"
+                            }
+                            },
+                        },
+                    ],
+                    },
+                },
+                {
+                    object: 'block',
+                    type: 'paragraph',
+                    paragraph: {
+                    text: [
+                        {
+                        type: 'text',
+                        text: {
+                            content: 'Important class link 1',
+                            link: {
+                                url: "https://en.wikipedia.org/wiki/Argleton"
+                            }
+                            },
+                        },
+                    ],
+                    },
+                },
+                {
+                    object: 'block',
+                    type: 'paragraph',
+                    paragraph: {
+                    text: [
+                        {
+                        type: 'text',
+                        text: {
+                            content: '',
+                            },
+                        },
+                    ],
+                    },
+                },
+                {
+                    object: 'block',
+                    type: 'paragraph',
+                    paragraph: {
+                    text: [
+                        {
+                            type: 'text',
+                            text: {
+                                content: 'Create an ',
+                                },
+                        },
+                        {
+                            type: 'text',
+                            text: {
+                                content: 'embed block ',
+                                link: {
+                                    url: "https://www.notion.so/Embeds-6b7133323590447b9d8e963c136ebce5"
+                                }
+                                },
+                        },
+                        {
+                            type: 'text',
+                            text: {
+                                content: 'to add your class syllabus here ⬇️',
+                                },
+                        },
+                    ],
+                    },
+                },
+                {
+                    object: 'block',
+                    type: 'paragraph',
+                    paragraph: {
+                    text: [
+                        {
+                            type: 'text',
+                            text: {
+                                content: '',
+                                },
+                        },
+                    ],
+                    },
+                },
+                {
+                    object: 'block',
+                    type: 'paragraph',
+                    paragraph: {
+                    text: [
+                        {
+                            type: 'text',
+                            text: {
+                                content: `Create a  `,
+                                },
+                            },
+                        {
+                            type: 'text',
+                            text: {
+                                content: 'linked database ',
+                                link: {
+                                    url: "https://www.notion.so/help/linked-databases"
+                                }
+                            },
+                        },
+                        {
+                            type: 'text',
+                            text: {
+                                content: `here filter it to show only ${classes_array[i]} notes. `,
+                            },
+                        },
+                    ],
+                    },
+                },
+            ]
+        });
+    }
 }
 
 
