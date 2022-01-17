@@ -202,7 +202,7 @@ export default function Class(props) {
             <Card.Body>
                 {props.path ? 
                     <div>
-                        <strong>History</strong>
+                        <strong>History ({flowHistory.length})</strong>
                         <div style={{ overflowY: 'scroll', maxHeight: '100px', marginTop: '10px', paddingTop: '5px'}}>
                             {flowHistory.map((hist, i) => {
                                 if (hist.message.substring(0, 2) === '[S') {
