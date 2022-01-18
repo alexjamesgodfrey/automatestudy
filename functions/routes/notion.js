@@ -45,7 +45,9 @@ const getAccessToken = async (code, uid, user_id, classes_array) => {
         .then(response => response.json())
         .then(async data => {
             logger.trace("Notion access token received from Notion for user " + uid)
+            console.log(data)
             if (data.access_token) {
+                console.log('here')
                 //add access token to database
                 await fetch(`${process.env.BASE_REQUEST_URL}/api/notion/store/${uid}/${user_id}`, {
                     method: 'POST',
@@ -55,6 +57,7 @@ const getAccessToken = async (code, uid, user_id, classes_array) => {
                     body: JSON.stringify(data)
                 })
                 //form the user's notion page
+                console.log(data.access_token)
                 notionImports.formParent(data.access_token, classes_array, user_id)
             }
         })
