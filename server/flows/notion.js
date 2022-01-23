@@ -488,11 +488,14 @@ const createMasterDatabase = async (access_token, page_id, classes_array, user_i
     createWelcomePage(access_token, createDatabase.id, d.toISOString().substring(0, 10))
 }
 
-const createClassPage = async (access_token, class_name) => {
+/**
+ * 
+ * @param {String} access_token the user's notion acess token
+ * @param {String} class_name the name of the class to add
+ * @param {String} page_id the id of the page to add the class to
+ */
+const createClassPage = async (access_token, class_name, page_id) => {
     const notion = new Client({ auth: access_token });
-
-    const pages = await listPages(access_token)
-    const page_id = await pages.results[0].id
 
     const response = await notion.pages.create({
         parent: {
@@ -670,6 +673,17 @@ const formParent = async (access_token, classes_array, user_id) => {
     const pages = await listPages(access_token)
     const page_id = await pages.results[0].id
 
+    //update the main page in the database
+    await fetch(`${process.env.BASE_REQUEST_URL}/api/notion/pageid/${user_id}`, {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            page_id: page_id
+        })
+    })
+
     //delete all page content
     const pageBlocks = await notion.blocks.children.list({
         block_id: page_id,
@@ -807,7 +821,7 @@ const formParent = async (access_token, classes_array, user_id) => {
 
     //create class pages
     for (let i = 0; i < classes_array.length; i++) {
-        createClassPage(access_token, classes_array[i])
+        createClassPage(access_token, classes_array[i], page_id)
     }
 }
 
@@ -902,6 +916,35 @@ const createPageInDatabase = async (access_token, database_id, page_title, date,
                                 content: `.`,
                             }
                         }
+                    ]
+                }
+            },
+            {
+                object: 'block',
+                type: "bulleted_list_item",
+                bulleted_list_item: {
+                    text: [
+                        {
+                            type: "text",
+                            text: {
+                                content: 'Scroll up to view page properties: create questions or review based on '
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: 'Next Task '
+                            },
+                            annotations: {
+                                bold: true
+                            }
+                        },
+                        {
+                            type: "text",
+                            text: {
+                                content: 'property.'
+                            }
+                        },
                     ]
                 }
             },

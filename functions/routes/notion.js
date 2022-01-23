@@ -75,9 +75,9 @@ const addClass = async (userid, class_name) => {
     await fetch(`${process.env.BASE_REQUEST_URL}/api/notion/${userid}`)
         .then(response => response.json())
         .then(data => {
-            notionImports.createClassPage(data.access_token, class_name)
+            notionImports.createClassPage(data.access_token, class_name, data.page_id)
         })
-} 
+}
 
 module.exports = function (app) {
     //calls getAccessToken function, which calls formparent, which initializes the notion page
@@ -160,5 +160,18 @@ module.exports = function (app) {
         }
     })
 
+    //update the page id for user
+    app.put('/api/notion/pageid/:userid', async (req, res) => {
+        try {
+            const { userid } = req.params;
+            const { page_id } = req.body
+            const getAll = await pool.query(
+                "UPDATE notion SET page_id=$1, WHERE userid=$3", 
+                [page_id, parseInt(userid)])
+            res.json(getAll.rows)
+        } catch (err) {
+            console.error(err.message)
+        }
+    })
     
 }
