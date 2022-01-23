@@ -115,22 +115,7 @@ const createWelcomePage = async (access_token, database_id, date) => {
                         {
                             type: "text",
                             text: {
-                                content: 'Scroll up to view page properties: create questions or review based on '
-                            }
-                        },
-                        {
-                            type: "text",
-                            text: {
-                                content: 'Next Task '
-                            },
-                            annotations: {
-                                bold: true
-                            }
-                        },
-                        {
-                            type: "text",
-                            text: {
-                                content: 'property.'
+                                content: 'Create questions or review based on Todoist tasks'
                             }
                         },
                     ]
@@ -150,9 +135,9 @@ const createWelcomePage = async (access_token, database_id, date) => {
                         {
                             type: "text",
                             text: {
-                                content: 'FAQ ',
+                                content: 'Docs ',
                                 link: {
-                                    url: 'https://studyflow.ai'
+                                    url: process.env.DOCS_LINK
                                 }
                             },
                             annotations: {
@@ -168,9 +153,9 @@ const createWelcomePage = async (access_token, database_id, date) => {
                         {
                             type: "text",
                             text: {
-                                content: 'contact us',
+                                content: 'contact us ',
                                 link: {
-                                    url: 'https://studyflow.ai'
+                                    url: 'mailto:studyflowai@gmail.com'
                                 }
                             },
                             annotations: {
@@ -180,7 +165,7 @@ const createWelcomePage = async (access_token, database_id, date) => {
                         {
                             type: "text",
                             text: {
-                                content: ' with questions, and enjoy studying efficiently!'
+                                content: 'with questions, and enjoy studying efficiently!'
                             }
                         },
                     ]
@@ -503,6 +488,172 @@ const createMasterDatabase = async (access_token, page_id, classes_array, user_i
     createWelcomePage(access_token, createDatabase.id, d.toISOString().substring(0, 10))
 }
 
+const createClassPage = async (access_token, class_name) => {
+    const notion = new Client({ auth: access_token });
+
+    const pages = await listPages(access_token)
+    const page_id = await pages.results[0].id
+
+    const response = await notion.pages.create({
+        parent: {
+            type: 'page_id',
+            "page_id": page_id,
+        },
+        properties: {
+            "title": {
+                "title": [
+                {
+                    "type": "text",
+                    "text": {
+                        "content": class_name
+                    }
+                }
+            ]
+            }
+        },
+        icon: {
+            type: "emoji",
+            emoji: "📔"
+        },
+        children: [
+            {
+                object: 'block',
+                type: 'paragraph',
+                paragraph: {
+                text: [
+                    {
+                    type: 'text',
+                    text: {
+                        content: 'As always, experiment and customize this page to your liking!',
+                        },
+                    },
+                ],
+                },
+            },
+            {
+                object: 'block',
+                type: 'paragraph',
+                paragraph: {
+                text: [
+                    {
+                    type: 'text',
+                    text: {
+                        content: 'Important class link 1',
+                        link: {
+                            url: "https://en.wikipedia.org/wiki/Five_Suns"
+                        }
+                        },
+                    },
+                ],
+                },
+            },
+            {
+                object: 'block',
+                type: 'paragraph',
+                paragraph: {
+                text: [
+                    {
+                    type: 'text',
+                    text: {
+                        content: 'Important class link 1',
+                        link: {
+                            url: "https://en.wikipedia.org/wiki/Argleton"
+                        }
+                        },
+                    },
+                ],
+                },
+            },
+            {
+                object: 'block',
+                type: 'paragraph',
+                paragraph: {
+                text: [
+                    {
+                    type: 'text',
+                    text: {
+                        content: '',
+                        },
+                    },
+                ],
+                },
+            },
+            {
+                object: 'block',
+                type: 'paragraph',
+                paragraph: {
+                text: [
+                    {
+                        type: 'text',
+                        text: {
+                            content: 'Create an ',
+                            },
+                    },
+                    {
+                        type: 'text',
+                        text: {
+                            content: 'embed block ',
+                            link: {
+                                url: "https://www.notion.so/Embeds-6b7133323590447b9d8e963c136ebce5"
+                            }
+                            },
+                    },
+                    {
+                        type: 'text',
+                        text: {
+                            content: 'to add your class syllabus here ⬇️',
+                            },
+                    },
+                ],
+                },
+            },
+            {
+                object: 'block',
+                type: 'paragraph',
+                paragraph: {
+                text: [
+                    {
+                        type: 'text',
+                        text: {
+                            content: '',
+                            },
+                    },
+                ],
+                },
+            },
+            {
+                object: 'block',
+                type: 'paragraph',
+                paragraph: {
+                text: [
+                    {
+                        type: 'text',
+                        text: {
+                            content: `Create a  `,
+                            },
+                        },
+                    {
+                        type: 'text',
+                        text: {
+                            content: 'linked database ',
+                            link: {
+                                url: "https://www.notion.so/help/linked-databases"
+                            }
+                        },
+                    },
+                    {
+                        type: 'text',
+                        text: {
+                            content: `here filter it to show only ${class_name} notes. `,
+                        },
+                    },
+                ],
+                },
+            },
+        ]
+    });
+} 
+
 
 /**
  * Function formParent (1) clears the desired page of all blocks (2) creates a 
@@ -517,7 +668,7 @@ const formParent = async (access_token, classes_array, user_id) => {
     const notion = new Client({ auth: access_token });
 
     const pages = await listPages(access_token)
-    const page_id = pages.results[0].id
+    const page_id = await pages.results[0].id
 
     //delete all page content
     const pageBlocks = await notion.blocks.children.list({
@@ -656,164 +807,7 @@ const formParent = async (access_token, classes_array, user_id) => {
 
     //create class pages
     for (let i = 0; i < classes_array.length; i++) {
-        const response = await notion.pages.create({
-            parent: {
-                type: 'page_id',
-                "page_id": page_id,
-            },
-            properties: {
-                "title": {
-                    "title": [
-                    {
-                        "type": "text",
-                        "text": {
-                            "content": classes_array[i]
-                        }
-                    }
-                ]
-                }
-            },
-            icon: {
-                type: "emoji",
-                emoji: "📔"
-            },
-            children: [
-                {
-                    object: 'block',
-                    type: 'paragraph',
-                    paragraph: {
-                    text: [
-                        {
-                        type: 'text',
-                        text: {
-                            content: 'As always, experiment and customize this page to your liking!',
-                            },
-                        },
-                    ],
-                    },
-                },
-                {
-                    object: 'block',
-                    type: 'paragraph',
-                    paragraph: {
-                    text: [
-                        {
-                        type: 'text',
-                        text: {
-                            content: 'Important class link 1',
-                            link: {
-                                url: "https://en.wikipedia.org/wiki/Five_Suns"
-                            }
-                            },
-                        },
-                    ],
-                    },
-                },
-                {
-                    object: 'block',
-                    type: 'paragraph',
-                    paragraph: {
-                    text: [
-                        {
-                        type: 'text',
-                        text: {
-                            content: 'Important class link 1',
-                            link: {
-                                url: "https://en.wikipedia.org/wiki/Argleton"
-                            }
-                            },
-                        },
-                    ],
-                    },
-                },
-                {
-                    object: 'block',
-                    type: 'paragraph',
-                    paragraph: {
-                    text: [
-                        {
-                        type: 'text',
-                        text: {
-                            content: '',
-                            },
-                        },
-                    ],
-                    },
-                },
-                {
-                    object: 'block',
-                    type: 'paragraph',
-                    paragraph: {
-                    text: [
-                        {
-                            type: 'text',
-                            text: {
-                                content: 'Create an ',
-                                },
-                        },
-                        {
-                            type: 'text',
-                            text: {
-                                content: 'embed block ',
-                                link: {
-                                    url: "https://www.notion.so/Embeds-6b7133323590447b9d8e963c136ebce5"
-                                }
-                                },
-                        },
-                        {
-                            type: 'text',
-                            text: {
-                                content: 'to add your class syllabus here ⬇️',
-                                },
-                        },
-                    ],
-                    },
-                },
-                {
-                    object: 'block',
-                    type: 'paragraph',
-                    paragraph: {
-                    text: [
-                        {
-                            type: 'text',
-                            text: {
-                                content: '',
-                                },
-                        },
-                    ],
-                    },
-                },
-                {
-                    object: 'block',
-                    type: 'paragraph',
-                    paragraph: {
-                    text: [
-                        {
-                            type: 'text',
-                            text: {
-                                content: `Create a  `,
-                                },
-                            },
-                        {
-                            type: 'text',
-                            text: {
-                                content: 'linked database ',
-                                link: {
-                                    url: "https://www.notion.so/help/linked-databases"
-                                }
-                            },
-                        },
-                        {
-                            type: 'text',
-                            text: {
-                                content: `here filter it to show only ${classes_array[i]} notes. `,
-                            },
-                        },
-                    ],
-                    },
-                },
-            ]
-        });
+        createClassPage(access_token, classes_array[i])
     }
 }
 
@@ -1141,4 +1135,4 @@ const createPageInDatabase = async (access_token, database_id, page_title, date,
     return response
 }
 
-module.exports = { formParent, createPageInDatabase }
+module.exports = { formParent, createPageInDatabase, createClassPage }

@@ -64,8 +64,20 @@ const getAccessToken = async (code, uid, user_id, classes_array) => {
     } catch (err) {
         logger.error("Notion access token could not be fetched and added to database for user " + uid + "\nError message: " + err.message)
     }
-    
 }
+
+/**
+ * Adds a new class page to the user's notion page
+ * @param {Integer} userid the user's unique pk id
+ * @param {String} class_name the name of the class to add
+ */
+const addClass = async (userid, class_name) => {
+    await fetch(`${process.env.BASE_REQUEST_URL}/api/notion/${userid}`)
+        .then(response => response.json())
+        .then(data => {
+            notionImports.createClassPage(data.access_token, class_name)
+        })
+} 
 
 module.exports = function (app) {
     //calls getAccessToken function, which calls formparent, which initializes the notion page
@@ -131,6 +143,18 @@ module.exports = function (app) {
                 "UPDATE notion SET database_id=$1, database_url=$2 WHERE userid=$3", 
                 [id, url, parseInt(userid)])
             res.json(getAll.rows)
+        } catch (err) {
+            console.error(err.message)
+        }
+    })
+
+    //creates a class for user 
+    app.put('/api/notion/createclass/:userid', async (req, res) => {
+        try {
+            const { userid } = req.params;
+            const { class_name } = req.body
+            await addClass(parseInt(userid), class_name)
+            res.send('class added')
         } catch (err) {
             console.error(err.message)
         }

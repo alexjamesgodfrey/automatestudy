@@ -56,8 +56,59 @@ const initializeTodoist = async (access_token, title, user_id, classes_array) =>
             },
             body: JSON.stringify(dbJSON)
         })
-        
     })
+}
+
+/**
+ * Adds a section to the user's todoist project and updates the database accordingly
+ * 
+ * @param {String} class_name name of class (section name) t0 add
+ * @param {Integer} projectid the id of the project
+ * @param {String} access_token the user's todoist access token
+ * @param {Integer} user_id the user's id
+ * @param {Array} previousSections array of the user's previous sections. needed to 
+ * update all sections
+ */
+const createSection = async (class_name, projectid, access_token, user_id, previousSections) => {
+    const sectionJSON = {
+        project_id: parseInt(projectid),
+        name: class_name
+    }
+    await fetch(`https://api.todoist.com/rest/v1/sections`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${access_token}`
+        },
+        body: JSON.stringify(sectionJSON)
+    })
+        .then(response => response.json())
+        .then(data => {
+            previousSections.push({
+                name: data.name,
+                id: data.id
+            })
+            createTask(
+                access_token,
+                `Welcome to ${class_name} Section`,
+                `All your tasks (add homeworks, quizzes, etc!) for ${class_name} go here`,
+                null, 
+                data.id,
+                null, 
+                'today'
+            )
+        })
+        //update sections in database
+        await fetch(`${process.env.BASE_REQUEST_URL}/api/todoist/sections`, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                sectionJSON: previousSections,
+                userid: user_id
+            })
+        })
 }
 
 const createSections = async (classes, projectid, access_token, user_id) => {
@@ -185,4 +236,4 @@ const createTask = async (access_token, content, description, project_id, sectio
     })
 }
 
-module.exports = { initializeTodoist, createTask }
+module.exports = { initializeTodoist, createTask, createSection }

@@ -56,7 +56,21 @@ const getAccessToken = async (code, uid, user_id, classes_array) => {
     } catch (err) {
         logger.error("Todoist access token could not be fetched and added to database for user " + uid + "\nError message: " + err.message)
     }
-    
+}
+
+/**
+ * 
+ * @param {Integer} userid the user's id
+ * @param {String} class_name the name of the class (section name) to add
+ * @param {String} access_token the user's todoist access token
+ */
+const addSection = async (userid, class_name, access_token) => {
+    //get the user's todoist info
+    await fetch(`${process.env.BASE_REQUEST_URL}/api/todoist/${userid}`)
+        .then(response => response.json())
+        .then(data => {
+            Todoist.createSection(class_name, data.projectid, access_token, userid, data.sections)
+        })
 }
 
 module.exports = function (app) {
@@ -128,6 +142,18 @@ module.exports = function (app) {
             logger.trace(`Sections added to database for user ${userid}`)
         } catch (err) {
             logger.trace(`Sections could not be added to database for user ${userid}. Error message: ${err.message}`)
+        }
+    })
+
+    //add a section for user 
+    app.put('/api/todoist/addsection/:userid', async (req, res) => {
+        try {
+            const { userid } = req.params
+            const { class_name, access_token } = req.body
+            await addSection(parseInt(userid), class_name, access_token)
+            res.send('added section')
+        } catch (err) {
+            console.log(err.message)
         }
     })
 }

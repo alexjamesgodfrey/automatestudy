@@ -77,7 +77,8 @@ module.exports = function (app) {
     app.put("/api/users/classes/:uid", async (req, res) => {
         try {
             const { uid } = req.params;
-            const classes = '{' + req.body.cs.split() + '}'
+            const { cs } = req.body
+            const classes = '{' + cs.split() + '}'
             const changeClasses = await pool.query("UPDATE users set classes = $1 WHERE uid = $2", [classes, uid]);
             logger.trace(`Classes updated to ${classes} for user ${uid}`)
             res.json(`Classes updated to ${classes} for user ${uid}`)
