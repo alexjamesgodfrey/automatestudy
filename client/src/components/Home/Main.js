@@ -91,7 +91,7 @@ export default function Main() {
                 <span></span>
             }
             <ProfileCards />
-            <Modal show={showClassModal}>
+            <Modal onHide={() => setShowClassModal(false)} show={showClassModal}>
                 <Modal.Header closeButton>
                     <Nav variant="tabs" defaultActiveKey="add">
                         <Nav.Item onClick={() => setAdding(true)}>
