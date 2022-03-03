@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import Header from '../Header/Header'
 import NotLoggedIn from './NotLoggedIn'
 import LoggedIn from './LoggedIn'
+import Sidebar from '../Sidebar/Sidebar'
 
 export default function Home() {
     const { currentUser } = useAuth()
@@ -17,9 +18,12 @@ export default function Home() {
     return (
         <Fade in={open}>
             <div>
-                <Header />
+                {/* <Header /> */}
                 {currentUser ?
-                    <LoggedIn />
+                    <div className='d-flex'>
+                        <Sidebar />
+                        <LoggedIn />
+                    </div>
                 :
                     <NotLoggedIn />
                 }

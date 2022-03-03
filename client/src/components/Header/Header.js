@@ -16,10 +16,10 @@ export default function Header() {
 
     return (
         <Navbar style={{ margin: '0px 30px' }}>
-            <Navbar.Brand href="#home">
+            <Navbar.Brand>
                 <div className="d-flex flex-column">
                     <strong style={{lineHeight: 1, marginTop: '3px'}}>studyflow</strong>
-                    <strong style={{fontSize: '17px', textAlign: 'right', lineHeight: 0.75}}>beta</strong>
+                    <strong style={{ fontSize: '17px', textAlign: 'right', lineHeight: 0.75}}>beta</strong>
                 </div>
             </Navbar.Brand>
             <Navbar.Toggle />
@@ -29,7 +29,7 @@ export default function Header() {
             </Navbar.Text></a>
             {currentUser ? 
                 <Navbar.Text onClick={() => logout()}>
-                    signed in as <span style={{ color: '#4FB0AE', textDecoration: 'underline' }}>{currentUser.displayName}</span>
+                    sign out
                 </Navbar.Text>
             :
                 <Navbar.Text style={{ cursor: 'pointer'}} onClick={() => google()}>
