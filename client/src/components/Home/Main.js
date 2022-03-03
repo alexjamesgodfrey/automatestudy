@@ -146,7 +146,7 @@ export default function Main() {
                     {` +/-`}
                 </span>
             </h4>
-            <div className="d-flex flex-column justify-content-center"> 
+            <div className="d-flex flex-wrap justify-content-center"> 
                 {userDB.classes.map((c, i) => {
                     return <Class
                         class={userFlows[c].class}

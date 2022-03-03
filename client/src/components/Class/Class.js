@@ -27,6 +27,20 @@ export default function Class(props) {
     const [lastFlowUTC, setLastFlowUTC] = useState()
     const [flowHistory, setFlowHistory] = useState([])
 
+    const renderer = ({ hours, minutes, seconds, completed }) => {
+        if (completed) {
+          // Render a completed state
+          return <span style={{ fonsize: '15px'}}>Flows executing...</span>;
+        } else {
+          // Render a countdown
+          if (seconds < 10) {
+            return <span>{minutes}:0{seconds}</span>;
+          }
+          return <span>{minutes}:{seconds}</span>;
+        }
+      };
+      
+
     const getDrives = async () => {
         const json = {
             access_token: userDB.cloudaccess,
@@ -183,12 +197,26 @@ export default function Class(props) {
     }, [])
 
     return (
-        <Card style={{ margin: '10px'}}>
+        <Card style={{ width: '350px', margin: '10px'}}>
             <Card.Header as="h5">
                 <div className='d-flex justify-content-between'>
                     <div>
                         {`${props.class} `}
-                        {lastFlowUTC && props.active ? <Countdown onComplete={() => window.location.reload(true)}date={(Date.now() + 900000 - (Date.now() - lastFlowUTC))} /> : <span></span>}
+                        {lastFlowUTC && props.active ? 
+                            <Countdown 
+                                renderer={renderer} 
+                                onComplete={() => window.location.reload(true)} 
+                                date={(Date.now() + 900000 - (Date.now() - lastFlowUTC))} 
+                            /> : <span></span>
+                        }
+                        <Button 
+                            variant="danger" 
+                            size="sm"
+                            style={{ marginLeft: '10px'}}
+                        >
+                            <span style={{ color: 'white' }}>Execute Now</span>
+                        </Button>
+                        
                     </div>
                     <Toggle
                         id='public-status'
@@ -207,13 +235,13 @@ export default function Class(props) {
                             {flowHistory.map((hist, i) => {
                                 if (hist.message.substring(0, 2) === '[S') {
                                     return (
-                                        <p style={{ lineHeight: 0.6, marginLeft: '20px' }}>
+                                        <p style={{ lineHeight: 1, marginLeft: '20px' }}>
                                             <span style={{ color: 'green' }}>[Success]</span>{hist.message.substring(9)}
                                         </p>
                                     )
                                 } else {
                                     return (
-                                        <p style={{ lineHeight: 0.6, marginLeft: '20px' }}>
+                                        <p style={{ lineHeight: 1, marginLeft: '20px' }}>
                                             <span style={{ color: 'red' }}>[Error]</span>{hist.message.substring(7)}
                                         </p>
                                     )
