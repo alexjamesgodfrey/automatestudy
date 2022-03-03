@@ -200,8 +200,7 @@ export default function Class(props) {
     return (
         <Card style={{ width: '350px', margin: '10px'}}>
             <Card.Header as="h5">
-                <div className='d-flex justify-content-between'>
-                    <div>
+                    <div style={{ width: '100%' }} className="d-flex justify-content-between">
                         {`${props.class} `}
                         {lastFlowUTC && props.active ? 
                             <Countdown 
@@ -213,7 +212,6 @@ export default function Class(props) {
                         <Button 
                             variant="outline-danger" 
                             size="sm"
-                            style={{ marginLeft: '10px'}}
                             disabled={false}
                             data-tip="instant execution for studyflow+ members"
                         >
@@ -222,7 +220,7 @@ export default function Class(props) {
                         <ReactTooltip />
                         
                         
-                    </div>
+                    
                     <Toggle
                         id='public-status'
                         className='custom-colors'
@@ -230,7 +228,7 @@ export default function Class(props) {
                         defaultChecked={props.active}
                         onChange={() => toggleActive()}
                     />
-                </div>
+                    </div>
             </Card.Header>
             <Card.Body>
                 {props.path ? 

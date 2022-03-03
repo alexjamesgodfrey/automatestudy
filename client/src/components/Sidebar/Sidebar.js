@@ -12,12 +12,12 @@ import './Sidebar.scss'
 export default function Sidebar() {
     const { userFlows } = useAuth()
     const [collapse, setCollapse] = useState(false)
-    const collapseIcon = collapse ? <AiOutlineDoubleRight /> : <AiOutlineDoubleLeft />
+    const collapseIcon = collapse ? <AiOutlineDoubleRight />: <AiOutlineDoubleLeft />
     console.log(Object.entries(userFlows))
   return (
     <ProSidebar collapsed={collapse} id="sidebar">
         <SidebarHeader className="sidebar-header">
-            <img src={logo} style={{ marginRight: '28px' }} />
+            <img src={logo} style={{ marginRight: '20px' }} />
             studyflow.ai
         </SidebarHeader>
         <SidebarContent>
@@ -49,7 +49,7 @@ export default function Sidebar() {
         </SidebarContent>
         <SidebarFooter>
         <Menu iconShape="circle">
-                <MenuItem onClick={() => setCollapse(!collapse)} icon={collapseIcon}>Collapse Sidebar</MenuItem>
+                <MenuItem onClick={() => setCollapse(!collapse)} icon={collapseIcon}></MenuItem>
             </Menu>
         </SidebarFooter>
         
