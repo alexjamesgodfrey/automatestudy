@@ -10,5 +10,12 @@ $theme-colors: (
   "success": #05ac47,
 );
 
+$sidebar-bg-color: white;
+$sidebar-color: black;
+$highlight-color: $primary-color;
+$icon-bg-color: white;
+$sidebar-width: 220px;
+
 /* import bootstrap to set changes */
+@import '~react-pro-sidebar/dist/scss/styles.scss';
 @import "~bootstrap/scss/bootstrap";
