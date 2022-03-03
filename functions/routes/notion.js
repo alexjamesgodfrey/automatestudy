@@ -33,6 +33,7 @@ const getAccessToken = async (code, uid, user_id, classes_array) => {
         "code": "${code}",
         "redirect_uri": "${process.env.REDIRECT_URI}"
     }`
+    console.log(body)
     try {
         await fetch(`https://api.notion.com/v1/oauth/token`, {
             method: 'POST',
@@ -47,7 +48,6 @@ const getAccessToken = async (code, uid, user_id, classes_array) => {
             logger.trace("Notion access token received from Notion for user " + uid)
             console.log(data)
             if (data.access_token) {
-                console.log('here')
                 //add access token to database
                 await fetch(`${process.env.BASE_REQUEST_URL}/api/notion/store/${uid}/${user_id}`, {
                     method: 'POST',
@@ -83,6 +83,7 @@ module.exports = function (app) {
     //calls getAccessToken function, which calls formparent, which initializes the notion page
     app.put("/api/notion/initialize/:code/:uid/:userid", async (req, res) => {
         try {
+            
             const { code, uid, userid } = req.params;
             const { classes_array } = req.body;
             logger.trace("Notion access token fetch requested for user " + uid)
@@ -166,7 +167,7 @@ module.exports = function (app) {
             const { userid } = req.params;
             const { page_id } = req.body
             const getAll = await pool.query(
-                "UPDATE notion SET page_id=$1, WHERE userid=$3", 
+                "UPDATE notion SET page_id=$1 WHERE userid=$2", 
                 [page_id, parseInt(userid)])
             res.json(getAll.rows)
         } catch (err) {

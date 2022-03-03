@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import app from '../../firebase.js';
 import { useAuth } from '../../contexts/AuthContext'
 import { Checkmark } from 'react-checkmark'
@@ -16,9 +16,13 @@ export default function ProfileCards() {
     const [tempURL, setTempURL] = useState('')
     const [editDisplayName, setEditDisplayName] = useState(false)
     const [tempDisplayName, setTempDisplayName] = useState('')
+    const [flowCount, setFlowCount] = useState("0")
+    const [nthUser, setNthUser] = useState("")
     const primaryColor = '#84cacc'
     const [showPublicAccountTip, setShowPublicAccountTip] = useState(false)
     const publicAccountTarget = useRef(null)
+
+    console.log(currentUser)
     
 
     const handlePublicChange = async () => {
@@ -75,6 +79,27 @@ export default function ProfileCards() {
         }
     }
 
+    const getFlowCount = async () => {
+        await fetch(`/api/history/flowcount/${userDB.id}`)
+            .then(response => response.json())
+            .then(data => setFlowCount(data.count))
+    }
+
+    function nth(n){return["st","nd","rd"][((n+90)%100-10)%10-1]||"th"}
+    const getNthUser = async () => {
+        await fetch(`/api/nthuser/${userDB.id}`)
+            .then(response => response.json())
+            .then(data => {
+                const nthUserTemp = nth(data.nthuser)
+                setNthUser(data.nthuser + nthUserTemp)
+            })
+    }
+
+    useEffect(() => {
+        getFlowCount()
+        getNthUser()
+    }, [])
+
     return (
         <div style={{ margin: '20px 0px' }} className="d-flex justify-content-center"> 
             <Card style={{ margin: '0px 20px', width: '300px' }}>
@@ -85,10 +110,9 @@ export default function ProfileCards() {
                             <img style={{ width: '80px', maxHeight: '80px', borderRadius: '50%' }} src={tempURL || currentUser.photoURL} alt="upload profile" />
                         </div>
                         <div style={{ marginLeft: '10px'}}>
-                            <p style={{ lineHeight: 0.5 }}>username:</p>
                             {editDisplayName ? 
                                 <div style={{ marginBottom: '10px'}}>
-                                    <Form.Control style={{ marginBottom: '5px' }} size="sm" type="text" placeholder="new username" onChange={(e) => setTempDisplayName(e.target.value)} />
+                                    <Form.Control style={{ marginBottom: '10px' }} size="sm" type="text" placeholder="new username" onChange={(e) => setTempDisplayName(e.target.value)} />
                                     <Button
                                         onClick={() => changeDisplayName()}
                                         style={{ height: '30px', fontSize: '14px' }}
@@ -115,29 +139,34 @@ export default function ProfileCards() {
                                     onClick={() => setEditDisplayName(true)}
                                 >{tempDisplayName || currentUser.displayName} <span style={{ textDecoration: 'underline'}}>edit</span></p>
                             }
+                            <Card.Text style={{ margin: '5px 10px 0px 10px' }} className="d-flex align-items-center">
+                                <span style={{ width: '100px', lineHeight: 1.2}}>{userDB.cloud}</span>
+                                <Checkmark size="small" color={primaryColor} />
+                            </Card.Text>
+                            <Card.Text style={{ margin: '0px 10px'}} className="d-flex align-items-center">
+                                <span style={{ width: '100px', lineHeight: 1.2}}>Notion</span>
+                                <Checkmark size="small" color={primaryColor} />
+                            </Card.Text>
+                            {userDB.todoistaccess ? 
+                                <Card.Text style={{ margin: '0px 10px'}} className="d-flex align-items-center">
+                                    <span style={{ width: '100px', lineHeight: 1.2}}>Todoist</span>
+                                    <Checkmark size="small" color={primaryColor} />
+                                </Card.Text>
+                            :
+                                <span></span>
+                            }
                         </div>
                     </div>
                     <Form.Control style={{ width: '180px', fontSize: '12px' }} type="file" size="sm" disabled={loading} accept="image/*" onChange={(e) => uploadPicture(e)}/>
                 </div>
             </Card>
             <Card style={{ margin: '0px 20px', width: '300px' }}>
-                <Card.Header as="h5">Connections</Card.Header>
-                <Card.Text style={{ margin: '5px 10px 0px 10px' }} className="d-flex align-items-center">
-                    <span style={{ width: '180px'}}>{userDB.cloud} connected</span>
-                    <Checkmark size="small" color={primaryColor} />
+                <Card.Header as="h5">Stats</Card.Header>
+                <Card.Text style={{ margin: '5px 10px' }} >
+                    You registered on <strong>{currentUser.metadata.creationTime.substring(0, currentUser.metadata.creationTime.length-12)}</strong>
+                    as the <strong>{nthUser}</strong> studyflow user.
+                    You have executed <strong>{flowCount}</strong> studyflows.
                 </Card.Text>
-                <Card.Text style={{ margin: '0px 10px'}} className="d-flex align-items-center">
-                    <span style={{ width: '180px'}}>Notion Connected</span>
-                    <Checkmark size="small" color={primaryColor} />
-                </Card.Text>
-                {userDB.todoistaccess ? 
-                    <Card.Text style={{ margin: '0px 10px'}} className="d-flex align-items-center">
-                        <span style={{ width: '180px'}}>Todoist Connected</span>
-                        <Checkmark size="small" color={primaryColor} />
-                    </Card.Text>
-                :
-                    <span></span>
-                }
             </Card>
             <Card style={{ margin: '0px 20px', width: '300px' }}>
                 <Card.Header as="h5">Settings</Card.Header>

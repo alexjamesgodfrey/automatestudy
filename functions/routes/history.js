@@ -57,4 +57,15 @@ module.exports = function (app) {
             console.error(err.message);
         }
     })
+
+    //get history for a certain user
+    app.get("/api/history/flowcount/:userid", async (req, res) => {
+        try {
+            const { userid } = req.params;
+            const request = await pool.query("SELECT COUNT(id) FROM history WHERE userid = $1 AND type != 'refreshonedrive'", [parseInt(userid)]);
+            res.json(request.rows[0]);
+        } catch (err) {
+            console.error(err.message);
+        }
+    })
 }

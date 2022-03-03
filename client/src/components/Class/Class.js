@@ -198,7 +198,7 @@ export default function Class(props) {
     }, [])
 
     return (
-        <Card style={{ width: '350px', margin: '10px'}}>
+        <Card style={{ width: '400px', margin: '10px 50px'}}>
             <Card.Header as="h5">
                     <div style={{ width: '100%' }} className="d-flex justify-content-between">
                         {`${props.class} `}
