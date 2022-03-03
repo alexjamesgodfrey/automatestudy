@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
+import ReactTooltip from 'react-tooltip';
 import Toggle from 'react-toggle'
 import Countdown from 'react-countdown';
 import Card from 'react-bootstrap/Card'
@@ -210,12 +211,16 @@ export default function Class(props) {
                             /> : <span></span>
                         }
                         <Button 
-                            variant="danger" 
+                            variant="outline-danger" 
                             size="sm"
                             style={{ marginLeft: '10px'}}
+                            disabled={false}
+                            data-tip="instant execution for studyflow+ members"
                         >
-                            <span style={{ color: 'white' }}>Execute Now</span>
+                            Execute
                         </Button>
+                        <ReactTooltip />
+                        
                         
                     </div>
                     <Toggle
