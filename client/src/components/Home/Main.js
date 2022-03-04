@@ -78,10 +78,12 @@ export default function Main() {
         .then(() => window.location.reload(true))
     }
 
+    console.log(currentUser.metadata)
+
     return (
         <div style={{ width: '1000px', margin: '20px auto' }} className='d-flex flex-column justify-content-center'>
+            
             <h4 style={{ textAlign: 'center', margin: '20px' }}>Welcome, <span style={{ textTransform: 'capitalize' }}>{currentUser.displayName}</span> | {surveyResponse.grade} at {surveyResponse.college}</h4>
-            <h4>Your Profile</h4>
             {!userDB.stripesubscription ? 
                 <Alert style={{ textAlign: 'center' }} variant='danger'>
                     Please <Alert.Link href={process.env.REACT_APP_STRIPE_LINK}>subscribe to Studyflow.ai
@@ -146,7 +148,7 @@ export default function Main() {
                     {` +/-`}
                 </span>
             </h4>
-            <div className="d-flex flex-column justify-content-center"> 
+            <div className="d-flex flex-wrap justify-content-center"> 
                 {userDB.classes.map((c, i) => {
                     return <Class
                         class={userFlows[c].class}

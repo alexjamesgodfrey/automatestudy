@@ -47,17 +47,6 @@ module.exports = function (app) {
         }
     })
 
-    //get a user's survey response based on uid
-    app.get("/api/survey/:uid", async (req, res) => {
-        try {
-            const { uid } = req.params;
-            const here = await pool.query("SELECT * FROM studyflow WHERE uid = $1", [uid]);
-            res.json(here.rows);
-        } catch (err) {
-            console.error(err.message);
-        }
-    })
-
     //create a new user
     app.post("/api/users", async (req, res) => {
         try {
@@ -174,11 +163,27 @@ module.exports = function (app) {
         try {
             const { stripesubscription } = req.body;
             await pool.query("UPDATE users set stripesubscription = $1 WHERE stripecustomerid = $2", [stripesubscription, stripesubscription.customer]);
-            logger.trace(`Updated stripecustomer for ${stripesubscription.customer}`)
-            res.json(`Updated stripecustomer for ${stripesubscription.customer}`)
+            logger.trace(`Updated stripesubscription for ${stripesubscription.customer}`)
+            res.json(`Updated stripesubscription for ${stripesubscription.customer}`)
         } catch (err) {
             const { stripecustomer } = req.body;
             logger.error(`Could not update stripcustomer for ${stripesubscription.customer}`)
+        }
+    })
+
+    //get user based on uid
+    app.get("/api/nthuser/:id", async (req, res) => {
+        try {
+            const { id } = req.params;
+            const user = await pool.query("SELECT * FROM users ORDER BY id");
+            const nth = user.rows.findIndex(object => {
+                return object.id == id
+            })
+            res.json({
+                nthuser: nth+1
+            });
+        } catch (err) {
+            console.error(err.message);
         }
     })
 }

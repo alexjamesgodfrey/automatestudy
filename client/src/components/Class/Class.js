@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
+import ReactTooltip from 'react-tooltip';
 import Toggle from 'react-toggle'
 import Countdown from 'react-countdown';
 import Card from 'react-bootstrap/Card'
@@ -26,6 +27,20 @@ export default function Class(props) {
     const [flowActivating, setFlowActivating] = useState(false)
     const [lastFlowUTC, setLastFlowUTC] = useState()
     const [flowHistory, setFlowHistory] = useState([])
+
+    const renderer = ({ hours, minutes, seconds, completed }) => {
+        if (completed) {
+          // Render a completed state
+          return <span style={{ fonsize: '15px'}}>Flows executing...</span>;
+        } else {
+          // Render a countdown
+          if (seconds < 10) {
+            return <span>{minutes}:0{seconds}</span>;
+          }
+          return <span>{minutes}:{seconds}</span>;
+        }
+      };
+      
 
     const getDrives = async () => {
         const json = {
@@ -183,13 +198,29 @@ export default function Class(props) {
     }, [])
 
     return (
-        <Card style={{ margin: '10px'}}>
+        <Card style={{ width: '400px', margin: '10px 50px'}}>
             <Card.Header as="h5">
-                <div className='d-flex justify-content-between'>
-                    <div>
+                    <div style={{ width: '100%' }} className="d-flex justify-content-between">
                         {`${props.class} `}
-                        {lastFlowUTC && props.active ? <Countdown onComplete={() => window.location.reload(true)}date={(Date.now() + 900000 - (Date.now() - lastFlowUTC))} /> : <span></span>}
-                    </div>
+                        {lastFlowUTC && props.active ? 
+                            <Countdown 
+                                renderer={renderer} 
+                                onComplete={() => window.location.reload(true)} 
+                                date={(Date.now() + 900000 - (Date.now() - lastFlowUTC))} 
+                            /> : <span></span>
+                        }
+                        <Button 
+                            variant="outline-danger" 
+                            size="sm"
+                            disabled={false}
+                            data-tip="instant execution for studyflow+ members"
+                        >
+                            Execute
+                        </Button>
+                        <ReactTooltip />
+                        
+                        
+                    
                     <Toggle
                         id='public-status'
                         className='custom-colors'
@@ -197,7 +228,7 @@ export default function Class(props) {
                         defaultChecked={props.active}
                         onChange={() => toggleActive()}
                     />
-                </div>
+                    </div>
             </Card.Header>
             <Card.Body>
                 {props.path ? 
@@ -207,13 +238,13 @@ export default function Class(props) {
                             {flowHistory.map((hist, i) => {
                                 if (hist.message.substring(0, 2) === '[S') {
                                     return (
-                                        <p style={{ lineHeight: 0.6, marginLeft: '20px' }}>
+                                        <p style={{ lineHeight: 1, marginLeft: '20px' }}>
                                             <span style={{ color: 'green' }}>[Success]</span>{hist.message.substring(9)}
                                         </p>
                                     )
                                 } else {
                                     return (
-                                        <p style={{ lineHeight: 0.6, marginLeft: '20px' }}>
+                                        <p style={{ lineHeight: 1, marginLeft: '20px' }}>
                                             <span style={{ color: 'red' }}>[Error]</span>{hist.message.substring(7)}
                                         </p>
                                     )

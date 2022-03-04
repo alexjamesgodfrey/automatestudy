@@ -3,21 +3,21 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { ProSidebar, SidebarHeader, Menu, MenuItem, SubMenu, SidebarContent, SidebarFooter } from 'react-pro-sidebar';
 import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from 'react-icons/ai'
-import { FaHome, FaQuestion, FaBookOpen, FaVideo } from 'react-icons/fa'
-import { BsPeopleFill } from 'react-icons/bs'
-import { MdSchool } from 'react-icons/md'
+import { FaHome, FaQuestion, FaBookOpen } from 'react-icons/fa'
+import { BsPeopleFill, BsFillBugFill } from 'react-icons/bs'
+import { MdSchool, MdEmail } from 'react-icons/md'
 import logo from '../../images/wave.svg'
 import './Sidebar.scss'
 
 export default function Sidebar() {
-    const { userFlows } = useAuth()
+    const { userFlows, currentUser } = useAuth()
     const [collapse, setCollapse] = useState(false)
-    const collapseIcon = collapse ? <AiOutlineDoubleRight /> : <AiOutlineDoubleLeft />
+    const collapseIcon = collapse ? <AiOutlineDoubleRight />: <AiOutlineDoubleLeft />
     console.log(Object.entries(userFlows))
   return (
     <ProSidebar collapsed={collapse} id="sidebar">
         <SidebarHeader className="sidebar-header">
-            <img src={logo} style={{ marginRight: '28px' }} />
+            <img alt="logo "src={logo} style={{ marginRight: '20px' }} />
             studyflow.ai
         </SidebarHeader>
         <SidebarContent>
@@ -43,13 +43,19 @@ export default function Sidebar() {
                     >
                         Community</MenuItem>
                 {/* <MenuItem icon={<FaVideo />}>Tutorial Videos</MenuItem> */}
-                <MenuItem icon={<FaBookOpen />}>Documentation</MenuItem>
-                <MenuItem icon={<FaQuestion />}>Help</MenuItem>
+                <Menu
+                    icon={<FaQuestion />}
+                    title="Help"
+                >
+                    <MenuItem icon={<FaBookOpen />}><a target="_blank" rel="noreferrer" href={process.env.REACT_APP_DOCS_LINK}>Documentation</a></MenuItem>
+                    <MenuItem icon={<BsFillBugFill />}><a target="_blank" rel="noreferrer" href={`mailto:${process.env.REACT_APP_HELP_EMAIL}?subject=Bug Report from ${currentUser.displayName}`}>Report a Bug</a></MenuItem>
+                    <MenuItem icon={<MdEmail />}><a target="_blank" rel="noreferrer" href={`mailto:${process.env.REACT_APP_HELP_EMAIL}?subject=Question from ${currentUser.displayName}`}>Email Us</a></MenuItem>
+                </Menu>
             </Menu>
         </SidebarContent>
         <SidebarFooter>
         <Menu iconShape="circle">
-                <MenuItem onClick={() => setCollapse(!collapse)} icon={collapseIcon}>Collapse Sidebar</MenuItem>
+                <MenuItem onClick={() => setCollapse(!collapse)} icon={collapseIcon}></MenuItem>
             </Menu>
         </SidebarFooter>
         
