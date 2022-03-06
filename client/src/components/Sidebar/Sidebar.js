@@ -29,7 +29,7 @@ export default function Sidebar() {
                 <SubMenu
                         icon={<MdSchool />}
                         suffix={<span className="badge yellow">{Object.keys(userFlows).length}</span>}
-                        title="My Flows"
+                        title="My Classes"
                     >
                     {Object.entries(userFlows).map((classArray, i) => {
                         return (
