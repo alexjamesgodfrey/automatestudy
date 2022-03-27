@@ -19,6 +19,8 @@ export default function Main() {
     const newClassName = useRef()
     const [loading, setLoading] = useState(false)
 
+    console.log(userDB)
+
     const addClass = async () => {
         setLoading(true)
         const newClass = newClassName.current.value
